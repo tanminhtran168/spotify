@@ -3,7 +3,7 @@ export default {
         user: 'postgres',
         host: 'localhost',
         database: 'postgres',
-        password: '161718',
-        port: 5432,
+        password: 'nnduong10',
+        port: 5000,
     }
 }

@@ -13,7 +13,8 @@
   "dependencies": {
     "body-parser": "^1.19.0",
     "esm": "^3.2.25",
-    "express": "^4.17.1",
+    "express": "^4.17.2",
+    "nodemon": "^2.0.15",
     "pg": "^8.7.1"
   }
 }
