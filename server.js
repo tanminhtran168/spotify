@@ -7,11 +7,19 @@ import album from './routes/albumRouter.js'
 
 const app = express();
 
+app.set('views','views');
+app.set('view engine','ejs');
+app.use(express.static('public'));
+
+//app.use("/", (req, res)=> {res.render('homepage')})
+app.get('/', (req, res) => {
+	res.render('homepage')
+})
+
 app.use("/user", user);
 app.use("/account", account);
 //app.use("/song", song);
 //app.use("/playlist", playlist);
 //app.use("/album", album);
-app.set('views','./backend/views');
-app.set('view engine','ejs');
+
 app.listen(5000, () => { console.log("Server started at http://localhost:5000")});
