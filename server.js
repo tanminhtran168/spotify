@@ -1,6 +1,7 @@
 import express from 'express';
 import user from './routes/userRouter.js'
 import account from './routes/accountRouter.js'
+import artist from './routes/artistRouter.js'
 import song from './routes/songRouter.js'
 import playlist from './routes/playlistRouter.js'
 import album from './routes/albumRouter.js'
@@ -18,7 +19,8 @@ app.get('/', (req, res) => {
 
 app.use("/user", user);
 app.use("/account", account);
-//app.use("/song", song);
+app.use("/artist", artist);
+app.use("/song", song);
 //app.use("/playlist", playlist);
 //app.use("/album", album);
 
