@@ -1,6 +1,6 @@
 import express from 'express'
 import bodyParser from 'body-parser';
-import {getAllAccount, getAccountInfo, addNewAccount, deleteAccount, updateAccount} from '../controllers/accountController.js'
+import {getAllAccount, getAccountInfo, post_addNewAccount, get_addNewAccount, post_deleteAccount, get_deleteAccount, updateAccount} from '../controllers/accountController.js'
 const router = express.Router();
 
 router.use(bodyParser.json())
@@ -8,12 +8,16 @@ router.use(bodyParser.urlencoded({extended:true}))
 
 router.get('/',  getAllAccount);
 
-//router.get('/:id/',  getAccountInfo); 
+router.get('/id/:id',  getAccountInfo); 
 
-router.get('/:id/', addNewAccount);
+router.get('/signup', get_addNewAccount);
 
-router.delete('/:id/', deleteAccount);
+router.post('/signup', post_addNewAccount);
 
-router.put('/:id/', updateAccount);
+router.get('/id/:id', get_deleteAccount);
+
+router.delete('/id/:id', post_deleteAccount);
+
+router.put('/id/:id/', updateAccount);
 
 export default router;
