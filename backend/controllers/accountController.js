@@ -47,14 +47,14 @@ export const post_addNewAccount = async (req, res) => {
     }
 }
 export const get_deleteAccount = async(req, res) => {
-    
+    res.render('deleteAcc')
 } 
 export const post_deleteAccount = async (req, res) => {
-    const id = req.params.id
+    console.log(req.body)
+    const {id} = req.body
     try {
         var accounts = pool.query('DELETE FROM account WHERE account_id = $1', [id])
         console.log('delete')
-        console.log(req)
     } catch (err) {
         console.log(err.stack)
     }

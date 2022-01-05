@@ -14,9 +14,9 @@ router.get('/signup', get_addNewAccount);
 
 router.post('/signup', post_addNewAccount);
 
-router.get('/id/:id', get_deleteAccount);
+router.get('/delete', get_deleteAccount);
 
-router.delete('/id/:id', post_deleteAccount);
+router.post('/delete', post_deleteAccount);
 
 router.put('/id/:id/', updateAccount);
 
