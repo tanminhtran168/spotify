@@ -8,23 +8,25 @@ const pool = new Pool(config.POSTGRES_INFO)
 export const getAllAccount = async (req, res) => {
     try {
         var accounts = await pool.query('SELECT * FROM account')
-        console.log('get')
-        console.log(accounts)
     } catch (err) {
         console.log(err.stack)
     }
-    res.send(accounts)
+    res.send(accounts.rows)
 }
-export const getAccountInfo = async (req, res) => {
-    const id = req.params.id
-    console.log(id)
+
+export const get_getAccountInfo = async (req, res) => {
+    res.render('searchInfo')
+}
+
+export const post_getAccountInfo = async (req, res) => {
+    console.log(req.body)
+    const {username, full_name, email, phone_number} = req.body
     try {
-        var accounts = await pool.query('SELECT * FROM account WHERE account_id = $1', [id])
-        console.log('get')
+        var accounts = await pool.query('SELECT * FROM account WHERE username = $1 or full_name = $2 or email = $3 or phone_number = $4', [username, full_name, email, phone_number])
     } catch (err) {
         console.log(err.stack)
     }    
-    res.send(accounts)
+    res.send(accounts.rows)
 }
 export const get_addNewAccount =(req,res) =>{
     res.render('signup');
