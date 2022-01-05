@@ -8,21 +8,25 @@ const pool = new Pool(config.POSTGRES_INFO)
 export const getAllSong = async (req, res) => {
     try {
         var song = await pool.query('SELECT * FROM song')
-        console.log('get')
     } catch (err) {
         console.log(err.stack)
     }
     res.send(song)
 }
-export const getSongInfo = async (req, res) => {
-    const id = parseInt(req.params.id)
+
+export const get_getSongInfo = async (req, res) => {
+    res.render('songViews/searchInfo')
+}
+
+export const post_getSongInfo = async (req, res) => {
+    console.log(req.body)
+    const {song_name, artist_name, album_name, duration, category} = req.body
     try {
-        var song = await pool.query('SELECT * FROM song WHERE song_id = $1', [id])
-        console.log('get')
+        var song = await pool.query('SELECT * FROM song WHERE song_name = $1 or full_name = $2 or email = $3 or phone_number = $4', [song_name, artist_name, album_name, duration, category])
     } catch (err) {
         console.log(err.stack)
     }    
-    res.send(song)
+    res.send(song.rows)
 }
 export const addNewSong = async (req, res) => {
     const {song_id, artist_id, album_id, song_name, duration, category, average_rate, last_updated_stamp, created_stamp} = req.body

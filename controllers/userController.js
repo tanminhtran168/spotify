@@ -6,7 +6,7 @@ const Pool = pg.Pool
 const pool = new Pool(config.POSTGRES_INFO)
 
 export const get_Signup =(req,res) =>{
-    res.render('signup');
+    res.render('userViews/signup');
 }
 export const post_Signup = async (req, res) => {
     console.log(req.body)
@@ -29,7 +29,7 @@ export const post_Signup = async (req, res) => {
 }
 
 export const get_Login = async (req, res) => {
-    res.render('login');
+    res.render('userViews/login');
 }
 export const post_Login = async (req, res) => {
     console.log(req.body)

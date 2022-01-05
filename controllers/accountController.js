@@ -15,7 +15,7 @@ export const getAllAccount = async (req, res) => {
 }
 
 export const get_getAccountInfo = async (req, res) => {
-    res.render('searchInfo')
+    res.render('accountViews/searchInfo')
 }
 
 export const post_getAccountInfo = async (req, res) => {
@@ -29,27 +29,29 @@ export const post_getAccountInfo = async (req, res) => {
     res.send(accounts.rows)
 }
 export const get_addNewAccount =(req,res) =>{
-    res.render('signup');
+    res.render('accountViews/signup');
 }
 export const post_addNewAccount = async (req, res) => {
     console.log(req.body)
-    const {account_id, username, current_password, full_name, email, phone_number} = req.body
-    
-    try {
-        var accounts = await pool.query('INSERT INTO account(account_id, username, current_password, user_role, full_name, birth_date, email, phone_number, last_updated_stamp, created_stamp) \
-            VALUES($1, $2, $3, \'client\', $4, null, $5, $6, null, null) RETURNING *', [account_id, username, current_password, full_name, email, phone_number])
-        console.log(req)
-    } catch (err) {
-        console.log(err.stack)
-    }
+    const {username, current_password, full_name, email, phone_number} = req.body
+    if(username == null || current_password == null || full_name == null || email == null || phone_number == null)
+        res.status(500).send({message: 'Missing some value'});
+    else 
+        try {
+            var accounts = await pool.query('INSERT INTO account(account_id, username, current_password, user_role, full_name, birth_date, email, phone_number, last_updated_stamp, created_stamp) \
+                VALUES(default, $1, $2, \'client\', $3, null, $4, $5, null, default) RETURNING *', [username, current_password, full_name, email, phone_number])
+            console.log(req)
+        } catch (err) {
+            console.log(err.stack)
+        }
     if (accounts) {
         res.status(201).send({message: 'New account created', data: accounts.rows});
     } else {
-        res.status(500).send({message: 'Error in creating new account'});
+        res.status(500).send({message: 'Error'});
     }
 }
 export const get_deleteAccount = async(req, res) => {
-    res.render('deleteAcc')
+    res.render('accountViews/deleteAcc')
 } 
 export const post_deleteAccount = async (req, res) => {
     console.log(req.body)
