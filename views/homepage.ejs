@@ -9,23 +9,46 @@
 </head>
 
 <body>
-    <div class="header-bar">
+    <div id="header-bar">
         <button class="header-button" type="button">HOME</button>
-        <div class="search-box">
-            <input type="text" class="search-box-input" placeholder="Search for Song, Album or Artist"/>
-            <button class="search-button"> 
+        <div id="search-box">
+            <input type="text" id="search-box-input" placeholder="Search for Song, Album or Artist"/>
+            <button id="search-button" class="icon-button"> 
                 <i class="fas fa-search"></i>
             </button>
         </div>
-        <button class="header-button" style="float: right;">LOGIN</button>
-        <button class="header-button" style="float: right;">SIGN UP</button>
+        <button class="header-button" id="login" >LOGIN</button>
+        <button class="header-button" id="signup">SIGN UP</button>
     </div>
 
-    <div class="welcome-message">
+    <div id="welcome-message">
         Welcome to our website!
     </div>
-    <div class="player-bar">
-        <audio src="Roundabout - Yes.flac"></audio>
+    <div id="player-bar">
+        <div id="song-info"></div>
+        <div id="media-controls">
+            <div id="media-controls-buttons">
+                <button id="random" class="icon-button">
+                    <i class="fas fa-random"></i>
+                </button>
+                <button id="prev" class="icon-button">
+                    <i class="fas fa-step-backward"></i>
+                </button>
+                <button id="play-pause" class="icon-button">
+                    <i class="fas fa-play-circle"></i>
+                </button>
+                <button id="next" class="icon-button">
+                    <i class="fas fa-step-forward"></i>
+                </button>
+                <button id="loop" class="icon-button">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+            <input type="range" id="progress" value="0"></input>
+        </div>
+        <div id="audio-controls">
+            <input type="range" id="volume" value="50"></input>
+        </div>
     </div>
     <div style="width: 100%; height: 2000px;"></div>
 </body>

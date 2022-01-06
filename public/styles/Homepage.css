@@ -12,7 +12,7 @@ body{
     
 }
 
-.header-bar{
+#header-bar{
     display: flex;
     position: fixed;
     height: 80px;
@@ -36,7 +36,10 @@ body{
     color: #4AB1BB;
 }
 
-.search-box{
+#login, #signup{
+    float: right;
+}
+#search-box{
     display: flex;
     width: 40%;
     height: 40px;
@@ -44,7 +47,7 @@ body{
     float: left;
     background-color: transparent;
 }
-.search-box > input {
+#search-box > input {
     margin: auto;
     border: none;
     width: 100%;
@@ -54,40 +57,109 @@ body{
     background-color: #101214;
     color: #FFFFFF;
 }
-.search-button {
+#search-button {
     display: inline-flex;
     margin: auto;
-    height: 40px;
-    width: 40px;
     margin-left: 10px;
     font-size: 25px;
+}
+.icon-button {
     border: none;
     background: transparent;
     color: white;
 }
-.search-button:hover {
+.icon-button:hover{
     color: #4AB1BB;
 }
 .fa-search {
     margin: auto;
 }
-.player-bar {
+#player-bar {
     display: flex;
     bottom: 0;
     position: fixed;
     height: 100px;
     width: 100%;
     background-color: #090A0B;
-    box-shadow: 0px 5px 5px #000000;
+    box-shadow: 0px -5px 5px #000000;
     z-index: 1;
+}
+#media-controls{
+    display: block;
+    margin: auto;
+    width: 35%;
+    height: 100%;
+}
+#media-controls-buttons {
+    margin-top: 10px;
+    display: flex;
+    background-color: transparent;
     align-items: center;
     justify-content: center;
 }
-.welcome-message {
+#welcome-message {
     position: relative;
     top: 200px;
     font-family: 'Poppins';
     font-size: 100px;
     text-align: center;
     color: #FFFFFF;
+}
+
+#prev, #next{
+    font-size: 25px;
+}
+
+#random, #loop{
+    font-size: 20px;
+}
+
+#play-pause{
+    font-size: 50px;
+}
+
+input[type=range]{
+    -webkit-appearance: none;  /* Override default CSS styles */
+    border-radius: 5px;
+    background: #1E98D7;
+    opacity: 0.8;
+    cursor: pointer;
+}
+
+input[type=range]:hover{
+    opacity: 1;
+}
+
+input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance: none;
+    border-radius: 50%; 
+    background: #FFFFFF;
+}
+
+#progress{
+    height: 6px;
+    width: 100%;
+}
+#progress::-webkit-slider-thumb{
+    width: 15px;
+    height: 15px;
+}
+#audio-controls{
+    display: flex;
+    float: right;
+    width: 10%;
+    height: 100%;
+}
+#volume{
+    margin: auto;
+    height: 6px;
+    width: 80%;
+}
+#volume::-webkit-slider-thumb{
+    width: 15px;
+    height: 15px;
+}
+#song-info{
+    width: 10%;
+    height: 100%;
 }
