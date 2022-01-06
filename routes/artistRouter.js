@@ -1,21 +1,22 @@
 import express from 'express'
 import bodyParser from 'body-parser';
+import { checkAdmin, isAuth } from '../utils.js'
 import {getAllArtist, get_getArtistInfo, post_getArtistInfo, get_addNewArtist, post_addNewArtist, get_deleteArtist, post_deleteArtist, updateArtist} from '../controllers/artistController.js'
 const router = express.Router();
 
 router.use(bodyParser.json())
 router.use(bodyParser.urlencoded({extended:true}))
 
-router.get('/',  getAllArtist);
+router.get('/', isAuth, checkAdmin, getAllArtist);
 
-router.get('/search',  get_getArtistInfo); 
-router.post('/search',  post_getArtistInfo);
+router.get('/search', isAuth, get_getArtistInfo); 
+router.post('/search', isAuth, post_getArtistInfo);
 
-router.get('/add', get_addNewArtist);
-router.post('/add', post_addNewArtist);
+router.get('/add', isAuth, checkAdmin, get_addNewArtist);
+router.post('/add', isAuth, checkAdmin, post_addNewArtist);
 
-router.get('/delete', get_deleteArtist);
-router.post('/delete', post_deleteArtist);
+router.get('/delete', isAuth, checkAdmin, get_deleteArtist);
+router.post('/delete', isAuth, checkAdmin, post_deleteArtist);
 
 router.put('/id/:id/', updateArtist);
 

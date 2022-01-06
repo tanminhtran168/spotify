@@ -1,6 +1,7 @@
 import express from 'express'
 import pg from 'pg'
 import config from '../config.js'
+import { albumUpdateNumofSongs } from './albumController.js'
 import {artistUpdateNumofSongs} from './artistController.js'
 const router = express.Router()
 const Pool = pg.Pool
@@ -57,7 +58,8 @@ export const post_addNewSong = async (req, res) => {
     }
     if (song) {
         res.status(201).send({message: 'New song created', data: song.rows});
-        artistUpdateNumofSongs(artist_id);
+        artistUpdateNumofSongs(artist_name)
+        if(album_name != null) albumUpdateNumofSongs(album_name)
     } else {
         res.status(500).send({message: 'Error in creating new song'});
     }

@@ -66,9 +66,9 @@ export const post_deleteArtist = async (req, res) => {
     }
 }
 
-export const artistUpdateNumofSongs = async (artist_id) => {
+export const artistUpdateNumofSongs = async (artist_name) => {
     try {
-        var artist = pool.query('UPDATE artist SET num_of_songs = (SELECT COUNT song_id FROM song WHERE song.artist_id = artist.artist_id) WHERE artist_id = $1', [artist_id])
+        var artist = pool.query('UPDATE artist SET num_of_songs = (SELECT COUNT song_id FROM song, artist WHERE song.artist_id = artist.artist_id and artist_name = $1) WHERE artist_name = $1', [artist_name])
     } catch (err) {
         console.log(err.stack)
     }

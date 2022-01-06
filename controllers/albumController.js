@@ -115,4 +115,17 @@ export const deleteSongInAlbum = async (req, res) => {
         res.status(500).send({message: 'Error in deleting song from your album'});
     }
 }
+export const albumUpdateNumofSongs = async (album_name) => {
+    try {
+        var album = pool.query('UPDATE album SET num_of_songs = (SELECT COUNT song_id FROM song, album WHERE song.album_id = album.album_id and album_name = $1) WHERE album_name = $1', [album_name])
+    } catch (err) {
+        console.log(err.stack)
+    }
+    if (album) {
+        res.status(201).send({message: 'Update successful'})
+    }
+    else {
+        res.status(500).send({message: 'Error in updating'})
+    }
+}
 export default router;
