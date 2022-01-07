@@ -17,7 +17,7 @@ CREATE TABLE account (
 CREATE TABLE client (
   client_id serial not null,
   account_id int NOT NULL,
-  num_artist INTEGER,
+  num_artist_favorite INTEGER,
   num_playlist INTEGER,
   CONSTRAINT pk_client PRIMARY KEY (client_id),
   CONSTRAINT client_account FOREIGN KEY (account_id) REFERENCES account (account_id)
@@ -29,6 +29,7 @@ CREATE TABLE artist (
   artist_info VARCHAR(1000),
   artist_image VARCHAR(100),
   birth_date DATE,
+  num_of_albums INTEGER,
   num_of_songs INTEGER,
   last_updated_stamp TIMESTAMP NULL,
   created_stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
