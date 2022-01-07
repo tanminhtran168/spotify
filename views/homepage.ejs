@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="styles/Homepage.css" type="text/css" rel="stylesheet">
+    <link rel="shortcut icon" href="#">
     <script src="https://kit.fontawesome.com/5b0c22fb92.js" crossorigin="anonymous"></script>
 </head>
 
@@ -35,7 +36,7 @@
                     <i class="fas fa-step-backward"></i>
                 </button>
                 <button id="play-pause" class="icon-button">
-                    <i class="fas fa-play-circle"></i>
+                    <i class="fas fa-play-circle" id="play-toggle"></i>
                 </button>
                 <button id="next" class="icon-button">
                     <i class="fas fa-step-forward"></i>
@@ -45,12 +46,14 @@
                 </button>
             </div>
             <input type="range" id="progress" value="0"></input>
+
+            <audio id="audio" src=""></audio>
         </div>
         <div id="audio-controls">
-            <input type="range" id="volume" value="50"></input>
+            <input type="range" id="volume" value="100"></input>
         </div>
     </div>
     <div style="width: 100%; height: 2000px;"></div>
 </body>
-
+<script src="./scripts/Homepage.js"></script>
 </html>
