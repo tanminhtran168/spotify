@@ -40,6 +40,7 @@ CREATE TABLE album (
   artist_id int NOT NULL,
   album_name VARCHAR(60),
   album_image VARCHAR(100),
+  album_info VARCHAR(1000),
   num_of_songs INTEGER,
   total_duration INTEGER,
   last_updated_stamp TIMESTAMP NULL,
@@ -54,6 +55,7 @@ CREATE TABLE song (
   album_id int ,
   song_name VARCHAR(60),
   song_image VARCHAR(100),
+  song_info VARCHAR(1000),
   duration INTEGER,
   category VARCHAR(60),
   average_rate NUMERIC,
@@ -101,8 +103,8 @@ CREATE TABLE artist_favorite (
 CREATE table playlist (
   playlist_id serial NOT NULL,
   client_id int NOT NULL,
-  playlist_name VARCHAR(60) not null,
-  playlist_note VARCHAR(60) not null,
+  playlist_name VARCHAR(60),
+  playlist_info VARCHAR(1000),
   num_of_songs int not null,
   last_updated_stamp TIMESTAMP NULL,
   created_stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -120,14 +122,13 @@ CREATE table song_added_to_playlist (
   CONSTRAINT song_added FOREIGN KEY (song_id) REFERENCES song (song_id)
 );
 
-INSERT INTO account(account_id, username, current_password, user_role, full_name, birth_date, email, phone_number, last_updated_stamp, created_stamp) 
-            VALUES(default, 'minhtt', '161718', 'admin', 'Tan Minh Tran', null, 'tanminhtran168@gmail.com', '123456789', null, default)
-INSERT INTO account(account_id, username, current_password, is_active, user_role, full_name, birth_date, email, phone_number, last_updated_stamp, created_stamp)
-            VALUES(default, 'duongnn', '123456', 'client', 'Nam Duong Ngo', null, 'duongnamngohl@gmail.com', '0963648035', null, default)
+INSERT INTO account(account_id, username, current_password, avatar, user_role, full_name, birth_date, email, phone_number, last_updated_stamp, created_stamp) 
+            VALUES(default, 'minhtt', '161718', null, 'admin', 'Tan Minh Tran', null, 'tanminhtran168@gmail.com', '123456789', null, default);
+INSERT INTO account(account_id, username, current_password, avatar, user_role, full_name, birth_date, email, phone_number, last_updated_stamp, created_stamp)
+            VALUES(default, 'duongnn', '123456', null, 'client', 'Nam Duong Ngo', null, 'duongnamngohl@gmail.com', '0963648035', null, default);
 select * from account 
 select * from artist  
 select * from song 
-SELECT * FROM account WHERE account_id = '1'
 
 drop table account, client, artist, album, song, song_added_to_playlist, playlist, comment, rating , artist_favorite 
 
