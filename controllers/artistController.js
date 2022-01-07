@@ -35,16 +35,19 @@ export const post_addNewArtist = async (req, res) => {
     const {artist_name, artist_image, artist_info} = req.body
     
     try {
-        var artist = await pool.query('INSERT INTO artist(artist_id, artist_name, artist_image, artist_info, birth_date, num_of_songs, last_updated_stamp, created_stamp) \
-            VALUES(default, $1, $2, $3, null, 0, null, default) RETURNING *', [artist_name, artist_image, artist_info])
-        console.log(req)
+        var name = await pool.query('SELECT artist_name FROM artist WHERE artist_name = $1', [artist_name])
+        if(name.rows[0].artist_name == null) {
+            var artist = await pool.query('INSERT INTO artist(artist_id, artist_name, artist_image, artist_info, birth_date, num_of_songs, last_updated_stamp, created_stamp) \
+                VALUES(default, $1, $2, $3, null, 0, null, default) RETURNING *', [artist_name, artist_image, artist_info])
+            if (artist) {
+                res.status(201).send({message: 'New artist added'});
+            } else {
+                res.status(500).send({message: 'Error in added new artist'});
+            }
+        }
+        else res.status(500).send({message: 'Artist name already exists'})
     } catch (err) {
         console.log(err.stack)
-    }
-    if (artist) {
-        res.status(201).send({message: 'New artist added'});
-    } else {
-        res.status(500).send({message: 'Error in added new artist'});
     }
 }
 export const get_deleteArtist = async(req, res) => {
@@ -52,17 +55,18 @@ export const get_deleteArtist = async(req, res) => {
 } 
 export const post_deleteArtist = async (req, res) => {
     console.log(req.body)
-    const {id} = req.body
+    const {artist_id} = req.body
     try {
-        var artist = pool.query('DELETE FROM artist WHERE artist_id = $1', [id])
-        console.log('delete')
+        var song = await pool.query('DELETE FROM song WHERE artist_id = $1', [artist_id])
+        var album = await pool.query('DELETE FROM album WHERE artist_id = $1', [artist_id])
+        var artist = await pool.query('DELETE FROM artist WHERE artist_id = $1', [artist_id])
+        if (artist && song && album) {
+            res.status(201).send({message: 'Artist deleted'});
+        } else {
+            res.status(500).send({message: 'Error in deleting artist'});
+        }
     } catch (err) {
         console.log(err.stack)
-    }
-    if (artist) {
-        res.status(201).send({message: 'Artist deleted'});
-    } else {
-        res.status(500).send({message: 'Error in deleting artist'});
     }
 }
 

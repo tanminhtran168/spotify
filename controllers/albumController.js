@@ -36,19 +36,23 @@ export const post_addNewAlbum = async (req, res) => {
     const {album_name, artist_name, album_image, album_info} = req.body
     
     try {
-        var artist = await pool.query('SELECT artist_id FROM artist WHERE artist_name = $1 LIMIT 1', [artist_name]) 
-        if(artist) {
-            var album = await pool.query('INSERT INTO album(album_id, artist_id, album_name, album_image, album_info, birth_date, num_of_songs, total_duration, last_updated_stamp, created_stamp) \
-                VALUES(default, (SELECT artist_id FROM artist WHERE artist_name = $2 LIMIT 1), $1, $3, $4, null, 0, null, default) RETURNING *', [album_name, artist_name, album_image, album_info])
-            //console.log(req)
-            if (album) {
-                res.status(201).send({message: 'New album added'});
-                artistUpdateNumofAlbums(artist_name)
-            } else {
-                res.status(500).send({message: 'Error in added new album'});
+        var name = await pool.query('SELECT album_name FROM album WHERE album_name = $1', [album_name])
+        if(name.rows[0].album_name == null) {
+            var artist = await pool.query('SELECT artist_id FROM artist WHERE artist_name = $1 LIMIT 1', [artist_name]) 
+            if(artist) {
+                var album = await pool.query('INSERT INTO album(album_id, artist_id, album_name, album_image, album_info, birth_date, num_of_songs, total_duration, last_updated_stamp, created_stamp) \
+                    VALUES(default, (SELECT artist_id FROM artist WHERE artist_name = $2 LIMIT 1), $1, $3, $4, null, 0, null, default) RETURNING *', [album_name, artist_name, album_image, album_info])
+                //console.log(req)
+                if (album) {
+                    res.status(201).send({message: 'New album added'});
+                    artistUpdateNumofAlbums(artist_name)
+                } else {
+                    res.status(500).send({message: 'Error in added new album'});
+                }
             }
+            else res.status(500).send({message: 'Artist unknown'});
         }
-        else res.status(500).send({message: 'Artist unknown'});
+        else res.status(500).send({message: 'Album name already exists'})
     } catch (err) {
         console.log(err.stack)
     }
@@ -61,20 +65,20 @@ export const post_deleteAlbum = async (req, res) => {
     const {album_id} = req.body
     try {
         var album = await pool.query('DELETE FROM album WHERE album_id = $1', [album_id])
-        console.log('delete')
+        var song = await pool.query('DELETE FROM song WHERE album_id = $1', [album_id])
+        if (album && song) {
+            res.status(201).send({message: 'Album deleted'});
+            var artist = await pool.query('SELECT artist_name FROM artist, album WHERE artist.album_id = album.album_id')
+            if (artist) {
+                res.status(201).send({message: 'Update number of albums successful'})
+                artistUpdateNumofAlbums(artist.rows[0].artist_name)
+            }
+            else res.status(500).send({message: 'Error in updating number of albums'})
+        } else {
+            res.status(500).send({message: 'Error in deleting album'})
+        }
     } catch (err) {
         console.log(err.stack)
-    }
-    if (album) {
-        res.status(201).send({message: 'Album deleted'});
-        var artist = await pool.query('SELECT artist_name FROM artist, album WHERE artist.album_id = album.album_id')
-        if (artist) {
-            res.status(201).send({message: 'Update number of albums successful'})
-            artistUpdateNumofAlbums(artist.rows[0].artist_name)
-        }
-        else res.status(500).send({message: 'Error in updating number of albums'})
-    } else {
-        res.status(500).send({message: 'Error in deleting album'})
     }
 }
 

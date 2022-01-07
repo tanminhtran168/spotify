@@ -38,9 +38,21 @@ export const post_addNewAccount = async (req, res) => {
         res.status(500).send({message: 'Missing some value'});
     else 
         try {
-            var accounts = await pool.query('INSERT INTO account(account_id, username, current_password, avatar, user_role, full_name, birth_date, email, phone_number, last_updated_stamp, created_stamp) \
-                VALUES(default, $1, $2, \'client\', $3, $4, null, $5, $6, null, default) RETURNING *', [username, current_password, avatar, full_name, email, phone_number])
-            console.log(req)
+            var username_db = await pool.query('SELECT username FROM account WHERE user_name = $1', [username])
+            if(username_db.rows[0].user_name == null) {
+                var email_db = await pool.query('SELECT email FROM account WHERE email = $1', [email])
+                if(email_db.rows[0].email == null) {
+                    var phone_db = await pool.query('SELECT phone_number FROM account WHERE phone_number = $1', [phone_number])
+                    if(phone_db.rows[0].phone_number == null) {
+                        var accounts = await pool.query('INSERT INTO account(account_id, username, current_password, avatar, user_role, full_name, birth_date, email, phone_number, last_updated_stamp, created_stamp) \
+                            VALUES(default, $1, $2, \'client\', $3, $4, null, $5, $6, null, default) RETURNING *', [username, current_password, avatar, full_name, email, phone_number])
+                        console.log(req)
+                    }
+                    else res.status(500).send({message: 'Phone number already exists'})
+                }
+                else res.status(500).send({message: 'Email already exists'})
+            } 
+            else res.status(500).send({message: 'Username already exists'})
         } catch (err) {
             console.log(err.stack)
         }
@@ -72,7 +84,7 @@ export const updateAccount = async (req, res) => {
     const id = parseInt(req.params.id)
     const {account_id, username, current_password, is_active, user_role, full_name, birth_date, email, phone_number, avatar, last_updated_stamp, created_stamp} = req.body
     try {
-        var accounts = pool.query('UPDATE account SET username = $2, current_password = $3, is_active = $4, user_role = $5, full_name = $6, birth_date = $7, email = $8, phone_number = $9, avatar = $10, last_updated_stamp = $11', 
+        var accounts = pool.query('UPDATE account SET username = $2, current_password = $3, is_active = $4, user_role = $5, full_name = $6, birth_date = $7, email = $8, phone_number = $9, avatar = $10, last_updated_stamp = $11 WHERE account_id = $1', 
             [account_id, username, current_password, is_active, user_role, full_name, birth_date, email, phone_number, avatar, last_updated_stamp, created_stamp])
         console.log('put')
         console.log(req)
