@@ -12,6 +12,15 @@ body{
     
 }
 
+#welcome-message {
+    position: relative;
+    top: 200px;
+    font-family: 'Poppins';
+    font-size: 100px;
+    text-align: center;
+    color: #FFFFFF;
+}
+
 #header-bar{
     display: flex;
     position: fixed;
@@ -67,10 +76,12 @@ body{
     border: none;
     background: transparent;
     color: white;
+    opacity: 0.7;
 }
 .icon-button:hover{
-    color: #4AB1BB;
+    opacity: 1;
 }
+
 .fa-search {
     margin: auto;
 }
@@ -86,7 +97,8 @@ body{
 }
 #media-controls{
     display: block;
-    margin: auto;
+    margin-left: 12.5%;
+    margin-right: 22.5%;
     width: 35%;
     height: 100%;
 }
@@ -97,14 +109,7 @@ body{
     align-items: center;
     justify-content: center;
 }
-#welcome-message {
-    position: relative;
-    top: 200px;
-    font-family: 'Poppins';
-    font-size: 100px;
-    text-align: center;
-    color: #FFFFFF;
-}
+
 
 #prev, #next{
     font-size: 25px;
@@ -121,7 +126,7 @@ body{
 input[type=range]{
     -webkit-appearance: none;  /* Override default CSS styles */
     border-radius: 5px;
-    background: #1E98D7;
+    background: #244659;
     opacity: 0.8;
     cursor: pointer;
 }
@@ -134,32 +139,97 @@ input[type=range]::-webkit-slider-thumb{
     -webkit-appearance: none;
     border-radius: 50%; 
     background: #FFFFFF;
+    visibility: hidden;
+}
+input[type=range]:hover::-webkit-slider-thumb{
+    visibility: visible;
+}
+#progress-bar{
+    display: flex;
 }
 
+#current-time, #song-time{
+    text-align: center;
+    font-size: 13px;
+    font-family: 'Roboto';
+    color: #FFFFFF;
+    width: 10%;
+}
 #progress{
     height: 6px;
     width: 100%;
+    margin: auto;
 }
 #progress::-webkit-slider-thumb{
     width: 15px;
     height: 15px;
 }
-#audio-controls{
+#volume-controls{
     display: flex;
+    align-items: center;
+    justify-content: center;
     float: right;
     width: 10%;
     height: 100%;
+    
 }
+#volume-button{
+    font-size: 20px;
+    max-width: 10%;
+}
+
 #volume{
+    background: #4AB1BB;
     margin: auto;
     height: 6px;
-    width: 80%;
+    width: 60%;
 }
 #volume::-webkit-slider-thumb{
     width: 15px;
     height: 15px;
 }
 #song-info{
-    width: 10%;
+    display: flex;
+    width: 20%;
     height: 100%;
+}
+
+#album-cover{
+    max-height: 70%;
+    min-height: 70%;
+    aspect-ratio: 1/1;
+    border: none;
+    background-color: transparent;
+    object-fit: contain;
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-left: 10px;
+}
+
+#song-textinfo{
+    display: block;
+    margin-left: 10px;
+    margin-top: auto;
+    margin-bottom: auto;
+    width: 100%;
+}
+
+#songname{
+    color: white;
+    font-family: Poppins;
+    font-size: 25px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin:auto;
+}
+
+#artist{
+    color: #797979;
+    font-family: Poppins;
+    font-size: 13px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin:auto;
 }
