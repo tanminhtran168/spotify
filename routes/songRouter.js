@@ -18,6 +18,6 @@ router.post('/add/', isAuth, checkAdmin, post_addNewSong);
 router.get('/delete/', isAuth, checkAdmin, get_deleteSong);
 router.post('/delete/', isAuth, checkAdmin, post_deleteSong);
 
-router.put('/:id/', updateSong);
+//router.put('/:id/', updateSong);
 
 export default router;

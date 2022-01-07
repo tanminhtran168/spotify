@@ -6,19 +6,23 @@ const Pool = pg.Pool
 const pool = new Pool(config.POSTGRES_INFO)
 
 export const getAllPlaylist = async (req, res) => {
-    const id = parseInt(req.params.id)
+    const {client_id} = req.body
     try {
-        var playlist = await pool.query('SELECT * FROM playlist WHERE client_id =  $1', [id])
+        var playlist = await pool.query('SELECT * FROM playlist WHERE client_id =  $1', [client_id])
         console.log('get')
     } catch (err) {
         console.log(err.stack)
     }
     res.send(playlist)
 }
-export const getPlaylistInfo = async (req, res) => {
-    const id = parseInt(req.params.id)
+
+export const get_getPlaylistInfo = async(req, res) => {
+    res.render('playlistViews/searchInfo')
+}
+export const post_getPlaylistInfo = async (req, res) => {
+    const {client_id, playlist_name} = req.body
     try {
-        var playlist = await pool.query('SELECT * FROM playlist WHERE playlist_id = $1', [id])
+        var playlist = await pool.query('SELECT * FROM playlist WHERE playlist_name = $2 and client_id = $1', [client_id, playlist_name])
         console.log('get')
     } catch (err) {
         console.log(err.stack)

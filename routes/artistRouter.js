@@ -18,6 +18,6 @@ router.post('/add', isAuth, checkAdmin, post_addNewArtist);
 router.get('/delete', isAuth, checkAdmin, get_deleteArtist);
 router.post('/delete', isAuth, checkAdmin, post_deleteArtist);
 
-router.put('/id/:id/', updateArtist);
+//router.put('/id/:id/', updateArtist);
 
 export default router;

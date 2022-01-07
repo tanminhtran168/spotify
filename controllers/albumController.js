@@ -1,6 +1,7 @@
 import express from 'express'
 import pg from 'pg'
 import config from '../config.js'
+import { artistUpdateNumofAlbums} from './artistController.js'
 const router = express.Router()
 const Pool = pg.Pool
 const pool = new Pool(config.POSTGRES_INFO)
@@ -8,124 +9,91 @@ const pool = new Pool(config.POSTGRES_INFO)
 export const getAllAlbum = async (req, res) => {
     try {
         var album = await pool.query('SELECT * FROM album')
-        console.log('get')
     } catch (err) {
         console.log(err.stack)
     }
-    res.send(album)
+    res.send(album.rows)
 }
-export const getAlbumInfo = async (req, res) => {
-    const id = parseInt(req.params.id)
+
+export const get_getAlbumInfo = async (req, res) => {
+    res.render('albumViews/searchInfo')
+}
+export const post_getAlbumInfo = async (req, res) => {
+    console.log(req.body)
+    const {album_name, artist_name} = req.body
     try {
-        var album = await pool.query('SELECT * FROM album WHERE album_id = $1', [id])
-        console.log('get')
+        var album = await pool.query('SELECT * FROM album WHERE album_name = $1 or artist_id = (SELECT artist_id FROM artist WHERE artist_name = $2 LIMIT 1)', [album_name, artist_name])
     } catch (err) {
         console.log(err.stack)
     }    
-    res.send(album)
+    res.send(album.rows)
 }
-export const addNewAlbum = async (req, res) => {
-    const {album_id, client_id, album_name, num_of_songs, album_note, last_updated_stamp, created_stamp} = req.body
+
+export const get_addNewAlbum = async (req, res) => {
+    res.render('albumViews/addNewAlbum')
+}
+export const post_addNewAlbum = async (req, res) => {
+    const {album_name, artist_name, album_image, album_info} = req.body
     
     try {
-        var album = await pool.query('INSERT INTO album(album_id, client_id, album_name, num_of_songs, album_note, last_updated_stamp, created_stamp) \
-            VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *', [album_id, client_id, album_name, num_of_songs, album_note, last_updated_stamp, created_stamp])
-        console.log(req)
+        var artist = await pool.query('SELECT artist_id FROM artist WHERE artist_name = $1 LIMIT 1', [artist_name]) 
+        if(artist) {
+            var album = await pool.query('INSERT INTO album(album_id, artist_id, album_name, album_image, album_info, birth_date, num_of_songs, total_duration, last_updated_stamp, created_stamp) \
+                VALUES(default, (SELECT artist_id FROM artist WHERE artist_name = $2 LIMIT 1), $1, $3, $4, null, 0, null, default) RETURNING *', [album_name, artist_name, album_image, album_info])
+            //console.log(req)
+            if (album) {
+                res.status(201).send({message: 'New album added'});
+                artistUpdateNumofAlbums(artist_name)
+            } else {
+                res.status(500).send({message: 'Error in added new album'});
+            }
+        }
+        else res.status(500).send({message: 'Artist unknown'});
     } catch (err) {
         console.log(err.stack)
     }
-    if (album) {
-        res.status(201).send({message: 'New album created', data: album.rows});
-    } else {
-        res.status(500).send({message: 'Error in creating new album'});
-    }
 }
-export const deleteAlbum = async (req, res) => {
-    const id = parseInt(req.params.id)
+export const get_deleteAlbum = async(req, res) => {
+    res.render('albumViews/deleteAlbum')
+} 
+export const post_deleteAlbum = async (req, res) => {
+    //console.log(req.body)
+    const {album_id} = req.body
     try {
-        var album = await pool.query('DELETE FROM album WHERE album_id = $1', [id])
+        var album = await pool.query('DELETE FROM album WHERE album_id = $1', [album_id])
         console.log('delete')
-        console.log(req)
     } catch (err) {
         console.log(err.stack)
     }
     if (album) {
-        res.status(201).send({message: 'album deleted', data: album.rows});
+        res.status(201).send({message: 'Album deleted'});
+        var artist = await pool.query('SELECT artist_name FROM artist, album WHERE artist.album_id = album.album_id')
+        if (artist) {
+            res.status(201).send({message: 'Update number of albums successful'})
+            artistUpdateNumofAlbums(artist.rows[0].artist_name)
+        }
+        else res.status(500).send({message: 'Error in updating number of albums'})
     } else {
-        res.status(500).send({message: 'Error in deleting album'});
-    }
-}
-export const updateAlbum = async (req, res) => {
-    const id = parseInt(req.params.id)
-    const {album_id, client_id, album_name, num_of_songs, album_note, last_updated_stamp, created_stamp} = req.body
-    try {
-        var album = await pool.query('UPDATE album SET albumname = $3, num_of_songs = $4, album_note = $5, last_updated_stamp = $6', 
-            [album_id, client_id, album_name, num_of_songs, album_note, last_updated_stamp, created_stamp])
-        console.log('put')
-        console.log(req)
-    } catch (err) {
-        console.log(err.stack)
-    }
-    if (album) {
-        res.status(201).send({message: 'album updated', data: album.rows});
-    } else {
-        res.status(500).send({message: 'Error in updating album'});
+        res.status(500).send({message: 'Error in deleting album'})
     }
 }
 
-export const getSonginAlbum = async (req, res) => {
-    const {song_id, album_id, last_updated_stamp, created_stamp} = req.body
-    try {
-        var album = await pool.query('SELECT * FROM song WHERE song_id =  $1', [song_id, album_id, last_updated_stamp, created_stamp])
-        console.log('get')
-    } catch (err) {
-        console.log(err.stack)
-    }
-    res.send(album)
-}
-
-export const addNewSongToAlbum = async (req, res) => {
-    const {song_id, album_id, last_updated_stamp, created_stamp} = req.body
-    try {
-        var album = await pool.query('INSERT INTO song_added_to_album(song_id, album_id, last_updated_stamp, created_stamp) \
-            VALUES($1, $2, $3, $4) RETURNING *', [song_id, album_id, last_updated_stamp, created_stamp])
-        console.log(req)
-    } catch (err) {
-        console.log(err.stack)
-    }
-    if (album) {
-        res.status(201).send({message: 'New song added to your album', data: album.rows});
-    } else {
-        res.status(500).send({message: 'Error in added new song to your album'});
-    }
-}
-
-export const deleteSongInAlbum = async (req, res) => {
-    const {song_id, album_id, last_updated_stamp, created_stamp} = req.body
-    try {
-        var album = await pool.query('DELETE FROM song_added_to_album WHERE album_id = $2 AND song_id = $1', [song_id, album_id, last_updated_stamp, created_stamp])
-        console.log('delete')
-        console.log(req)
-    } catch (err) {
-        console.log(err.stack)
-    }
-    if (album) {
-        res.status(201).send({message: 'Song deleted from your album', data: album.rows});
-    } else {
-        res.status(500).send({message: 'Error in deleting song from your album'});
-    }
-}
 export const albumUpdateNumofSongs = async (album_name) => {
     try {
-        var album = pool.query('UPDATE album SET num_of_songs = (SELECT COUNT song_id FROM song, album WHERE song.album_id = album.album_id and album_name = $1) WHERE album_name = $1', [album_name])
+        var album1 = pool.query('UPDATE album SET num_of_songs = (SELECT COUNT song_id FROM song, album WHERE song.album_id = album.album_id and album_name = $1) WHERE album_name = $1', [album_name])
+        var album2 = pool.query('UPDATE album SET total_duration = (SELECT SUM(duration) FROM song, album WHERE song.album_id = album.album_id and album_name = $1) WHERE album_name = $1', [album_name])
     } catch (err) {
         console.log(err.stack)
     }
-    if (album) {
+    if (album1 && album2) {
         res.status(201).send({message: 'Update successful'})
     }
     else {
         res.status(500).send({message: 'Error in updating'})
     }
 }
+export const updateAlbum = async (req, res) => {
+
+}
+
 export default router;

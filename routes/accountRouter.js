@@ -18,6 +18,6 @@ router.post('/add', isAuth, checkAdmin, post_addNewAccount);
 router.get('/delete', isAuth, checkAdmin, get_deleteAccount);
 router.post('/delete', isAuth, checkAdmin, post_deleteAccount);
 
-router.put('/id/:id/', updateAccount);
+//router.put('/id/:id/', updateAccount);
 
 export default router;

@@ -11,13 +11,13 @@ export const get_Signup = (req,res) =>{
 }
 export const post_Signup = async (req, res) => {
     //console.log(req.body)
-    const {username, current_password, full_name, email, phone_number} = req.body
+    const {username, current_password, avatar, full_name, email, phone_number} = req.body
     if(username == null || current_password == null || full_name == null || email == null || phone_number == null)
         res.status(500).send({message: 'Missing some value'});
     else 
         try {
-            var user = await pool.query('INSERT INTO account(account_id, username, current_password, user_role, full_name, birth_date, email, phone_number, last_updated_stamp, created_stamp) \
-                VALUES(default, $1, $2, \'client\', $3, null, $4, $5, null, default) RETURNING *', [username, current_password, full_name, email, phone_number])
+            var user = await pool.query('INSERT INTO account(account_id, username, current_password, avatar, user_role, full_name, birth_date, email, phone_number, last_updated_stamp, created_stamp) \
+                VALUES(default, $1, $2, $3, \'client\', $4, null, $5, $6, null, default) RETURNING *', [username, current_password, avatar, full_name, email, phone_number])
             //console.log(req)
         } catch (err) {
             console.log(err.stack)
