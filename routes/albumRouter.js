@@ -1,5 +1,6 @@
 import express from 'express'
 import bodyParser from 'body-parser';
+import { checkAdmin, isAuth } from '../utils.js'
 import {getAllAlbum, getAlbumInfo, addNewAlbum, deleteAlbum, updateAlbum} from '../controllers/albumController.js'
 const router = express.Router();
 

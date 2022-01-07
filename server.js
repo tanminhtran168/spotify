@@ -17,7 +17,7 @@ app.get('/', (req, res) => {
 	res.render('homepage')
 })
 
-app.use("/user", user);
+app.use("/", user);
 app.use("/account", account);
 app.use("/artist", artist);
 app.use("/song", song);

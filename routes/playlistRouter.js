@@ -1,5 +1,6 @@
 import express from 'express'
 import bodyParser from 'body-parser';
+import { checkAdmin, isAuth } from '../utils.js'
 import {getAllPlaylist, getPlaylistInfo, addNewPlaylist, deletePlaylist, updatePlaylist} from '../controllers/playlistController.js'
 const router = express.Router();
 
