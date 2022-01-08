@@ -2,13 +2,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap');
 
 body{
-    display: block;
-    padding: 0;
-    margin: 0;
     background-color: #040505;
-    background-image: linear-gradient(0deg, rgba(0,0,0,1) 60%, rgba(0,0,0,0.4) 80%, rgba(255,255,255,0) 100%), url("../images/eguitar.jpg");
+}
+
+#page-content{
+    height: fit-content;
+    width: 100%;
+    display: block;
+    background-image: linear-gradient(0deg, rgba(0,0,0,1) 70%, rgba(0,0,0,0.7) 85%, rgba(255,255,255,0) 100%), url("../images/eguitar.jpg");
     background-repeat: no-repeat;
-    background-size: contain;
+    background-size:    contain;
+    object-fit: cover;
     
 }
 
@@ -24,6 +28,8 @@ body{
 #header-bar{
     display: flex;
     position: fixed;
+    top: 0;
+    left: 0;
     height: 80px;
     width: 100%;
     background-color: #040505;
@@ -88,6 +94,7 @@ body{
 #player-bar {
     display: flex;
     bottom: 0;
+    left: 0;
     position: fixed;
     height: 100px;
     width: 100%;
@@ -97,8 +104,8 @@ body{
 }
 #media-controls{
     display: block;
-    margin-left: 12.5%;
-    margin-right: 22.5%;
+    margin-left: 15%;
+    margin-right: 20%;
     width: 35%;
     height: 100%;
 }
@@ -164,23 +171,27 @@ input[type=range]:hover::-webkit-slider-thumb{
     width: 15px;
     height: 15px;
 }
+
 #volume-controls{
     display: flex;
-    align-items: center;
-    justify-content: center;
     float: right;
-    width: 10%;
+    width: 15%;
     height: 100%;
     
 }
-#volume-button{
+#volume-button, #queue-button{
     font-size: 20px;
     max-width: 10%;
+    margin-left: 5px;
+    margin-right: 5px;
 }
 
 #volume{
     background: #4AB1BB;
-    margin: auto;
+    margin-left: 10px;
+    margin-right: 5px;
+    margin-top: auto;
+    margin-bottom: auto;
     height: 6px;
     width: 60%;
 }

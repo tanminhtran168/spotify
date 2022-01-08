@@ -50,8 +50,10 @@ export const get_Login = async (req, res) => {
     res.render('userViews/login');
 }
 export const post_Login = async (req, res) => {
-    //console.log(req.body)
+    console.log(req.body)
     const {username, password} = req.body
+    console.log(username)
+    console.log(password)
     if(username == null || password == null)
         res.status(500).send({message: 'Missing some value'});
     else {

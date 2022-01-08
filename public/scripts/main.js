@@ -281,3 +281,18 @@ const app = {
 };
 
 app.start();
+
+const navigateTo = url => {
+    history.pushState(null, null ,url);
+    router();
+};
+
+const router = async () => {
+    
+}
+
+
+
+document.addEventListener("DOMContentLoaded", () => {
+   router();
+});

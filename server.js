@@ -14,8 +14,9 @@ app.use(express.static('public'));
 
 //app.use("/", (req, res)=> {res.render('homepage')})
 app.get('/', (req, res) => {
-	res.render('homepage')
+	res.render('main')
 })
+
 
 app.use("/", user);
 app.use("/account", account);
