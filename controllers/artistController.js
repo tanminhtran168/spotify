@@ -36,7 +36,7 @@ export const post_addNewArtist = async (req, res) => {
     
     try {
         var name = await pool.query('SELECT artist_name FROM artist WHERE artist_name = $1', [artist_name])
-        if(name.rows[0].artist_name == null) {
+        if(name.rows[0] == null) {
             var artist = await pool.query('INSERT INTO artist(artist_id, artist_name, artist_image, artist_info, birth_date, num_of_songs, last_updated_stamp, created_stamp) \
                 VALUES(default, $1, $2, $3, null, 0, null, default) RETURNING *', [artist_name, artist_image, artist_info])
             if (artist) {

@@ -42,8 +42,8 @@ export const post_addNewSong = async (req, res) => {
             var artist = await pool.query('SELECT artist.artist_id FROM artist,song WHERE artist_name = $1 and artist.artist_id = song.artist_id  LIMIT 1', [artist_name])
             if(artist) {
                 if(album_name == null) {
-                    var song = await pool.query('INSERT INTO song(song_id, artist_id, album_id, song_name, song_image, song_info, duration, category, average_rate, last_updated_stamp, created_stamp) \
-                    VALUES(default, (SELECT artist_id FROM artist WHERE artist_name = $1 LIMIT 1), null, $3, $4, $5, $6, $7, null, null, default) RETURNING *', [artist_name, album_name, song_name, song_image, song_info, duration, category])
+                    var song = await pool.query('INSERT INTO song(song_id, artist_id, album_id, song_name, song_image, song_info, duration, category, sum_rate, num_of_ratings, num_of_comments, last_updated_stamp, created_stamp) \
+                    VALUES(default, (SELECT artist_id FROM artist WHERE artist_name = $1 LIMIT 1), null, $3, $4, $5, $6, $7, 0, 0, 0, null, default) RETURNING *', [artist_name, album_name, song_name, song_image, song_info, duration, category])
                 }
                 else {
                     var album = await pool.query('SELECT album.album_id FROM album, song WHERE album_name = $1 and album.album_id = song.album_id  LIMIT 1', [album_name])

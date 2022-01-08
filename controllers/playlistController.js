@@ -38,11 +38,14 @@ export const post_addNewPlaylist = async (req, res) => {
     
     try {
         var name = await pool.query('SELECT playlist_name FROM playlist WHERE playlist_name = $1 and client_id = $2', [playlist_name, client_id])
-        if(name.rows[0].playlist_name == null) {
+        if(name.rows[0] == null) {
             var playlist = await pool.query('INSERT INTO playlist(playlist_id, client_id, playlist_name, num_of_songs, total_duration, playlist_note, last_updated_stamp, created_stamp) \
                 VALUES(default, $1, $2, 0, 0, $3, null, default) RETURNING *', [client_id, playlist_name, playlist_note])
             if (playlist) {
                 res.status(201).send({message: 'New playlist created'});
+                const updateNum = await pool.query('UPDATE client SET num_playlist = (SELECT COUNT playlist_id FROM song_added_to_playlist WHERE client_id = $1)', [client_id])
+                if(updateNum) res.status(201).send({message: 'Update number of playlist successful'})
+                else res.status(500).send({message: 'Error in updating number of playlist'})
             } else {
                 res.status(500).send({message: 'Error in creating new playlist'});
             }
@@ -69,6 +72,9 @@ export const post_deletePlaylist = async (req, res) => {
         var playlist = await pool.query('DELETE FROM playlist WHERE playlist_id = $1', [playlist_id])
         if (playlist) {
             res.status(201).send({message: 'Playlist deleted'})
+            const updateNum = await pool.query('UPDATE client SET num_playlist = (SELECT COUNT playlist_id FROM song_added_to_playlist WHERE client_id = $1)', [client_id])
+            if(updateNum) res.status(201).send({message: 'Update number of playlist successful'})
+            else res.status(500).send({message: 'Error in updating number of playlist'})
         } else {
             res.status(500).send({message: 'Error in deleting playlist'})
         }

@@ -37,7 +37,7 @@ export const post_addNewAlbum = async (req, res) => {
     
     try {
         var name = await pool.query('SELECT album_name FROM album WHERE album_name = $1', [album_name])
-        if(name.rows[0].album_name == null) {
+        if(name.rows[0] == null) {
             var artist = await pool.query('SELECT artist_id FROM artist WHERE artist_name = $1 LIMIT 1', [artist_name]) 
             if(artist) {
                 var album = await pool.query('INSERT INTO album(album_id, artist_id, album_name, album_image, album_info, birth_date, num_of_songs, total_duration, last_updated_stamp, created_stamp) \
