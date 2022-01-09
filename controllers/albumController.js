@@ -68,7 +68,7 @@ export const post_deleteAlbum = async (req, res) => {
     try {
         var album = await pool.query('DELETE FROM album WHERE album_id = $1', [album_id])
         var song = await pool.query('DELETE FROM song WHERE album_id = $1', [album_id])
-        if (album && song) {
+        if (album.rowCount && song.rowCount) {
             res.status(201).send({message: 'Album deleted'});
             var artist = await pool.query('SELECT artist_name FROM artist, album WHERE artist.album_id = album.album_id')
             if (artist) {
