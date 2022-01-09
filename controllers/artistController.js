@@ -32,20 +32,23 @@ export const get_addNewArtist = async (req, res) => {
     res.render('artistViews/addNewArtist')
 }
 export const post_addNewArtist = async (req, res) => {
-    const {artist_name, artist_image, artist_info} = req.body
+    const {artist_name, artist_image, birth_date, artist_info} = req.body
     
     try {
-        var name = await pool.query('SELECT artist_name FROM artist WHERE artist_name = $1', [artist_name])
-        if(name.rows[0] == null) {
-            var artist = await pool.query('INSERT INTO artist(artist_id, artist_name, artist_image, artist_info, birth_date, num_of_songs, last_updated_stamp, created_stamp) \
-                VALUES(default, $1, $2, $3, null, 0, null, default) RETURNING *', [artist_name, artist_image, artist_info])
-            if (artist) {
-                res.status(201).send({message: 'New artist added'});
-            } else {
-                res.status(500).send({message: 'Error in added new artist'});
+        if(artist_name == '' || birth_date == '' ) res.status(500).send({message: 'Missing some value'})
+        else {
+            var name = await pool.query('SELECT artist_name FROM artist WHERE artist_name = $1', [artist_name])
+            if(name.rows[0] == null) {
+                var artist = await pool.query('INSERT INTO artist(artist_id, artist_name, artist_info, artist_image, birth_date, num_of_albums, num_of_songs, last_updated_stamp, created_stamp) \
+                    VALUES(default, $1, $2, $3, $4, 0, 0, current_timestamp, default) RETURNING *', [artist_name, artist_info, artist_image, birth_date])
+                if (artist) {
+                    res.status(201).send({message: 'New artist added'});
+                } else {
+                    res.status(500).send({message: 'Error in added new artist'});
+                }
             }
+            else res.status(500).send({message: 'Artist name already exists'})
         }
-        else res.status(500).send({message: 'Artist name already exists'})
     } catch (err) {
         console.log(err.stack)
     }
@@ -72,7 +75,7 @@ export const post_deleteArtist = async (req, res) => {
 
 export const artistUpdateNumofSongs = async (artist_name) => {
     try {
-        var artist = pool.query('UPDATE artist SET num_of_songs = (SELECT COUNT song_id FROM song, artist WHERE song.artist_id = artist.artist_id and artist_name = $1) WHERE artist_name = $1', [artist_name])
+        var artist = pool.query('UPDATE artist SET num_of_songs = (SELECT COUNT song_id FROM song, artist WHERE song.artist_id = artist.artist_id and artist_name = $1), last_updated_timestamp =  current_timestamp WHERE artist_name = $1', [artist_name])
     } catch (err) {
         console.log(err.stack)
     }
@@ -86,7 +89,7 @@ export const artistUpdateNumofSongs = async (artist_name) => {
 
 export const artistUpdateNumofAlbums = async (artist_name) => {
     try {
-        var artist = pool.query('UPDATE artist SET num_of_albums = (SELECT COUNT album_id FROM album, artist WHERE album.artist_id = artist.artist_id and artist_name = $1) WHERE artist_name = $1', [artist_name])
+        var artist = pool.query('UPDATE artist SET num_of_albums = (SELECT COUNT album_id FROM album, artist WHERE album.artist_id = artist.artist_id and artist_name = $1), last_updated_timestamp =  current_timestamp WHERE artist_name = $1', [artist_name])
     } catch (err) {
         console.log(err.stack)
     }

@@ -32,8 +32,8 @@ export const get_addNewAccount =(req,res) =>{
     res.render('accountViews/addNewAccount');
 }
 export const post_addNewAccount = async (req, res) => {
-    const {user_name, current_password, confirm_password, avatar, full_name, email, phone_number} = req.body
-    if(user_name == '' || current_password == '' || confirm_password == '' || full_name == '' || email == '' || phone_number == '')
+    const {user_name, current_password, confirm_password, avatar, full_name, birth_date, email, phone_number} = req.body
+    if(user_name == '' || current_password == '' || confirm_password == '' || full_name == '' || email == '' || phone_number == '' || birth_date == '')
         res.status(500).send({message: 'Missing some value'});
     else {
         try {
@@ -45,7 +45,7 @@ export const post_addNewAccount = async (req, res) => {
                         var phone_db = await pool.query('SELECT phone_number FROM account WHERE phone_number = $1', [phone_number])
                         if(phone_db.rows[0] == null) {
                             var user = await pool.query('INSERT INTO account(account_id, username, current_password, avatar, user_role, full_name, birth_date, email, phone_number, last_updated_stamp, created_stamp) \
-                                VALUES(default, $1, $2, $3, \'client\', $4, null, $5, $6, null, default) RETURNING *', [user_name, current_password, avatar, full_name, email, phone_number])
+                                VALUES(default, $1, $2, $3, \'client\', $4, $5, $6, $7, , current_timestamp, default) RETURNING *', [user_name, current_password, avatar, full_name, birth_date,email, phone_number])
                             if (user.rows[0] != null) {
                                 res.send({
                                     id: user.rows[0].account_id,

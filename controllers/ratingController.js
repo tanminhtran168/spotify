@@ -32,11 +32,11 @@ export const get_addNewRating = async (req, res) => {
 }
 export const post_addNewRating = async (req, res) => {
     const {client_id, song_id, rating} = req.body
-    var rate = await pool.query('INSERT INTO rating(rating_id, client_id, song_id, rating, last_updated_stamp, created_stamp) VALUES (default, $1, $2, $3, null, default)', [client_id, song_id, rating])
+    var rate = await pool.query('INSERT INTO rating(rating_id, client_id, song_id, rating, last_updated_stamp, created_stamp) VALUES (default, $1, $2, $3, current_timestamp, default)', [client_id, song_id, rating])
     if(rate) {
         res.status(201).send({message: 'Add new rating successful'})
         var sum = await pool.query('UPDATE song SET sum_rate = (SELECT SUM(rating) FROM rating WHERE song_id = $1) WHERE song_id = $1', [song_id])
-        var num = await pool.query('UPDATE song SET num_of_ratings = (SELECT COUNT client_id FROM rating WHERE song_id = $1) WHERE song_id = $1', [song_id])
+        var num = await pool.query('UPDATE song SET num_of_ratings = (SELECT COUNT client_id FROM rating WHERE song_id = $1), last_updated_stamp = current_timestamp WHERE song_id = $1', [song_id])
         if(sum && num) res.status(201).send({message: 'Update rating successful'})
         else res.status(500).send({message: 'Error in updating rating'})
     }
@@ -63,7 +63,7 @@ export const post_deleteRating = async (req, res) => {
     if(rate) {
         res.status(201).send({message: 'Delete rating successful'})
         var sum = await pool.query('UPDATE song SET sum_rate = (SELECT SUM(rating) FROM rating WHERE song_id = $1) WHERE song_id = $1', [song_id])
-        var num = await pool.query('UPDATE song SET num_of_ratings = (SELECT COUNT client_id FROM rating WHERE song_id = $1) WHERE song_id = $1', [song_id])
+        var num = await pool.query('UPDATE song SET num_of_ratings = (SELECT COUNT client_id FROM rating WHERE song_id = $1), last_updated_stamp = current_timestamp WHERE song_id = $1', [song_id])
         if(sum && num) res.status(201).send({message: 'Update rating successful'})
         else res.status(500).send({message: 'Error in updating rating'})
     }

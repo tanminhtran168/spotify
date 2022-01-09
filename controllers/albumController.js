@@ -36,23 +36,26 @@ export const post_addNewAlbum = async (req, res) => {
     const {album_name, artist_name, album_image, album_info} = req.body
     
     try {
-        var name = await pool.query('SELECT album_name FROM album WHERE album_name = $1', [album_name])
-        if(name.rows[0] == null) {
-            var artist = await pool.query('SELECT artist_id FROM artist WHERE artist_name = $1 LIMIT 1', [artist_name]) 
-            if(artist) {
-                var album = await pool.query('INSERT INTO album(album_id, artist_id, album_name, album_image, album_info, birth_date, num_of_songs, total_duration, last_updated_stamp, created_stamp) \
-                    VALUES(default, (SELECT artist_id FROM artist WHERE artist_name = $2 LIMIT 1), $1, $3, $4, null, 0, null, default) RETURNING *', [album_name, artist_name, album_image, album_info])
-                //console.log(req)
-                if (album) {
-                    res.status(201).send({message: 'New album added'});
-                    artistUpdateNumofAlbums(artist_name)
-                } else {
-                    res.status(500).send({message: 'Error in added new album'});
+        if(album_name == '' || artist_name == '') res.status(500).send({message: 'Missing some value'}) 
+        else {
+            var name = await pool.query('SELECT album_name FROM album WHERE album_name = $1', [album_name])
+            if(name.rows[0] == null) {
+                var artist = await pool.query('SELECT artist_id FROM artist WHERE artist_name = $1 LIMIT 1', [artist_name]) 
+                if(artist.rows[0] != null) {
+                    var album = await pool.query('INSERT INTO album(album_id, artist_id, album_name, album_image, album_info, num_of_songs, total_duration, last_updated_stamp, created_stamp) \
+                        VALUES(default, (SELECT artist_id FROM artist WHERE artist_name = $2 LIMIT 1), $1, $3, $4, 0, 0, current_timestamp, default) RETURNING *', [album_name, artist_name, album_image, album_info])
+                    //console.log(req)
+                    if (album) {
+                        res.status(201).send({message: 'New album added'});
+                        artistUpdateNumofAlbums(artist_name)
+                    } else {
+                        res.status(500).send({message: 'Error in added new album'});
+                    }
                 }
+                else res.status(500).send({message: 'Artist unknown'});
             }
-            else res.status(500).send({message: 'Artist unknown'});
+            else res.status(500).send({message: 'Album name already exists'})
         }
-        else res.status(500).send({message: 'Album name already exists'})
     } catch (err) {
         console.log(err.stack)
     }
@@ -84,16 +87,11 @@ export const post_deleteAlbum = async (req, res) => {
 
 export const albumUpdateNumofSongs = async (album_name) => {
     try {
-        var album1 = pool.query('UPDATE album SET num_of_songs = (SELECT COUNT song_id FROM song, album WHERE song.album_id = album.album_id and album_name = $1) WHERE album_name = $1', [album_name])
-        var album2 = pool.query('UPDATE album SET total_duration = (SELECT SUM(duration) FROM song, album WHERE song.album_id = album.album_id and album_name = $1) WHERE album_name = $1', [album_name])
-    } catch (err) {
+        var album = pool.query('UPDATE album SET num_of_songs = (SELECT COUNT song_id FROM song, album WHERE song.album_id = album.album_id and album_name = $1), total_duration = (SELECT SUM(duration) FROM song, album WHERE song.album_id = album.album_id and album_name = $1), , last_updated_timestamp =  current_timestamp WHERE album_name = $1', [album_name])
+        if (album) res.status(201).send({message: 'Update successful'})
+        else res.status(500).send({message: 'Error in updating'})
+} catch (err) {
         console.log(err.stack)
-    }
-    if (album1 && album2) {
-        res.status(201).send({message: 'Update successful'})
-    }
-    else {
-        res.status(500).send({message: 'Error in updating'})
     }
 }
 export const updateAlbum = async (req, res) => {
