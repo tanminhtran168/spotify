@@ -64,8 +64,7 @@ export const get_deleteAlbum = async(req, res) => {
     res.render('albumViews/deleteAlbum')
 } 
 export const post_deleteAlbum = async (req, res) => {
-    //console.log(req.body)
-    const {album_id} = req.body
+    const album_id = req.body.id
     try {
         var album = await pool.query('DELETE FROM album WHERE album_id = $1', [album_id])
         var song = await pool.query('DELETE FROM song WHERE album_id = $1', [album_id])

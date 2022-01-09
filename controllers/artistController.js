@@ -73,7 +73,7 @@ export const post_deleteArtist = async (req, res) => {
     }
 }
 
-export const artistUpdateNumofSongs = async (artist_name) => {
+export const artistUpdateNumofSongs = async (artist_name, res) => {
     try {
         var artist = pool.query('UPDATE artist SET num_of_songs = (SELECT COUNT song_id FROM song, artist WHERE song.artist_id = artist.artist_id and artist_name = $1), last_updated_timestamp =  current_timestamp WHERE artist_name = $1', [artist_name])
     } catch (err) {
@@ -87,7 +87,7 @@ export const artistUpdateNumofSongs = async (artist_name) => {
     }
 }
 
-export const artistUpdateNumofAlbums = async (artist_name) => {
+export const artistUpdateNumofAlbums = async (artist_name, res) => {
     try {
         var artist = pool.query('UPDATE artist SET num_of_albums = (SELECT COUNT album_id FROM album, artist WHERE album.artist_id = artist.artist_id and artist_name = $1), last_updated_timestamp =  current_timestamp WHERE artist_name = $1', [artist_name])
     } catch (err) {
