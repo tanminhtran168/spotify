@@ -2,6 +2,7 @@ import express from 'express'
 import pg from 'pg'
 import config from '../config.js'
 import { getToken } from '../utils.js'
+
 const router = express.Router()
 const Pool = pg.Pool
 const pool = new Pool(config.POSTGRES_INFO)
@@ -63,11 +64,13 @@ export const post_Login = async (req, res) => {
             console.log(err.stack)
         }
         if (user.rows[0] != null) {
+            var token = getToken(user)
+            res.cookie('token', token, {expires: new Date(Date.now() + 90000000)})
             res.send({
                 id: user.rows[0].account_id,
                 user_name: user.rows[0].username,
                 isAdmin: (user.rows[0].user_role == 'admin'),
-                token: getToken(user)
+                token: token
             })
         }
         else {

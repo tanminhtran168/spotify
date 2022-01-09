@@ -16,7 +16,7 @@ const getToken = (user) => {
 };
 
 const isAuth = (req, res, next) => {
-  const token = req.headers.authorization;
+  const token = 'Bearer ' + req.cookies.token;
 
   if (token) {
     const onlyToken = token.slice(7, token.length);
