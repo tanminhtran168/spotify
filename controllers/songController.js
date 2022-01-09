@@ -1,8 +1,6 @@
 import express from 'express'
 import pg from 'pg'
 import config from '../config.js'
-import {albumUpdateNumofSongs, post_addNewAlbum} from './albumController.js'
-import {artistUpdateNumofSongs} from './artistController.js'
 const router = express.Router()
 const Pool = pg.Pool
 const pool = new Pool(config.POSTGRES_INFO)

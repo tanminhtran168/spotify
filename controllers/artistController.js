@@ -73,21 +73,6 @@ export const post_deleteArtist = async (req, res) => {
     }
 }
 
-export const artistUpdateNumofSongs = async (artist_id) => {
-    try {
-        var artist = pool.query('UPDATE artist SET num_of_albums = num_of_albums + 1 WHERE artist_id = $1;', [artist_id])
-    } catch (err) {
-        console.log(err.stack)
-    }
-    if (artist) {
-        console.log('Update successful')
-    }
-    else {
-        console.log('Error in updating')
-    }
-}
-
-
 export const updateArtist = async (req, res) => {
 }
 
