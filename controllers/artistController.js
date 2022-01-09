@@ -57,49 +57,36 @@ export const get_deleteArtist = async(req, res) => {
     res.render('artistViews/deleteArtist')
 } 
 export const post_deleteArtist = async (req, res) => {
-    console.log(req.body)
-    const {artist_id} = req.body
+    const artist_id = req.body.id;
+
     try {
-        var song = await pool.query('DELETE FROM song WHERE artist_id = $1', [artist_id])
-        var album = await pool.query('DELETE FROM album WHERE artist_id = $1', [artist_id])
+        await pool.query('DELETE FROM song WHERE artist_id = $1', [artist_id])
+        await pool.query('DELETE FROM album WHERE artist_id = $1', [artist_id])
         var artist = await pool.query('DELETE FROM artist WHERE artist_id = $1', [artist_id])
-        if (artist && song && album) {
+        if (artist.rowCount) {
             res.status(201).send({message: 'Artist deleted'});
         } else {
-            res.status(500).send({message: 'Error in deleting artist'});
+            res.status(500).send({message: 'Artist ID does not exist'});
         }
     } catch (err) {
         console.log(err.stack)
     }
 }
 
-export const artistUpdateNumofSongs = async (artist_name, res) => {
+export const artistUpdateNumofSongs = async (artist_id) => {
     try {
-        var artist = pool.query('UPDATE artist SET num_of_songs = (SELECT COUNT song_id FROM song, artist WHERE song.artist_id = artist.artist_id and artist_name = $1), last_updated_timestamp =  current_timestamp WHERE artist_name = $1', [artist_name])
+        var artist = pool.query('UPDATE artist SET num_of_albums = num_of_albums + 1 WHERE artist_id = $1;', [artist_id])
     } catch (err) {
         console.log(err.stack)
     }
     if (artist) {
-        res.status(201).send({message: 'Update successful'})
+        console.log('Update successful')
     }
     else {
-        res.status(500).send({message: 'Error in updating'})
+        console.log('Error in updating')
     }
 }
 
-export const artistUpdateNumofAlbums = async (artist_name, res) => {
-    try {
-        var artist = pool.query('UPDATE artist SET num_of_albums = (SELECT COUNT album_id FROM album, artist WHERE album.artist_id = artist.artist_id and artist_name = $1), last_updated_timestamp =  current_timestamp WHERE artist_name = $1', [artist_name])
-    } catch (err) {
-        console.log(err.stack)
-    }
-    if (artist) {
-        res.status(201).send({message: 'Update successful'})
-    }
-    else {
-        res.status(500).send({message: 'Error in updating'})
-    }
-}
 
 export const updateArtist = async (req, res) => {
 }
