@@ -5,8 +5,11 @@ import artist from './routes/artistRouter.js'
 import song from './routes/songRouter.js'
 import playlist from './routes/playlistRouter.js'
 import album from './routes/albumRouter.js'
+import cookieParser from 'cookie-parser';
 
 const app = express();
+
+app.use(cookieParser())
 
 app.set('views','views');
 app.set('view engine','ejs');

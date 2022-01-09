@@ -33,13 +33,15 @@ export const post_getSongInfo = async (req, res) => {
 export const get_addNewSong = async (req, res) => {
     res.render('songViews/addNewSong')
 }
+
 export const post_addNewSong = async (req, res) => {
     const {song_name, artist_name, album_name, song_image, song_info, duration, category} = req.body
     
     try {
         var name = await pool.query('SELECT song_name FROM song WHERE song_name = $1', [song_name])
-        if(name.rows[0].song_name == null) {
+        if(name.rows.length == 0) {
             var artist = await pool.query('SELECT artist.artist_id FROM artist,song WHERE artist_name = $1 and artist.artist_id = song.artist_id  LIMIT 1', [artist_name])
+            console.log(artist)
             if(artist) {
                 if(album_name == null) {
                     var song = await pool.query('INSERT INTO song(song_id, artist_id, album_id, song_name, song_image, song_info, duration, category, average_rate, last_updated_stamp, created_stamp) \
