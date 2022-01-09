@@ -7,13 +7,13 @@ const router = express.Router();
 router.use(bodyParser.json())
 router.use(bodyParser.urlencoded({extended:true}))
 
-router.get('/', isAuth, getAllAlbum);
+router.get('/', getAllAlbum);
 
 router.get('/search', isAuth, get_getAlbumInfo); 
 router.post('/search', isAuth, post_getAlbumInfo);
 
-router.get('/add', get_addNewAlbum);
-router.post('/add', post_addNewAlbum);
+router.get('/add', isAuth, checkAdmin, get_addNewAlbum);
+router.post('/add', isAuth, checkAdmin, post_addNewAlbum);
 
 router.get('/delete', isAuth, checkAdmin, get_deleteAlbum);
 router.post('/delete', isAuth, checkAdmin, post_deleteAlbum);
