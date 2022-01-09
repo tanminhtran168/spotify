@@ -23,7 +23,7 @@ export const post_getPlaylistInfo = async (req, res) => {
     const {client_id, playlist_id, playlist_name} = req.body
     try {
         var playlist = await pool.query('SELECT * FROM playlist WHERE (playlist_name = $3 or playlist_id = $2) and client_id = $1', [client_id, playlist_id, playlist_name])        
-        var change = await pool.query('UPDATE playlist SET num_of_songs = (SELECT COUNT song_id FROM song_added_to_playlist WHERE playlist_id = $1), total_duration = (SELECT SUM(duration) FROM song, song_added_to_playlist WHERE song.song_id = song_added_to_playlist.song_id) WHERE playlist_id = $1', [playlist_id])
+        var change = await pool.query('UPDATE playlist SET num_of_songs = (SELECT COUNT song_id FROM song_added_to_playlist WHERE playlist_id = $1), total_duration = (SELECT SUM(duration), last_updated_timestamp =  current_timestamp FROM song, song_added_to_playlist WHERE song.song_id = song_added_to_playlist.song_id) WHERE playlist_id = $1', [playlist_id])
     } catch (err) {
         console.log(err.stack)
     }
@@ -38,11 +38,14 @@ export const post_addNewPlaylist = async (req, res) => {
     
     try {
         var name = await pool.query('SELECT playlist_name FROM playlist WHERE playlist_name = $1 and client_id = $2', [playlist_name, client_id])
-        if(name.rows[0].playlist_name == null) {
+        if(name.rows[0] == null) {
             var playlist = await pool.query('INSERT INTO playlist(playlist_id, client_id, playlist_name, num_of_songs, total_duration, playlist_note, last_updated_stamp, created_stamp) \
-                VALUES(default, $1, $2, 0, 0, $3, null, default) RETURNING *', [client_id, playlist_name, playlist_note])
+                VALUES(default, $1, $2, 0, 0, $3, current_timestamp, default) RETURNING *', [client_id, playlist_name, playlist_note])
             if (playlist) {
                 res.status(201).send({message: 'New playlist created'});
+                const updateNum = await pool.query('UPDATE account, client SET num_playlist = (SELECT COUNT playlist_id FROM song_added_to_playlist WHERE client_id = $1), last_updated_timestamp =  current_timestamp WHERE client.account_id = account.account_id', [client_id])
+                if(updateNum) res.status(201).send({message: 'Update number of playlist successful'})
+                else res.status(500).send({message: 'Error in updating number of playlist'})
             } else {
                 res.status(500).send({message: 'Error in creating new playlist'});
             }
@@ -69,6 +72,9 @@ export const post_deletePlaylist = async (req, res) => {
         var playlist = await pool.query('DELETE FROM playlist WHERE playlist_id = $1', [playlist_id])
         if (playlist) {
             res.status(201).send({message: 'Playlist deleted'})
+            const updateNum = await pool.query('UPDATE account, client SET num_playlist = (SELECT COUNT playlist_id FROM song_added_to_playlist WHERE client_id = $1), last_updated_timestamp =  current_timestamp WHERE client.account_id = account.account_id', [client_id])
+            if(updateNum) res.status(201).send({message: 'Update number of playlist successful'})
+            else res.status(500).send({message: 'Error in updating number of playlist'})
         } else {
             res.status(500).send({message: 'Error in deleting playlist'})
         }
@@ -78,10 +84,10 @@ export const post_deletePlaylist = async (req, res) => {
 }
 
 export const updatePlaylist = async (req, res) => {
-    const {playlist_id, client_id, playlist_name, num_of_songs, playlist_note, last_updated_stamp, created_stamp} = req.body
+    const {playlist_id, client_id, playlist_name, playlist_note} = req.body
     try {
-        var playlist = await pool.query('UPDATE playlist SET playlistname = $3, num_of_songs = $4, playlist_note = $5, last_updated_stamp = $6', 
-            [playlist_id, client_id, playlist_name, num_of_songs, playlist_note, last_updated_stamp, created_stamp])
+        var playlist = await pool.query('UPDATE playlist SET playlistname = $3, playlist_note = $4, last_updated_stamp = current_timestamp WHERE playlist_id = $1', 
+            [playlist_id, client_id, playlist_name, playlist_note])
     } catch (err) {
         console.log(err.stack)
     }
@@ -117,7 +123,7 @@ export const addNewSongToPlaylist = async (req, res) => {
     try {
         var playlist = await pool.query('INSERT INTO song_added_to_playlist(song_id, playlist_id, created_stamp) \
             VALUES($1, $2, default) RETURNING *', [song_id, playlist_id])
-        var change = await pool.query('UPDATE playlist SET num_of_songs = (SELECT COUNT song_id FROM song_added_to_playlist WHERE playlist_id = $1), total_duration = (SELECT SUM(duration) FROM song, song_added_to_playlist WHERE song.song_id = song_added_to_playlist.song_id) WHERE playlist_id = $1', [playlist_id])
+        var change = await pool.query('UPDATE playlist SET num_of_songs = (SELECT COUNT song_id FROM song_added_to_playlist WHERE playlist_id = $1), total_duration = (SELECT SUM(duration) FROM song, song_added_to_playlist WHERE song.song_id = song_added_to_playlist.song_id), last_updated_stamp = current_timestamp WHERE playlist_id = $1', [playlist_id])
         if (change) {
             res.status(201).send({message: 'Update changes successful'});
         } else {
@@ -142,7 +148,7 @@ export const deleteSongInPlaylist = async (req, res) => {
         } else {
             res.status(500).send({message: 'Error in deleting song from your playlist'});
         }
-        var change = await pool.query('UPDATE playlist SET num_of_songs = (SELECT COUNT song_id FROM song_added_to_playlist WHERE playlist_id = $1), total_duration = (SELECT SUM(duration) FROM song, song_added_to_playlist WHERE song.song_id = song_added_to_playlist.song_id) WHERE playlist_id = $1', [playlist_id])
+        var change = await pool.query('UPDATE playlist SET num_of_songs = (SELECT COUNT song_id FROM song_added_to_playlist WHERE playlist_id = $1), total_duration = (SELECT SUM(duration) FROM song, song_added_to_playlist WHERE song.song_id = song_added_to_playlist.song_id), last_updated_stamp = current_timestamp WHERE playlist_id = $1', [playlist_id])
         if (change) {
             res.status(201).send({message: 'Update changes successful'});
         } else {

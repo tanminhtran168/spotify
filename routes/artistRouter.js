@@ -7,7 +7,7 @@ const router = express.Router();
 router.use(bodyParser.json())
 router.use(bodyParser.urlencoded({extended:true}))
 
-router.get('/', isAuth, checkAdmin, getAllArtist);
+router.get('/', isAuth, getAllArtist);
 
 router.get('/search', isAuth, get_getArtistInfo); 
 router.post('/search', isAuth, post_getArtistInfo);

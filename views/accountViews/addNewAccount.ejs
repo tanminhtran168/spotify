@@ -1,9 +1,9 @@
 <body>
     <div class="center">
     <h3>Add new account</h3>
-    <form action="signup" method="POST">
+    <form action="add" method="POST">
         <div class="field">
-            <div class="label" for="user_name">Username</div>
+            <div class="label" for="user_name">User name</div>
             <input type="text" name="user_name" placeholder="type" />
         </div>    
         <div class="field">
@@ -15,8 +15,12 @@
             <input type="text" name="avatar" placeholder="type"/>
         </div>
         <div class="field">
-            <div class="label" for="fullname">Fullname</div>
+            <div class="label" for="fullname">Full name</div>
             <input type="text" name="fullname" placeholder="type"/>
+        </div>
+        <div class="field">
+            <div class="label" for="birth_date">Birthday</div>
+            <input type="date" name="birth_date" placeholder="type"/>
         </div>
         <div class="field">
             <div class="label" for="email">Email</div>

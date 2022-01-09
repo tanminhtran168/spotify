@@ -59,7 +59,9 @@ CREATE TABLE song (
   song_info VARCHAR(1000),
   duration INTEGER,
   category VARCHAR(60),
-  average_rate NUMERIC,
+  sum_rate int,
+  num_of_ratings int,
+  num_of_comments int,
   last_updated_stamp TIMESTAMP NULL,
   created_stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT pk_song PRIMARY KEY (song_id),
@@ -107,6 +109,7 @@ CREATE table playlist (
   playlist_name VARCHAR(60),
   playlist_info VARCHAR(1000),
   num_of_songs int not null,
+  total_duration int not null,
   last_updated_stamp TIMESTAMP NULL,
   created_stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT pk_playlist PRIMARY KEY (playlist_id),
@@ -116,7 +119,6 @@ CREATE table playlist (
 CREATE table song_added_to_playlist (
   song_id int NOT NULL,
   playlist_id int NOT NULL,
-  last_updated_stamp TIMESTAMP NULL,
   created_stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT pk_song_playlist PRIMARY KEY (song_id, playlist_id),
   CONSTRAINT playlist_included FOREIGN KEY (playlist_id) REFERENCES playlist (playlist_id),
@@ -131,5 +133,6 @@ select * from account
 select * from artist  
 select * from song 
 
+drop table artist_favored, rating, client, comment, playlist, song_added_to_playlist, song,album ,artist, account, admin
 drop table account, client, artist, album, song, song_added_to_playlist, playlist, comment, rating , artist_favorite 
 
