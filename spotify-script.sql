@@ -57,6 +57,7 @@ CREATE TABLE song (
   song_name VARCHAR(60),
   song_image VARCHAR(100),
   song_info VARCHAR(1000),
+  song_link VARCHAR(100),
   duration INTEGER,
   category VARCHAR(60),
   sum_rate int,
@@ -128,10 +129,12 @@ CREATE table song_added_to_playlist (
 INSERT INTO account(account_id, username, current_password, avatar, user_role, full_name, birth_date, email, phone_number, last_updated_stamp, created_stamp) 
             VALUES(default, 'minhtt', '161718', null, 'admin', 'Tan Minh Tran', null, 'tanminhtran168@gmail.com', '123456789', null, default);
 INSERT INTO account(account_id, username, current_password, avatar, user_role, full_name, birth_date, email, phone_number, last_updated_stamp, created_stamp)
-            VALUES(default, 'duongnn', '123456', null, 'client', 'Nam Duong Ngo', null, 'duongnamngohl@gmail.com', '0963648035', null, default);
+            VALUES(default, 'duongnn', '123456', null, 'client', 'Nam Duong Ngo', null, 'duongnamngohl@gmail.com', '0963648035', current_timestamp, default);
+delete from artist where artist_id = 1
 select * from account 
 select * from artist  
 select * from song 
+select * from album 
 
 drop table artist_favored, rating, client, comment, playlist, song_added_to_playlist, song,album ,artist, account, admin
 drop table account, client, artist, album, song, song_added_to_playlist, playlist, comment, rating , artist_favorite 
