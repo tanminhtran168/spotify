@@ -68,6 +68,7 @@ export const post_Login = async (req, res) => {
         if (user.rows[0] != null) {
             var token = getToken(user)
             res.cookie('token', token, {expires: new Date(Date.now() + 90000000)})
+            //res.cookie('client_id', client_id, {expires: new Date(Date.now() + 90000000)})
             res.send({
                 id: user.rows[0].account_id,
                 user_name: user.rows[0].username,

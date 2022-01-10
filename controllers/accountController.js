@@ -122,7 +122,7 @@ export const post_updateAccount = async (req, res) => {
                 res.status(500).send({message: 'Wrong current password'})
             }
             else {
-                if(user_name == '') user_name = old_db.rows[0].user_name 
+                if(user_name == '') user_name = old_db.rows[0].username
                 if(new_password == '' && confirm_new_password == '') new_password = confirm_new_password = old_password
                 if(avatar == '') avatar = old_db.rows[0].avatar
                 if(user_role == '') user_role = old_db.rows[0].user_role
@@ -138,6 +138,23 @@ export const post_updateAccount = async (req, res) => {
                             var phone_db = await pool.query('SELECT phone_number FROM account WHERE phone_number = $1', [phone_number])
                             if(phone_db.rowCount == 0 || phone_number == old_db.rows[0].phone_number) {
                                 if(user_role == 'admin' || user_role == 'client') {
+                                    if(user_role == 'client' && old_db.user_role == 'admin') {
+                                        await pool.query('INSERT INTO client(client_id, account_id, num_artist_favorite, num_playlist) VALUES(default, $1, 0, 0)', [account_id])
+                                    }
+                                    if(user_role == 'admin' && old_db.user_role == 'client') {
+                                        var client = await pool.query('SELECT client_id FROM client WHERE account_id = $1', [account_id])
+                                        var playlist = await pool.query('SELECT playlist_id FROM playlist WHERE client_id = $1', [client.rows[0].client_id])
+                                        var x = 0;
+                                        while(x < playlist.rowCount) {
+                                            var delSongInPlaylist = await pool.query('DELETE FROM song_added_to_playlist WHERE playlist_id = $1', [playlist.rows[x].playlist_id])
+                                            x += 1;
+                                        }
+                                        var delRating = await pool.query('DELETE FROM rating WHERE client_id = $1', [client.rows[0].client_id])
+                                        var delComment = await pool.query('DELETE FROM comment WHERE client_id = $1', [client.rows[0].client_id])
+                                        var delArtistFavorite = await pool.query('DELETE FROM artist_favorite WHERE client_id = $1', [client.rows[0].client_id])
+                                        var delPlaylist = await pool.query('DELETE FROM playlist WHERE client_id = $1', [client.rows[0].client_id])
+                                        var delClient = await pool.query('DELETE FROM client WHERE account_id = $1', [account_id])
+                                    }
                                     var account = pool.query('UPDATE account SET username = $2, current_password = $3, avatar = $4, user_role = $5, full_name = $6, birth_date = $7, email = $8, phone_number = $9, last_updated_stamp = current_timestamp WHERE account_id = $1', 
                                         [account_id, user_name, new_password, avatar, user_role, full_name, birth_date, email, phone_number])
                                     if (account) res.status(201).send({message: 'Account updated'});

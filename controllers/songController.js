@@ -20,7 +20,7 @@ export const get_getSongInfobyId = async (req, res) => {
 export const post_getSongInfobyId = async (req, res) => {
     const {song_id} = req.body
     try {
-        var song = await pool.query('SELECT song_id, song_name, artist_name, album_name, duration, category, last_updated_stamp, created_stamp FROM song, artist, album WHERE artist.song_id = song.song_id && album.song_id = song.song_id', [song_id])
+        var song = await pool.query('SELECT song.*, artist_name, album_name FROM song, artist, album WHERE song.artist_id = artist.artist_id and song.album_id = album.album_id and song_id = $1', [song_id])
         res.send(song.rows)
     } catch (err) {
         console.log(err.stack)
@@ -34,7 +34,7 @@ export const post_searchSong = async (req, res) => {
     const {song_name, artist_name, album_name, category} = req.body
     try {
         //var song = await pool.query('SELECT * FROM song where song_name = $1', [song_name])
-        var song = await pool.query('SELECT song_id, song_name, artist_name, album_name, duration, category, last_updated_stamp, created_stamp FROM song, artist, album WHERE song_name = $1 or (artist_name = $2 && artist.song_id = song.song_id) or (album_name = $3 && album.song_id = song.song_id) or category = $4', [song_name, artist_name, album_name, category])
+        var song = await pool.query('SELECT song.*, artist_name, album_name FROM song, artist, album WHERE song_name = $1 or (artist_name = $2 and song.artist_id = artist.artist_id) or (album_name = $3 and song.album_id = album.album_id) or category = $4', [song_name, artist_name, album_name, category])
         res.send(song.rows)
     } catch (err) {
         console.log(err.stack)
@@ -163,7 +163,7 @@ export const post_updateSong = async (req, res) => {
                         // Cập nhật num_of_songs, duration trong album
                         await pool.query('UPDATE album SET num_of_songs = num_of_songs - 1, last_updated_stamp = current_timestamp WHERE album_id = $1', [old_album.rows[0].album_id])
                         await pool.query('UPDATE album SET num_of_songs = num_of_songs + 1, last_updated_stamp = current_timestamp WHERE album_id = $1', [new_album.rows[0].album_id])
-                        await pool.query('UPDATE album SET total_duration = total_duration - $1, last_updated_stamp = current_timestamp WHERE album_id = $2;', [duration, old_album.rows[0].album_id])
+                        await pool.query('UPDATE album SET total_duration = total_duration - $1, last_updated_stamp = current_timestamp WHERE album_id = $2;', [old_db.rows[0].duration, old_album.rows[0].album_id])
                         await pool.query('UPDATE album SET total_duration = total_duration + $1, last_updated_stamp = current_timestamp WHERE album_id = $2;', [duration, new_album.rows[0].album_id])
                         // Cập nhật song
                         var song = pool.query('UPDATE song SET artist_id = $2, album_id = $3, song_name = $4, song_image = $5, song_info = $6, song_link = $7, duration = $8, category = $9, last_updated_stamp = current_timestamp WHERE song_id = $1', [song_id, new_artist.rows[0].artist_id, new_album.rows[0].album_id, song_name, song_image, song_info, song_link, duration, category])
