@@ -31,9 +31,10 @@ export const get_searchArtist = async (req, res) => {
     res.render('artistViews/searchInfo')
 }
 export const post_searchArtist = async (req, res) => {
-    const {artist_name} = req.body
+    const {key_word} = req.body
+    key_word = key_word + "%"
     try {
-        var artist = await pool.query('SELECT * FROM artist WHERE artist_name = $1', [artist_name])
+        var artist = await pool.query('SELECT * FROM artist WHERE artist_name LIKE $1', [key_word])
         res.send(artist.rows)
     } catch (err) {
         console.log(err.stack)
