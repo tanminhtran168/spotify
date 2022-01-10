@@ -130,21 +130,19 @@ export const post_updateAlbum = async (req, res) => {
         var old_db = await pool.query('SELECT * FROM album WHERE album_id = $1', [album_id])
         if(old_db.rowCount == 0) res.status(500).send({message: 'Album does not exist'})
         else {
-            if(album_name = '') album_name = old_db.rows[0].album_name
-            if(artist_name = '') artist_name = old_db.rows[0].artist_name
-            if(album_image = '') album_image = old_db.rows[0].album_image
-            if(album_info = '') album_info = old_db.rows[0].album_info
+            if(album_name == '') album_name = old_db.rows[0].album_name
+            if(album_image == '') album_image = old_db.rows[0].album_image
+            if(album_info == '') album_info = old_db.rows[0].album_info
             var albumname_db = await pool.query('SELECT album_name FROM album WHERE album_name = $1', [album_name])
             if(albumname_db.rowCount == 0 || album_name == old_db.rows[0].album_name) {
                 var old_artist = await pool.query('SELECT * FROM artist WHERE artist_id = $1', [old_db.rows[0].artist_id])
                 var new_artist
-                if(artist_name = '') new_artist = old_artist 
+                if(artist_name == '') new_artist = old_artist 
                 else new_artist = await pool.query('SELECT * FROM artist WHERE artist_name = $1', [artist_name])
-                //console.log(new_artist)
                 if(new_artist.rowCount) {
                     // Cập nhật num_of_albums
-                    await pool.query('UPDATE artist SET num_of_albums = num_of_album - 1 WHERE artist_id = $1, last_updated_stamp = current_timestamp', [old_artist.rows[0].artist_id])
-                    await pool.query('UPDATE artist SET num_of_albums = num_of_album + 1 WHERE artist_id = $1, last_updated_stamp = current_timestamp', [new_artist.rows[0].artist_id])
+                    await pool.query('UPDATE artist SET num_of_albums = num_of_albums - 1, last_updated_stamp = current_timestamp WHERE artist_id = $1', [old_artist.rows[0].artist_id])
+                    await pool.query('UPDATE artist SET num_of_albums = num_of_albums + 1, last_updated_stamp = current_timestamp WHERE artist_id = $1', [new_artist.rows[0].artist_id])
                     // Cập nhật album
                     var album = pool.query('UPDATE album SET album_name = $2, artist_id = $3, album_image = $4, album_info = $5, last_updated_stamp = current_timestamp WHERE album_id = $1', [album_id, album_name, new_artist.rows[0].artist_id, album_image, album_info])
                     if (album) res.status(201).send({message: 'Album updated'});

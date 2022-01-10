@@ -97,7 +97,6 @@ CREATE TABLE comment (
 CREATE TABLE artist_favorite (
   client_id int NOT NULL,
   artist_id int NOT NULL,
-  last_updated_stamp TIMESTAMP NULL,
   created_stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT pk_client_artist PRIMARY KEY (client_id, artist_id),
   CONSTRAINT client_favoring FOREIGN KEY (client_id) REFERENCES client (client_id),
@@ -127,15 +126,38 @@ CREATE table song_added_to_playlist (
 );
 
 INSERT INTO account(account_id, username, current_password, avatar, user_role, full_name, birth_date, email, phone_number, last_updated_stamp, created_stamp) 
-            VALUES(default, 'minhtt', '161718', null, 'admin', 'Tan Minh Tran', null, 'tanminhtran168@gmail.com', '123456789', null, default);
+            VALUES(default, 'minhtt', '161718', '', 'admin', 'Tan Minh Tran', date('2000-01-01'), 'tanminhtran168@gmail.com', '123456789', current_timestamp, default);
 INSERT INTO account(account_id, username, current_password, avatar, user_role, full_name, birth_date, email, phone_number, last_updated_stamp, created_stamp)
-            VALUES(default, 'duongnn', '123456', null, 'client', 'Nam Duong Ngo', null, 'duongnamngohl@gmail.com', '0963648035', current_timestamp, default);
-delete from artist where artist_id = 1
-select * from account 
-select * from artist  
-select * from song 
-select * from album 
+            VALUES(default, 'duongnn', '123456', '', 'client', 'Nam Duong Ngo', date('2000-11-13'), 'duongnamngohl@gmail.com', '0963648035', current_timestamp, default);
+INSERT INTO client(client_id, account_id, num_artist_favorite, num_playlist)
+            VALUES(default, 2, 1, 1);
+INSERT INTO playlist(playlist_id, client_id , playlist_name, playlist_info, num_of_songs, total_duration, last_updated_stamp, created_stamp) 
+            VALUES(default, 1, 'Music', 'Nhac nhe', 1, 100, current_timestamp, default);
+INSERT INTO artist(artist_id, artist_name, artist_info, artist_image, birth_date, num_of_albums, num_of_songs, last_updated_stamp, created_stamp) 
+            VALUES(1, 'cur', 'Rapper so 1 HL', '', date('2000-01-22'), 1, 1, current_timestamp, default);
+INSERT INTO album(album_id, artist_id, album_name, album_image, album_info, num_of_songs, total_duration, last_updated_stamp, created_stamp) 
+            VALUES(1, 1, 'Rap songs', '', 'Nhac rap', 1, 100, current_timestamp, default);
+INSERT INTO song(song_id, artist_id, album_id, song_name, song_image, song_info, song_link, category, duration, sum_rate, num_of_ratings, num_of_comments, last_updated_stamp, created_stamp) 
+            VALUES(1, 1, 1, 'Toi yeu CHL', '', 'Nhac CHL', '', 'Nhac viet', 100, 5, 1, 1, current_timestamp, default);
+INSERT INTO song_added_to_playlist (song_id , playlist_id , created_stamp) 
+            VALUES(1, 1, default);
+INSERT INTO artist_favorite (client_id, artist_id, created_stamp) 
+            VALUES(1, 1, default);
+INSERT INTO rating(rating_id, client_id, song_id, rating, last_updated_stamp, created_stamp) 
+            VALUES(1, 1, 1, 5, current_timestamp, default);
+INSERT INTO comment(comment_id, client_id, song_id, comment_content, last_updated_stamp, created_stamp) 
+            VALUES(1, 1, 1, 'Hay', current_timestamp, default);
+select * from account ;
+select * from client;
+select * from playlist;
+select * from artist  ;
+select * from artist_favorite ;
+select * from album ;
+select * from song  ;
+select * from song_added_to_playlist  ;
+select * from rating ;
+select * from comment;
+
 
 drop table artist_favored, rating, client, comment, playlist, song_added_to_playlist, song,album ,artist, account, admin
 drop table account, client, artist, album, song, song_added_to_playlist, playlist, comment, rating , artist_favorite 
-

@@ -50,7 +50,7 @@ export const post_addNewSong = async (req, res) => {
     try {
         duration = duration == '' ? 0 : duration;
         // Kiểm tra tên bài hát có trùng không
-        var name = await pool.query('SELECT * FROM song, artist WHERE song.artist_id = artist.artist_id and song_name = $1 and artist_name = $2', [song_name, artist_name])
+        var name = await pool.query('SELECT * FROM song WHERE song_name = $1', [song_name])
         // Nếu artist này chưa có song nào cùng song_name
         if (name.rowCount == 0) {
             // Lấy thông tin artist
@@ -68,9 +68,9 @@ export const post_addNewSong = async (req, res) => {
                         var artist_id = artist.rows[0].artist_id
                         var album_id = album.rows[0].album_id
                         // Cập nhật num_of_albums
-                        var update_artist = await pool.query('UPDATE artist SET num_of_songs = num_of_songs + 1 WHERE artist_id = $1;', [artist_id])
-                        var update_album_songs = await pool.query('UPDATE album SET num_of_songs = num_of_songs + 1 WHERE album_id = $1;', [album_id])
-                        var update_album_duration = await pool.query('UPDATE album SET total_duration = total_duration + $1 WHERE album_id = $2;', [duration, album_id])
+                        var update_artist = await pool.query('UPDATE artist SET num_of_songs = num_of_songs + 1, last_updated_stamp = current_timestamp WHERE artist_id = $1;', [artist_id])
+                        var update_album_songs = await pool.query('UPDATE album SET num_of_songs = num_of_songs + 1, last_updated_stamp = current_timestamp WHERE album_id = $1;', [album_id])
+                        var update_album_duration = await pool.query('UPDATE album SET total_duration = total_duration + $1, last_updated_stamp = current_timestamp WHERE album_id = $2;', [duration, album_id])
                         // Trả kết quả
                         if (update_artist.rowCount && update_album_songs.rowCount && update_album_duration.rowCount) {
                             res.status(201).send({message: 'Song added. artist & album updated successfully'});
@@ -103,7 +103,7 @@ export const post_deleteSong = async (req, res) => {
         var y = 0
         while(y < playlist.rowCount) {
             var playlist_id = playlist.rows[y].playlist_id
-            var update = await pool.query('UPDATE playlist SET num_of_songs = num_of_songs - 1 WHERE playlist_id = $1', [playlist_id])
+            var update = await pool.query('UPDATE playlist SET num_of_songs = num_of_songs - 1, last_updated_stamp = current_timestamp WHERE playlist_id = $1', [playlist_id])
             y += 1
         }
         var delSongaddedtoPlaylist = await pool.query('DELETE FROM song_added_to_playlist WHERE song_id = $1', [song_id])
@@ -115,19 +115,17 @@ export const post_deleteSong = async (req, res) => {
         if (song.rowCount) {
             res.status(201).send({message: 'Song deleted', data: song.rows});
             // Cập nhật num_of_songs
-            var update_artist = await pool.query('UPDATE artist SET num_of_songs = num_of_songs - 1 WHERE artist_id = $1;', [artist_id])
-            var update_album = await pool.query('UPDATE album SET num_of_songs = num_of_songs - 1 WHERE album_id = $1;', [album_id])
-            var update_album_duration = await pool.query('UPDATE album SET total_duration = total_duration - $1 WHERE album_id = $2;', [duration, album_id])
+            var update_artist = await pool.query('UPDATE artist SET num_of_songs = num_of_songs - 1, last_updated_stamp = current_timestamp WHERE artist_id = $1;', [artist_id])
+            var update_album = await pool.query('UPDATE album SET num_of_songs = num_of_songs - 1, last_updated_stamp = current_timestamp WHERE album_id = $1;', [album_id])
+            var update_album_duration = await pool.query('UPDATE album SET total_duration = total_duration - $1, last_updated_stamp = current_timestamp WHERE album_id = $2;', [duration, album_id])
             
             // Trả kết quả
             if (update_artist.rowCount && update_album.rowCount && update_album_duration.rowCount) {
                 res.status(201).send({message: 'Song deleted. #Songs, duration updated successfully'});
-            } else {
-                res.status(500).send({message: 'Error in updating number of songs, duration'})
-            }
-        } else {
-            res.status(500).send({message: 'Error in deleting song'});
-        }
+            } 
+            else res.status(500).send({message: 'Error in updating number of songs, duration'})
+        } 
+        else res.status(500).send({message: 'Error in deleting song'});
     } catch (err) {
         console.log(err.stack)
     }
@@ -149,9 +147,32 @@ export const post_updateSong = async (req, res) => {
             if(category == '') category = old_db.rows[0].category
             var songname_db = await pool.query('SELECT song_name FROM song WHERE song_name = $1', [song_name])
             if(songname_db.rowCount == 0 || song_name == old_db.rows[0].song_name) {
-                var song = pool.query('UPDATE song SET song_name = $2, song_image = $3, birth_date = $4, song_info = $5, last_updated_stamp = current_timestamp WHERE song_id = $1', [song_id, song_name, song_image, birth_date, song_info])
-                if (song) res.status(201).send({message: 'song updated'})
-                else res.status(500).send({message: 'Error in updating song'})
+                var old_artist = await pool.query('SELECT * FROM artist WHERE artist_id = $1', [old_db.rows[0].artist_id])
+                var new_artist
+                if(artist_name == '') new_artist = old_artist 
+                else new_artist = await pool.query('SELECT * FROM artist WHERE artist_name = $1', [artist_name])
+                if(new_artist.rowCount) {
+                    // Cập nhật num_of_songs trong artist
+                    await pool.query('UPDATE artist SET num_of_songs = num_of_songs - 1, last_updated_stamp = current_timestamp WHERE artist_id = $1', [old_artist.rows[0].artist_id])
+                    await pool.query('UPDATE artist SET num_of_songs = num_of_songs + 1, last_updated_stamp = current_timestamp WHERE artist_id = $1', [new_artist.rows[0].artist_id])
+                    var old_album = await pool.query('SELECT * FROM album WHERE album_id = $1', [old_db.rows[0].album_id])
+                    var new_album
+                    if(album_name == '') new_album = old_album 
+                    else new_album = await pool.query('SELECT * FROM album WHERE album_name = $1', [album_name])
+                    if(new_album.rowCount) {
+                        // Cập nhật num_of_songs, duration trong album
+                        await pool.query('UPDATE album SET num_of_songs = num_of_songs - 1, last_updated_stamp = current_timestamp WHERE album_id = $1', [old_album.rows[0].album_id])
+                        await pool.query('UPDATE album SET num_of_songs = num_of_songs + 1, last_updated_stamp = current_timestamp WHERE album_id = $1', [new_album.rows[0].album_id])
+                        await pool.query('UPDATE album SET total_duration = total_duration - $1, last_updated_stamp = current_timestamp WHERE album_id = $2;', [duration, old_album.rows[0].album_id])
+                        await pool.query('UPDATE album SET total_duration = total_duration + $1, last_updated_stamp = current_timestamp WHERE album_id = $2;', [duration, new_album.rows[0].album_id])
+                        // Cập nhật song
+                        var song = pool.query('UPDATE song SET artist_id = $2, album_id = $3, song_name = $4, song_image = $5, song_info = $6, song_link = $7, duration = $8, category = $9, last_updated_stamp = current_timestamp WHERE song_id = $1', [song_id, new_artist.rows[0].artist_id, new_album.rows[0].album_id, song_name, song_image, song_info, song_link, duration, category])
+                        if (song) res.status(201).send({message: 'Song updated'})
+                        else res.status(500).send({message: 'Error in updating song'})
+                    }
+                    else res.status(500).send({message: 'Album does not exist'})
+                }
+                else res.status(500).send({message: 'Artist unknown'})
             }
             else res.status(500).send({message: 'Song name already exists'})
         }
