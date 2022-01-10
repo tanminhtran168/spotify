@@ -14,19 +14,31 @@ export const getAllSong = async (req, res) => {
     res.send(song.rows)
 }
 
-export const get_getSongInfo = async (req, res) => {
-    res.render('songViews/searchInfo')
+export const get_getSongInfobyId = async (req, res) => {
+    res.render('songViews/getInfobyId')
 }
-export const post_getSongInfo = async (req, res) => {
-    console.log(req.body)
-    const {song_name, artist_name, album_name, category} = req.body
+export const post_getSongInfobyId = async (req, res) => {
+    const {song_id} = req.body
     try {
-        var song = await pool.query('SELECT * FROM song where song_name = $1', [song_name])
-        // var song = await pool.query('SELECT song_id, song_name, artist_name, album_name, duration, category, average_rate FROM song, artist, album WHERE song_name = $1 or (artist_name = $2) or (album_name = $3) or category = $4', [song_name, artist_name, album_name, category])
+        var song = await pool.query('SELECT song_id, song_name, artist_name, album_name, duration, category, last_updated_stamp, created_stamp FROM song, artist, album WHERE artist.song_id = song.song_id && album.song_id = song.song_id', [song_id])
+        res.send(song.rows)
     } catch (err) {
         console.log(err.stack)
     }    
-    res.send(song.rows)
+}
+
+export const get_searchSong = async (req, res) => {
+    res.render('songViews/searchInfo')
+}
+export const post_searchSong = async (req, res) => {
+    const {song_name, artist_name, album_name, category} = req.body
+    try {
+        //var song = await pool.query('SELECT * FROM song where song_name = $1', [song_name])
+        var song = await pool.query('SELECT song_id, song_name, artist_name, album_name, duration, category, last_updated_stamp, created_stamp FROM song, artist, album WHERE song_name = $1 or (artist_name = $2 && artist.song_id = song.song_id) or (album_name = $3 && album.song_id = song.song_id) or category = $4', [song_name, artist_name, album_name, category])
+        res.send(song.rows)
+    } catch (err) {
+        console.log(err.stack)
+    }    
 }
 
 export const get_addNewSong = async (req, res) => {
@@ -34,23 +46,18 @@ export const get_addNewSong = async (req, res) => {
 }
 
 export const post_addNewSong = async (req, res) => {
-    console.log(req.body)
     var {song_name, artist_name, album_name, song_image, song_info, song_link, duration, category} = req.body;
-    duration = duration == '' ? 0 : duration;
-    console.log(typeof(duration))
     try {
+        duration = duration == '' ? 0 : duration;
         // Kiểm tra tên bài hát có trùng không
         var name = await pool.query('SELECT * FROM song, artist WHERE song.artist_id = artist.artist_id and song_name = $1 and artist_name = $2', [song_name, artist_name])
-
         // Nếu artist này chưa có song nào cùng song_name
         if (name.rowCount == 0) {
-
             // Lấy thông tin artist
-            var artist = await pool.query('SELECT artist_id FROM artist WHERE artist_name = $1 LIMIT 1', [artist_name])
-            
+            var artist = await pool.query('SELECT artist_id FROM artist WHERE artist_name = $1', [artist_name])
             // Nếu artist tồn tại
             if (artist.rowCount) {
-                var album = await pool.query('SELECT album_id FROM album WHERE album_name = $1  LIMIT 1', [album_name])
+                var album = await pool.query('SELECT album_id FROM album WHERE album_name = $1', [album_name])
                 if (album.rowCount) {
                     var artist_id = artist.rows[0].artist_id
                     var album_id = album.rows[0].album_id
@@ -60,21 +67,16 @@ export const post_addNewSong = async (req, res) => {
                         // Lấy artist_id và album_id để cập nhật
                         var artist_id = artist.rows[0].artist_id
                         var album_id = album.rows[0].album_id
-
                         // Cập nhật num_of_albums
                         var update_artist = await pool.query('UPDATE artist SET num_of_songs = num_of_songs + 1 WHERE artist_id = $1;', [artist_id])
                         var update_album_songs = await pool.query('UPDATE album SET num_of_songs = num_of_songs + 1 WHERE album_id = $1;', [album_id])
                         var update_album_duration = await pool.query('UPDATE album SET total_duration = total_duration + $1 WHERE album_id = $2;', [duration, album_id])
-                        
                         // Trả kết quả
                         if (update_artist.rowCount && update_album_songs.rowCount && update_album_duration.rowCount) {
                             res.status(201).send({message: 'Song added. artist & album updated successfully'});
-                        } else {
-                            res.status(500).send({message: 'Error in updating artist and album'})
-                        }
-                    } else {
-                        res.status(500).send({message: 'Error in added new song'});
-                    }
+                        } else res.status(500).send({message: 'Error in updating artist and album'})
+                    } 
+                    else res.status(500).send({message: 'Error in added new song'});
                 }        
                 else res.status(500).send({message: 'Album does not exist'});
             }
@@ -89,22 +91,29 @@ export const get_deleteSong = async(req, res) => {
     res.render('songViews/deleteSong')
 } 
 export const post_deleteSong = async (req, res) => {
-    const {id} = req.body;
+    const {song_id} = req.body;
     try {
-        var song = await pool.query('SELECT artist_id, album_id, duration FROM song WHERE song_id = $1', [id])
-        if (song.rowCount == 0) {
-            res.status(500).send({message: 'Song ID does not exist'})
-        }
+        var song = await pool.query('SELECT artist_id, album_id, duration FROM song WHERE song_id = $1', [song_id])
+        if (song.rowCount == 0) res.status(500).send({message: 'Song ID does not exist'})
         var artist_id = song.rows[0].artist_id
         var album_id = song.rows[0].album_id
         var duration = song.rows[0].duration
-        console.log(artist_id)
-
+        var playlist = await pool.query('SELECT playlist_id FROM song_added_to_playlist WHERE song_id = $1', [song_id])
+        // Cập nhật num_of_songs trong playlist
+        var y = 0
+        while(y < playlist.rowCount) {
+            var playlist_id = playlist.rows[y].playlist_id
+            var update = await pool.query('UPDATE playlist SET num_of_songs = num_of_songs - 1 WHERE playlist_id = $1', [playlist_id])
+            y += 1
+        }
+        var delSongaddedtoPlaylist = await pool.query('DELETE FROM song_added_to_playlist WHERE song_id = $1', [song_id])
+        // Xóa rating, comment của bài hát
+        var delRating = await pool.query('DELETE FROM rating WHERE song_id = $1', [song_id])
+        var delComment = await pool.query('DELETE FROM comment WHERE song_id = $1', [song_id])
         // Xóa song
-        var song = await pool.query('DELETE FROM song WHERE song_id = $1', [id])
+        var song = await pool.query('DELETE FROM song WHERE song_id = $1', [song_id])
         if (song.rowCount) {
             res.status(201).send({message: 'Song deleted', data: song.rows});
-
             // Cập nhật num_of_songs
             var update_artist = await pool.query('UPDATE artist SET num_of_songs = num_of_songs - 1 WHERE artist_id = $1;', [artist_id])
             var update_album = await pool.query('UPDATE album SET num_of_songs = num_of_songs - 1 WHERE album_id = $1;', [album_id])
@@ -123,8 +132,32 @@ export const post_deleteSong = async (req, res) => {
         console.log(err.stack)
     }
 }
-export const updateSong = async (req, res) => {
-    
+export const get_updateSong = async (req, res) => {
+    res.render('songViews/updateSong')
+}
+export const post_updateSong = async (req, res) => {
+    var {song_id, song_name, artist_name, album_name, song_image, song_info, song_link, duration, category} = req.body
+    try {
+        var old_db = await pool.query('SELECT * FROM song WHERE song_id = $1', [song_id])
+        if(old_db.rowCount == 0) res.status(500).send({message: 'Song does not exist'})
+        else {
+            if(song_name == '') song_name = old_db.rows[0].song_name
+            if(song_image == '') song_image = old_db.rows[0].song_image
+            if(song_link == '') song_link = old_db.rows[0].song_link
+            if(song_info == '') song_info = old_db.rows[0].song_info
+            if(duration == '') duration = old_db.rows[0].duration
+            if(category == '') category = old_db.rows[0].category
+            var songname_db = await pool.query('SELECT song_name FROM song WHERE song_name = $1', [song_name])
+            if(songname_db.rowCount == 0 || song_name == old_db.rows[0].song_name) {
+                var song = pool.query('UPDATE song SET song_name = $2, song_image = $3, birth_date = $4, song_info = $5, last_updated_stamp = current_timestamp WHERE song_id = $1', [song_id, song_name, song_image, birth_date, song_info])
+                if (song) res.status(201).send({message: 'song updated'})
+                else res.status(500).send({message: 'Error in updating song'})
+            }
+            else res.status(500).send({message: 'Song name already exists'})
+        }
+    } catch (err) {
+        console.log(err.stack)
+    }
 }
 
 export default router;

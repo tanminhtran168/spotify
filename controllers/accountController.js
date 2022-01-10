@@ -111,7 +111,7 @@ export const get_updateAccount = async (req, res) => {
     res.render('accountViews/updateAcc')
 }
 export const post_updateAccount = async (req, res) => {
-    const {account_id, user_name, old_password, new_password, confirm_new_password, avatar, user_role, full_name, birth_date, email, phone_number} = req.body
+    var {account_id, user_name, old_password, new_password, confirm_new_password, avatar, user_role, full_name, birth_date, email, phone_number} = req.body
     try {
         var old_db = await pool.query('SELECT * FROM account WHERE account_id = $1', [account_id])
         if(old_db.rowCount == 0) {
@@ -122,6 +122,14 @@ export const post_updateAccount = async (req, res) => {
                 res.status(500).send({message: 'Wrong current password'})
             }
             else {
+                if(user_name == '') user_name = old_db.rows[0].user_name 
+                if(new_password == '' && confirm_new_password == '') new_password = confirm_new_password = old_password
+                if(avatar == '') avatar = old_db.rows[0].avatar
+                if(user_role == '') user_role = old_db.rows[0].user_role
+                if(full_name == '') full_name = old_db.rows[0].full_name
+                if(birth_date == '') birth_date = old_db.rows[0].birth_date
+                if(email == '') email = old_db.rows[0].email
+                if(phone_number == '') phone_number = old_db.rows[0].phone_number
                 var username_db = await pool.query('SELECT username FROM account WHERE username = $1', [user_name])
                 if(username_db.rowCount == 0 || user_name == old_db.rows[0].username) {
                     if(new_password == confirm_new_password) {

@@ -33,7 +33,7 @@ export const get_searchAlbum = async (req, res) => {
 export const post_searchAlbum = async (req, res) => {
     const {album_name, artist_name} = req.body
     try {
-        var album = await pool.query('SELECT * FROM album WHERE album_name = $1 or artist_id = (SELECT artist_id FROM artist WHERE artist_name = $2 LIMIT 1)', [album_name, artist_name])
+        var album = await pool.query('SELECT album_name, artist_name, album_image, album_info, num_of_songs, total_duration, last_updated_stamp, created_stamp FROM album WHERE album_name = $1 or (artist_name = $2 and artist.artist_id = album.artist_id)', [album_name, artist_name])
         res.send(album.rows)
     } catch (err) {
         console.log(err.stack)
@@ -59,7 +59,7 @@ export const post_addNewAlbum = async (req, res) => {
                         VALUES(default, $1, $2, $3, $4, 0, 0, current_timestamp, default) RETURNING *', [artist_id, album_name, album_image, album_info])
                     if (album.rowCount) {
                         // Cập nhật num_of_albums
-                        var update = await pool.query('UPDATE artist SET num_of_albums = num_of_albums + 1 WHERE artist_id = $1;', [artist_id])
+                        var update = await pool.query('UPDATE artist SET num_of_albums = num_of_albums + 1, last_updated_stamp = current_timestamp WHERE artist_id = $1;', [artist_id])
                         // Trả kết quả
                         if (update.rowCount) res.status(201).send({message: 'Album added and #Album updated successfully'});
                         else res.status(500).send({message: 'Error in updating number of albums'})
@@ -95,7 +95,7 @@ export const post_deleteAlbum = async (req, res) => {
             var y = 0
             while(y < playlist.rowCount) {
                 var playlist_id = playlist.rows[y].playlist_id
-                var update = await pool.query('UPDATE playlist SET num_of_songs = num_of_songs - 1 WHERE playlist_id = $1', [playlist_id])
+                var update = await pool.query('UPDATE playlist SET num_of_songs = num_of_songs - 1, last_updated_stamp = current_timestamp WHERE playlist_id = $1', [playlist_id])
                 y += 1
             }
             var delSongaddedtoPlaylist = await pool.query('DELETE FROM song_added_to_playlist WHERE song_id = $1', [song_id])
@@ -111,7 +111,7 @@ export const post_deleteAlbum = async (req, res) => {
         // Nếu xóa thành công album
         if (delAlbum.rowCount) {
             // Cập nhật num_of_albums
-            var update = await pool.query('UPDATE artist SET num_of_albums = num_of_albums - 1 WHERE artist_id = $1;', [artist_id])
+            var update = await pool.query('UPDATE artist SET num_of_albums = num_of_albums - 1, last_updated_stamp = current_timestamp WHERE artist_id = $1;', [artist_id])
             // Trả kết quả
             if (update.rowCount) res.status(201).send({message: 'Album deleted and #Album updated successfully'});
             else res.status(500).send({message: 'Error in updating number of albums'})
@@ -125,18 +125,28 @@ export const get_updateAlbum = async (req, res) => {
     res.render('albumViews/updateAlbum')
 }
 export const post_updateAlbum = async (req, res) => {
-    const {album_id, album_name, artist_name, album_image, album_info} = req.body
+    var {album_id, album_name, artist_name, album_image, album_info} = req.body
     try {
         var old_db = await pool.query('SELECT * FROM album WHERE album_id = $1', [album_id])
-        if(old_db.rowCount == 0) {
-            res.status(500).send({message: 'Album does not exist'})
-        }
+        if(old_db.rowCount == 0) res.status(500).send({message: 'Album does not exist'})
         else {
+            if(album_name = '') album_name = old_db.rows[0].album_name
+            if(artist_name = '') artist_name = old_db.rows[0].artist_name
+            if(album_image = '') album_image = old_db.rows[0].album_image
+            if(album_info = '') album_info = old_db.rows[0].album_info
             var albumname_db = await pool.query('SELECT album_name FROM album WHERE album_name = $1', [album_name])
             if(albumname_db.rowCount == 0 || album_name == old_db.rows[0].album_name) {
-                var artist_id_db = await pool.query('SELECT artist_id FROM artist WHERE artist_name = $1', [artist_name])
-                if(artist_id_db.rowCount) {
-                    var album = pool.query('UPDATE album SET album_name = $2, artist_id = $3, album_image = $4, album_info = $5, last_updated_stamp = current_timestamp WHERE album_id = $1', [album_id, album_name, artist_id_db.rows[0].artist_id, album_image, album_info])
+                var old_artist = await pool.query('SELECT * FROM artist WHERE artist_id = $1', [old_db.rows[0].artist_id])
+                var new_artist
+                if(artist_name = '') new_artist = old_artist 
+                else new_artist = await pool.query('SELECT * FROM artist WHERE artist_name = $1', [artist_name])
+                //console.log(new_artist)
+                if(new_artist.rowCount) {
+                    // Cập nhật num_of_albums
+                    await pool.query('UPDATE artist SET num_of_albums = num_of_album - 1 WHERE artist_id = $1, last_updated_stamp = current_timestamp', [old_artist.rows[0].artist_id])
+                    await pool.query('UPDATE artist SET num_of_albums = num_of_album + 1 WHERE artist_id = $1, last_updated_stamp = current_timestamp', [new_artist.rows[0].artist_id])
+                    // Cập nhật album
+                    var album = pool.query('UPDATE album SET album_name = $2, artist_id = $3, album_image = $4, album_info = $5, last_updated_stamp = current_timestamp WHERE album_id = $1', [album_id, album_name, new_artist.rows[0].artist_id, album_image, album_info])
                     if (album) res.status(201).send({message: 'Album updated'});
                     else res.status(500).send({message: 'Error in updating album'});
                 }
@@ -147,14 +157,6 @@ export const post_updateAlbum = async (req, res) => {
     } catch (err) {
         console.log(err.stack)
     }
-}
-
-export const addNewSongtoAlbum = async (req, res) => {
-
-}
-
-export const deleteSonginAlbum = async (req, res) => {
-
 }
 
 export default router;
