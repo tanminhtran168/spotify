@@ -8,19 +8,27 @@ import album from './routes/albumRouter.js'
 import cookieParser from 'cookie-parser';
 import rating from './routes/ratingRouter.js'
 import comment from './routes/commentRouter.js'
-
+import path from 'path'
 const app = express();
-
+const __dirname = path.resolve(path.dirname(''));
 app.use(cookieParser())
 
 app.set('views','views');
 app.set('view engine','ejs');
 app.use(express.static('public'));
 
-//app.use("/", (req, res)=> {res.render('homepage')})
-app.get('/', (req, res) => {
-	res.render('main')
+//for frontend testing
+/*
+app.get("/login", (req, res) => {
+	res.render('userViews/login');
 })
+*/
+
+app.get("/*", (req, res) => {
+	res.render('main');
+})
+
+
 
 app.use("/", user);
 app.use("/account", account);
