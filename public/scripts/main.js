@@ -304,6 +304,18 @@ window.onload = () => {
 
     let path = window.location.pathname;
 
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if(this.readyState == 4)
+        {
+            root.innerHTML = this.responseText;
+            history.replaceState({ejs: this.responseText}, `${path}`, `${path}`)
+        }
+    }
+    xhttp.open("GET", `/ejs${path}`, true);
+    xhttp.send();
+    
+    /*
     fetch(`/ejs${path}`).then(function (response) {
         // The API call was successful!
         return response.text();
@@ -315,12 +327,12 @@ window.onload = () => {
     }).catch(function (err) {
         // There was an error
         console.warn('Something went wrong.', err);
-    });
+    });*/
 }
 
 function navigateTo(path)
 {
-    fetch(`/ejs${path}`).then(function (response) {
+    /*fetch(`/ejs${path}`).then(function (response) {
         // The API call was successful!
         return response.text();
     }).then(function (html) {
@@ -331,7 +343,17 @@ function navigateTo(path)
     }).catch(function (err) {
         // There was an error
         console.warn('Something went wrong.', err);
-    });
+    });*/
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if(this.readyState == 4)
+        {
+            root.innerHTML = this.responseText;
+            history.pushState({ejs: this.responseText}, `${path}`, `${path}`)
+        }
+    }
+    xhttp.open("GET", `/ejs${path}`, true);
+    xhttp.send();
 }
 
 addEventListener('popstate', function (event) {
