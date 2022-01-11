@@ -18,11 +18,14 @@ app.set('view engine','ejs');
 app.use(express.static('public'));
 
 //for frontend testing
-/*
-app.get("/login", (req, res) => {
-	res.render('userViews/login');
+
+app.get("/ejs/login", (req, res) => {
+	res.sendFile(path.join(__dirname, 'views/userViews/login.ejs'))
 })
-*/
+
+app.get("/ejs", (req, res) => {
+	res.sendFile(path.join(__dirname, 'views/dashboard.ejs'))
+})
 
 app.get("/*", (req, res) => {
 	res.render('main');

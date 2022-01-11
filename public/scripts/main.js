@@ -220,7 +220,7 @@ const app = {
             
         };
         loginBtn.onclick = function () {
-            navigateTo('login')
+            navigateTo('/login')
             //history.pushState({}, 'login', 'login')
             //document.getElementById('page-content').innerHTML = 'Login'
         }
@@ -297,34 +297,44 @@ app.start();
 
 
 //handle routing
-
+let root = document.getElementById('page-content');
 window.onload = () => {
     //get root div for rendering
-    let root = document.getElementById('page-content');
+   
 
-    let currentPath = window.location.pathname;
+    let path = window.location.pathname;
 
-    fetch(currentPath).then(function (response) {
+    fetch(`/ejs${path}`).then(function (response) {
         // The API call was successful!
         return response.text();
     }).then(function (html) {
         // This is the HTML from our response as a text string
-        //console.log(html);
+        console.log(html);
+        root.innerHTML = html;
+        history.replaceState({ejs: html}, `${path}`, `${path}`)
     }).catch(function (err) {
         // There was an error
         console.warn('Something went wrong.', err);
     });
-    if(currentPath === '/')
-    document.getElementById('page-content').innerHTML = `You are on homepage`
-    else
-    document.getElementById('page-content').innerHTML = `You are on ${currentPath}`
 }
 
 function navigateTo(path)
 {
-    if(path === '/')
-        document.getElementById('page-content').innerHTML = `You are on homepage`
-    else
-        document.getElementById('page-content').innerHTML = `You are on ${path}`
+    fetch(`/ejs${path}`).then(function (response) {
+        // The API call was successful!
+        return response.text();
+    }).then(function (html) {
+        // This is the HTML from our response as a text string
+        console.log(html);
+        root.innerHTML = html;
+        history.pushState({ejs: html}, `${path}`, `${path}`)
+    }).catch(function (err) {
+        // There was an error
+        console.warn('Something went wrong.', err);
+    });
 }
 
+addEventListener('popstate', function (event) {
+    //console.log(event.state.content); // this contains the state data from `pushState`. Use it to decide what to change the page back to.
+    document.getElementById('page-content').innerHTML = event.state.ejs;
+})
