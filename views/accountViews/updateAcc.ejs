@@ -1,18 +1,26 @@
 <body>
     <div class="center">
-    <h3>Add new account</h3>
-    <form action="add" method="POST">
+    <h3>Update account</h3>
+    <form action="update" method="POST">
+        <div class="field">
+            <div class="label" for="account_id">Account id</div>
+            <input type="text" name="account_id" placeholder="type" />
+        </div>    
         <div class="field">
             <div class="label" for="user_name">User name</div>
             <input type="text" name="user_name" placeholder="type" />
         </div>    
         <div class="field">
-        <div class="label" for="current_password">Password</div>
-        <input type="password" name="current_password" placeholder="type" />
+            <div class="label" for="old_password">Old password</div>
+            <input type="password" name="old_password" placeholder="type" />
         </div>
         <div class="field">
-            <div class="label" for="confirm_password">Confirm password</div>
-            <input type="password" name="confirm_password" placeholder="type" />
+            <div class="label" for="new_password">New password</div>
+            <input type="password" name="new_password" placeholder="type" />
+        </div>
+        <div class="field">
+            <div class="label" for="confirm_new_password">Confirm new password</div>
+            <input type="password" name="confirm_new_password" placeholder="type" />
         </div>
         <div class="field">
             <div class="label" for="avatar">Avatar</div>
@@ -35,7 +43,7 @@
             <input type="text" name="phone_number" placeholder="type"/>
         </div>
         <br>
-        <button class="btn" type="submit">Add</button>
+        <button class="btn" type="submit">Update</button>
     </form>
     </div>
 </body>

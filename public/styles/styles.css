@@ -9,11 +9,13 @@ body{
     height: fit-content;
     width: 100%;
     display: block;
-    background-image: linear-gradient(0deg, rgba(0,0,0,1) 70%, rgba(0,0,0,0.7) 85%, rgba(255,255,255,0) 100%), url("../images/eguitar.jpg");
+    margin-top: 100px;
+    color: white;
+    /*background-image: linear-gradient(0deg, rgba(0,0,0,1) 70%, rgba(0,0,0,0.7) 85%, rgba(255,255,255,0) 100%), url("../images/eguitar.jpg");
     background-repeat: no-repeat;
     background-size:    contain;
     object-fit: cover;
-    
+    */
 }
 
 #welcome-message {
@@ -243,4 +245,13 @@ input[type=range]:hover::-webkit-slider-thumb{
     text-overflow: ellipsis;
     white-space: nowrap;
     margin:auto;
+}
+
+#dashboard {
+    width: 100%;
+    display: block;
+    background-image: linear-gradient(0deg, rgba(0,0,0,1) 70%, rgba(0,0,0,0.7) 85%, rgba(255,255,255,0) 100%), url("../images/eguitar.jpg");
+    background-repeat: no-repeat;
+    background-size:    contain;
+    object-fit: cover;
 }

@@ -14,6 +14,8 @@ const songName = document.getElementById("songname");
 const artist = document.getElementById("artist");
 const songTime = document.getElementById("song-time");
 const playerCurrentTime = document.getElementById("current-time");
+const loginBtn = document.getElementById("login");
+const homeBtn = document.getElementById("home");
 const app = {
     currentIndex: 0,
     isPlaying: false,
@@ -216,6 +218,17 @@ const app = {
                     volumeIcon.className="fas fa-volume-up";
             }
             
+        };
+        loginBtn.onclick = function () {
+            navigateTo('login')
+            //history.pushState({}, 'login', 'login')
+            //document.getElementById('page-content').innerHTML = 'Login'
+        }
+
+        homeBtn.onclick = function () {
+            navigateTo('/')
+            //history.pushState({}, 'Home', '/')
+            //document.getElementById('page-content').innerHTML = 'You are at homepage'
         }
     },
 
@@ -282,17 +295,36 @@ const app = {
 
 app.start();
 
-const navigateTo = url => {
-    history.pushState(null, null ,url);
-    router();
-};
 
-const router = async () => {
-    
+//handle routing
+
+window.onload = () => {
+    //get root div for rendering
+    let root = document.getElementById('page-content');
+
+    let currentPath = window.location.pathname;
+
+    fetch(currentPath).then(function (response) {
+        // The API call was successful!
+        return response.text();
+    }).then(function (html) {
+        // This is the HTML from our response as a text string
+        //console.log(html);
+    }).catch(function (err) {
+        // There was an error
+        console.warn('Something went wrong.', err);
+    });
+    if(currentPath === '/')
+    document.getElementById('page-content').innerHTML = `You are on homepage`
+    else
+    document.getElementById('page-content').innerHTML = `You are on ${currentPath}`
 }
 
+function navigateTo(path)
+{
+    if(path === '/')
+        document.getElementById('page-content').innerHTML = `You are on homepage`
+    else
+        document.getElementById('page-content').innerHTML = `You are on ${path}`
+}
 
-
-document.addEventListener("DOMContentLoaded", () => {
-   router();
-});
