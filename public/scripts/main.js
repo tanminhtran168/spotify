@@ -220,7 +220,7 @@ const app = {
             
         };
         loginBtn.onclick = function () {
-            navigateTo('login')
+            navigateTo('/login')
             //history.pushState({}, 'login', 'login')
             //document.getElementById('page-content').innerHTML = 'Login'
         }
@@ -320,7 +320,7 @@ window.onload = () => {
 
 function navigateTo(path)
 {
-    fetch(`ejs${path}`).then(function (response) {
+    fetch(`/ejs${path}`).then(function (response) {
         // The API call was successful!
         return response.text();
     }).then(function (html) {
