@@ -314,17 +314,34 @@ window.onload = () => {
         // There was an error
         console.warn('Something went wrong.', err);
     });
+    
     if(currentPath === '/')
-    document.getElementById('page-content').innerHTML = `You are on homepage`
+    {
+        history.replaceState({content: `You are on homepage`}, `${currentPath}`, `${currentPath}`)
+        document.getElementById('page-content').innerHTML = `You are on homepage`
+    }
     else
-    document.getElementById('page-content').innerHTML = `You are on ${currentPath}`
+    {
+        history.replaceState({content: `You are on ${currentPath}`}, `${currentPath}`, `${currentPath}`)
+        document.getElementById('page-content').innerHTML = `You are on ${currentPath}`
+    }
 }
 
 function navigateTo(path)
 {
     if(path === '/')
+    {
+        history.pushState({content: `You are on homepage`}, `${path}`, `${path}`)
         document.getElementById('page-content').innerHTML = `You are on homepage`
+    }
     else
+    {
+        history.pushState({content: `You are on ${path}`}, `${path}`, `${path}`)
         document.getElementById('page-content').innerHTML = `You are on ${path}`
+    }
 }
 
+addEventListener('popstate', function (event) {
+    console.log(event.state.content); // this contains the state data from `pushState`. Use it to decide what to change the page back to.
+    document.getElementById('page-content').innerHTML = event.state.content;
+})
