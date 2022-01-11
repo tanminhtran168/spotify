@@ -53,24 +53,21 @@ export const get_Login = async (req, res) => {
     res.render('userViews/login');
 }
 export const post_Login = async (req, res) => {
-    console.log(req.body)
     const {user_name, password} = req.body
-    console.log(user_name)
-    console.log(password)
     if(user_name == '' || password == '')
         res.status(500).send({message: 'Missing some value'});
     else {
         try {
-            var user = await pool.query('SELECT * FROM account WHERE username = $1 and current_password = $2 LIMIT 1', [user_name, password])
+            var user = await pool.query('SELECT account_id, username, user_role FROM account WHERE username = $1 and current_password = $2 LIMIT 1', [user_name, password])
             if (user.rowCount) {
-                var token = getToken(user)
+                var token = getToken(user.rows[0])
                 res.cookie('token', token, {expires: new Date(Date.now() + 90000000)})
-                res.send({
+                /*res.send({
                     id: user.rows[0].account_id,
                     user_name: user.rows[0].username,
                     isAdmin: (user.rows[0].user_role == 'admin'),
                     token: token
-                })
+                })*/
             }
             else {
                 res.status(500).send({message: 'Wrong username or password'});
