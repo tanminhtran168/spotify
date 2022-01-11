@@ -60,21 +60,21 @@ export const post_Login = async (req, res) => {
     else {
         try {
             var user = await pool.query('SELECT * FROM account WHERE username = $1 and current_password = $2 LIMIT 1', [user_name, password])
+            if (user.rowCount) {
+                var token = getToken(user)
+                res.cookie('token', token, {expires: new Date(Date.now() + 90000000)})
+                res.send({
+                    id: user.rows[0].account_id,
+                    user_name: user.rows[0].username,
+                    isAdmin: (user.rows[0].user_role == 'admin'),
+                    token: token
+                })
+            }
+            else {
+                res.status(500).send({message: 'Wrong username or password'});
+            }
         } catch (err) {
             console.log(err.stack)
-        }
-        if (user.rows[0] != null) {
-            var token = getToken(user)
-            res.cookie('token', token, {expires: new Date(Date.now() + 90000000)})
-            res.send({
-                id: user.rows[0].account_id,
-                user_name: user.rows[0].username,
-                isAdmin: (user.rows[0].user_role == 'admin'),
-                token: token
-            })
-        }
-        else {
-            res.status(500).send({message: 'Wrong username or password'});
         }
     }
 }
