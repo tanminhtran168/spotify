@@ -38,10 +38,14 @@ export const isAuth = async (req, res, next) => {
 };
 
 export const checkAdmin = async (req, res, next) => {
-  if (req.user && req.user.isAdmin) {
-    return next();
-  }
-  res.status(401).send({ message: 'Admin Token is not valid.' });
+  const token = req.cookies.token;
+  jwt.verify(token, config.JWT_SECRET, (err, decode) => {
+    if (err) {
+      return res.status(401).send({ message: 'Invalid Token' });
+    }
+    if(decode.isAdmin) return next();
+    else res.status(401).send({ message: 'Admin Token is not valid.' });
+    });
 };
 
 export var getClient = async (req, res) => {

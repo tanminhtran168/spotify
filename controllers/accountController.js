@@ -34,7 +34,7 @@ export const post_searchAccount = async (req, res) => {
     var {key_word} = req.body
     key_word = "%" + key_word + "%"
     try {
-        var account = await pool.query('SELECT * FROM account WHERE username LIKE $1 or full_name LIKE $1 or email LIKE $1 or phone_number LIKE $1', [key_word])
+        var account = await pool.query('SELECT DISTINCT * FROM account WHERE username LIKE $1 or full_name LIKE $1 or email LIKE $1 or phone_number LIKE $1', [key_word])
         res.send(account.rows)
     } catch (err) {
         console.log(err.stack)

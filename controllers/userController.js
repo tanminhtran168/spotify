@@ -60,14 +60,14 @@ export const post_Login = async (req, res) => {
         try {
             var user = await pool.query('SELECT account_id, username, user_role FROM account WHERE username = $1 and current_password = $2 LIMIT 1', [user_name, password])
             if (user.rowCount) {
-                var token = getToken(user.rows[0])
+                var token = await getToken(user.rows[0])
                 res.cookie('token', token, {expires: new Date(Date.now() + 90000000)})
-                /*res.send({
+                res.send({
                     id: user.rows[0].account_id,
                     user_name: user.rows[0].username,
                     isAdmin: (user.rows[0].user_role == 'admin'),
                     token: token
-                })*/
+                })
             }
             else {
                 res.status(500).send({message: 'Wrong username or password'});
@@ -76,6 +76,14 @@ export const post_Login = async (req, res) => {
             console.log(err.stack)
         }
     }
+}
+
+export const get_logout = async(req, res) => {
+    res.render('userViews/logout')
+}
+export const post_logout = async(req, res) => {
+    res.clearCookie('token')
+    res.send({message: 'Log out completed'})
 }
 
 export const loginAdmin = async(req, res) => {

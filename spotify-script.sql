@@ -129,24 +129,92 @@ INSERT INTO account(account_id, username, current_password, avatar, user_role, f
             VALUES(default, 'minhtt', '161718', '', 'admin', 'Tan Minh Tran', date('2000-01-01'), 'tanminhtran168@gmail.com', '123456789', current_timestamp, default);
 INSERT INTO account(account_id, username, current_password, avatar, user_role, full_name, birth_date, email, phone_number, last_updated_stamp, created_stamp)
             VALUES(default, 'duongnn', '123456', '', 'client', 'Nam Duong Ngo', date('2000-11-13'), 'duongnamngohl@gmail.com', '0963648035', current_timestamp, default);
+INSERT INTO account(account_id, username, current_password, avatar, user_role, full_name, birth_date, email, phone_number, last_updated_stamp, created_stamp)
+            VALUES(default, 'minhtb', '123456', '', 'client', 'Binh Minh Tran', date('2000-10-02'), 'minhtb@gmail.com', '012345678', current_timestamp, default);
+INSERT INTO account(account_id, username, current_password, avatar, user_role, full_name, birth_date, email, phone_number, last_updated_stamp, created_stamp)
+            VALUES(default, 'ducdm', '123456', '', 'client', 'Minh Duc Dang', date('2000-01-31'), 'ducdm@gmail.com', '012345679', current_timestamp, default);
+
 INSERT INTO client(client_id, account_id, num_artist_favorite, num_playlist)
-            VALUES(default, 2, 1, 1);
+            VALUES(default, 2, 2, 2);
+INSERT INTO client(client_id, account_id, num_artist_favorite, num_playlist)
+            VALUES(default, 3, 2, 2);
+INSERT INTO client(client_id, account_id, num_artist_favorite, num_playlist)
+            VALUES(default, 4, 1, 1);
+           
 INSERT INTO playlist(playlist_id, client_id , playlist_name, playlist_info, num_of_songs, total_duration, last_updated_stamp, created_stamp) 
-            VALUES(default, 1, 'Music', 'Nhac nhe', 1, 100, current_timestamp, default);
+            VALUES(default, 1, 'Music', 'Trend', 1, 100, current_timestamp, default);
+INSERT INTO playlist(playlist_id, client_id , playlist_name, playlist_info, num_of_songs, total_duration, last_updated_stamp, created_stamp) 
+            VALUES(default, 1, 'Nhac nhe', 'Hobby', 2, 400, current_timestamp, default);
+INSERT INTO playlist(playlist_id, client_id , playlist_name, playlist_info, num_of_songs, total_duration, last_updated_stamp, created_stamp) 
+            VALUES(default, 2, 'Nhac EDM', 'Nhac Au My', 1, 300, current_timestamp, default);
+INSERT INTO playlist(playlist_id, client_id , playlist_name, playlist_info, num_of_songs, total_duration, last_updated_stamp, created_stamp) 
+            VALUES(default, 2, 'Nhac rock', 'Nhac viet', 2, 500, current_timestamp, default);
+INSERT INTO playlist(playlist_id, client_id , playlist_name, playlist_info, num_of_songs, total_duration, last_updated_stamp, created_stamp) 
+            VALUES(default, 3, 'Nhac san', 'Nhac vn', 1, 200, current_timestamp, default);
+           
 INSERT INTO artist(artist_id, artist_name, artist_info, artist_image, birth_date, num_of_albums, num_of_songs, last_updated_stamp, created_stamp) 
-            VALUES(1, 'cur', 'Rapper so 1 HL', '', date('2000-01-22'), 1, 1, current_timestamp, default);
+            VALUES(default, 'cur', 'Rapper so 1 HL', '', date('2000-01-22'), 1, 2, current_timestamp, default);
+INSERT INTO artist(artist_id, artist_name, artist_info, artist_image, birth_date, num_of_albums, num_of_songs, last_updated_stamp, created_stamp) 
+            values(default, 'hai', 'Singer so 1 QY', '', date('2000-04-05'), 1, 1, current_timestamp, default);
+           
 INSERT INTO album(album_id, artist_id, album_name, album_image, album_info, num_of_songs, total_duration, last_updated_stamp, created_stamp) 
-            VALUES(1, 1, 'Rap songs', '', 'Nhac rap', 1, 100, current_timestamp, default);
+            VALUES(default, 1, 'Rap songs', '', 'Nhac rap', 2, 400, current_timestamp, default);
+INSERT INTO album(album_id, artist_id, album_name, album_image, album_info, num_of_songs, total_duration, last_updated_stamp, created_stamp) 
+            VALUES(default, 2, 'Songs', '', 'Nhac nhe', 1, 100, current_timestamp, default);
+           
 INSERT INTO song(song_id, artist_id, album_id, song_name, song_image, song_info, song_link, category, duration, sum_rate, num_of_ratings, num_of_comments, last_updated_stamp, created_stamp) 
-            VALUES(1, 1, 1, 'Toi yeu CHL', '', 'Nhac CHL', '', 'Nhac viet', 100, 5, 1, 1, current_timestamp, default);
+            VALUES(default, 1, 1, 'Toi yeu CHL', '', 'Nhac CHL', '', 'Nhac viet', 100, 4, 1, 1, current_timestamp, default);
+INSERT INTO song(song_id, artist_id, album_id, song_name, song_image, song_info, song_link, category, duration, sum_rate, num_of_ratings, num_of_comments, last_updated_stamp, created_stamp) 
+            VALUES(default, 1, 1, 'Cur rap song', '', 'Nhac VN', '', 'Nhac My', 300, 8, 2, 1, current_timestamp, default);
+INSERT INTO song(song_id, artist_id, album_id, song_name, song_image, song_info, song_link, category, duration, sum_rate, num_of_ratings, num_of_comments, last_updated_stamp, created_stamp) 
+            VALUES(default, 2, 2, 'Nhac tiktok', '', 'Tiktok', '', 'Nhac viet', 200, 8, 2, 2, current_timestamp, default);
+           
 INSERT INTO song_added_to_playlist (song_id , playlist_id , created_stamp) 
             VALUES(1, 1, default);
+INSERT INTO song_added_to_playlist (song_id , playlist_id , created_stamp) 
+            VALUES(1, 2, default);
+INSERT INTO song_added_to_playlist (song_id , playlist_id , created_stamp) 
+            VALUES(2, 2, default);
+INSERT INTO song_added_to_playlist (song_id , playlist_id , created_stamp) 
+            VALUES(2, 3, default);
+INSERT INTO song_added_to_playlist (song_id , playlist_id , created_stamp) 
+            VALUES(2, 4, default);
+INSERT INTO song_added_to_playlist (song_id , playlist_id , created_stamp) 
+            VALUES(3, 4, default);
+INSERT INTO song_added_to_playlist (song_id , playlist_id , created_stamp) 
+            VALUES(3, 5, default);
+           
 INSERT INTO artist_favorite (client_id, artist_id, created_stamp) 
             VALUES(1, 1, default);
+INSERT INTO artist_favorite (client_id, artist_id, created_stamp) 
+            VALUES(1, 2, default);
+INSERT INTO artist_favorite (client_id, artist_id, created_stamp) 
+            VALUES(2, 1, default);
+INSERT INTO artist_favorite (client_id, artist_id, created_stamp) 
+            values(2, 2, default);
+INSERT INTO artist_favorite (client_id, artist_id, created_stamp) 
+            VALUES(3, 1, default);
+           
 INSERT INTO rating(rating_id, client_id, song_id, rating, last_updated_stamp, created_stamp) 
-            VALUES(1, 1, 1, 5, current_timestamp, default);
+            VALUES(default, 1, 2, 5, current_timestamp, default);
+INSERT INTO rating(rating_id, client_id, song_id, rating, last_updated_stamp, created_stamp) 
+            VALUES(default, 2, 1, 4, current_timestamp, default);
+INSERT INTO rating(rating_id, client_id, song_id, rating, last_updated_stamp, created_stamp) 
+            VALUES(default, 2, 3, 4, current_timestamp, default);
+INSERT INTO rating(rating_id, client_id, song_id, rating, last_updated_stamp, created_stamp) 
+            VALUES(default, 3, 2, 3, current_timestamp, default);
+INSERT INTO rating(rating_id, client_id, song_id, rating, last_updated_stamp, created_stamp) 
+            VALUES(default, 3, 3, 4, current_timestamp, default);
+
 INSERT INTO comment(comment_id, client_id, song_id, comment_content, last_updated_stamp, created_stamp) 
-            VALUES(1, 1, 1, 'Hay', current_timestamp, default);
+            VALUES(default, 1, 2, 'Hay', current_timestamp, default);
+INSERT INTO comment(comment_id, client_id, song_id, comment_content, last_updated_stamp, created_stamp) 
+            VALUES(default, 2, 3, 'ok', current_timestamp, default);
+INSERT INTO comment(comment_id, client_id, song_id, comment_content, last_updated_stamp, created_stamp) 
+            VALUES(default, 2, 1, 'Duoc', current_timestamp, default);
+INSERT INTO comment(comment_id, client_id, song_id, comment_content, last_updated_stamp, created_stamp) 
+            VALUES(default, 3, 1, 'binh thuong', current_timestamp, default);
+
 select * from account ;
 select * from client;
 select * from playlist;
@@ -161,3 +229,4 @@ select * from comment;
 
 drop table artist_favored, rating, client, comment, playlist, song_added_to_playlist, song,album ,artist, account, admin
 drop table account, client, artist, album, song, song_added_to_playlist, playlist, comment, rating , artist_favorite 
+
