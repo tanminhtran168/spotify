@@ -31,9 +31,10 @@ export const get_searchAccount = async (req, res) => {
     res.render('accountViews/searchInfo')
 }
 export const post_searchAccount = async (req, res) => {
-    const {user_name, full_name, email, phone_number} = req.body
+    var {key_word} = req.body
+    key_word = "%" + key_word + "%"
     try {
-        var account = await pool.query('SELECT * FROM account WHERE username = $1 or full_name = $2 or email = $3 or phone_number = $4', [user_name, full_name, email, phone_number])
+        var account = await pool.query('SELECT * FROM account WHERE username LIKE $1 or full_name LIKE $1 or email LIKE $1 or phone_number LIKE $1', [key_word])
         res.send(account.rows)
     } catch (err) {
         console.log(err.stack)

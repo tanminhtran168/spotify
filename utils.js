@@ -1,12 +1,17 @@
+import express from 'express'
 import jwt from 'jsonwebtoken';
 import config from './config.js';
+import pg from 'pg'
+const router = express.Router()
+const Pool = pg.Pool
+const pool = new Pool(config.POSTGRES_INFO)
 
-const getToken = (user) => {
+export const getToken = async (user) => {
   return jwt.sign(
     {
-      id: user.rows[0].id,
-      user_name: user.rows[0].user_name,
-      isAdmin: (user.rows[0].user_role == 'admin'),
+      id: user.account_id,
+      user_name: user.username,
+      isAdmin: (user.user_role == 'admin'),
     },
     config.JWT_SECRET,
     {
@@ -15,31 +20,52 @@ const getToken = (user) => {
   );
 };
 
-const isAuth = (req, res, next) => {
-  const token = 'Bearer ' + req.cookies.token;
+export const isAuth = async (req, res, next) => {
+  const token = req.cookies.token;
 
   if (token) {
-    const onlyToken = token.slice(7, token.length);
-    jwt.verify(onlyToken, config.JWT_SECRET, (err, decode) => {
+    jwt.verify(token, config.JWT_SECRET, (err, decode) => {
       if (err) {
         return res.status(401).send({ message: 'Invalid Token' });
       }
-      req.user = decode;
-      console.log(req.user)
+      //console.log(decode)
       next();
       return;
     });
-  } else {
-    return res.status(401).send({ message: 'Token is not supplied.' });
-  }
+  } 
+  else res.status(401).send({ message: 'Token is not supplied.' });
+  
 };
 
-const checkAdmin = (req, res, next) => {
-  console.log(req.user);
+export const checkAdmin = async (req, res, next) => {
   if (req.user && req.user.isAdmin) {
     return next();
   }
-  return res.status(401).send({ message: 'Admin Token is not valid.' });
+  res.status(401).send({ message: 'Admin Token is not valid.' });
 };
 
-export { getToken, isAuth, checkAdmin };
+export var getClient = async (req, res) => {
+  var token = req.cookies.token
+    var account_id = 0
+    jwt.verify(token, config.JWT_SECRET, (err, decode) => {
+        if (err) {
+          res.status(401).send({ message: 'Invalid Token' }); 
+          return 0
+        }
+        account_id = decode.id
+    });
+    if(account_id == 0) res.status(500).send('You must log in first') 
+    else {
+        var client = await pool.query('SELECT client_id FROM client WHERE account_id = $1', [account_id])
+        if(client.rowCount) {
+            var client_id = client.rows[0].client_id
+            return client_id
+        } 
+        else {
+          return -1
+        }
+    }
+}
+
+//export { getToken, isAuth, checkAdmin, getClient };
+export default router

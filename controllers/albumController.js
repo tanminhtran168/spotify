@@ -32,7 +32,7 @@ export const get_searchAlbum = async (req, res) => {
 }
 export const post_searchAlbum = async (req, res) => {
     var {key_word} = req.body
-    key_word = key_word + "%"
+    key_word = "%" + key_word + "%"
     try {
         var album = await pool.query('SELECT album_name, artist_name, album_image, album_info, num_of_songs, total_duration, last_updated_stamp, created_stamp FROM album WHERE album_name LIKE $1 or (artist_name LIKE $1 and artist.artist_id = album.artist_id)', [key_word])
         res.send(album.rows)

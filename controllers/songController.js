@@ -8,10 +8,10 @@ const pool = new Pool(config.POSTGRES_INFO)
 export const getAllSong = async (req, res) => {
     try {
         var song = await pool.query('SELECT * FROM song')
+        res.send(song.rows)
     } catch (err) {
         console.log(err.stack)
     }
-    res.send(song.rows)
 }
 
 export const get_getSongInfobyId = async (req, res) => {
@@ -32,8 +32,8 @@ export const get_searchSong = async (req, res) => {
 }
 export const post_searchSong = async (req, res) => {
     var {key_word, category} = req.body
-    key_word = key_word +  "%"
-    category = category + "%"
+    key_word = "%" + key_word +  "%"
+    category = "%" + category + "%"
     try {
         var song = await pool.query('SELECT song.*, artist_name, album_name FROM song, artist, album WHERE song_name LIKE $1 or (artist_name LIKE $1 and song.artist_id = artist.artist_id) or (album_name LIKE $1 and song.album_id = album.album_id) and category LIKE $2', [key_word, category])
         res.send(song.rows)
