@@ -8,7 +8,8 @@ const Pool = pg.Pool
 const pool = new Pool(config.POSTGRES_INFO)
 
 export const get_Signup = (req,res) =>{
-    res.render('userViews/signup');
+    if(req.cookies.token != null) res.status(500).send({message: 'You must log out first'}) 
+    else res.render('userViews/signup');
 }
 export const post_Signup = async (req, res) => {
     const {user_name, current_password, confirm_password, avatar, full_name, birth_date, email, phone_number} = req.body
@@ -50,7 +51,8 @@ export const post_Signup = async (req, res) => {
 }
 
 export const get_Login = async (req, res) => {
-    res.render('userViews/login');
+    if(req.cookies.token != null) res.status(500).send({message: 'You must log out first'}) 
+    else res.render('userViews/login');
 }
 export const post_Login = async (req, res) => {
     const {user_name, password} = req.body

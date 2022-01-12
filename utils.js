@@ -26,14 +26,14 @@ export const isAuth = async (req, res, next) => {
   if (token) {
     jwt.verify(token, config.JWT_SECRET, (err, decode) => {
       if (err) {
-        return res.status(401).send({ message: 'Invalid Token' });
+        return res.status(401).send({ message: 'Error in authentication' });
       }
       //console.log(decode)
       next();
       return;
     });
   } 
-  else res.status(401).send({ message: 'Token is not supplied.' });
+  else res.status(401).send({ message: 'You must log in first' });
   
 };
 
@@ -41,10 +41,10 @@ export const checkAdmin = async (req, res, next) => {
   const token = req.cookies.token;
   jwt.verify(token, config.JWT_SECRET, (err, decode) => {
     if (err) {
-      return res.status(401).send({ message: 'Invalid Token' });
+      return res.status(401).send({ message: 'Error in authentication' });
     }
     if(decode.isAdmin) return next();
-    else res.status(401).send({ message: 'Admin Token is not valid.' });
+    else res.status(401).send({ message: 'Only admin can do this' });
     });
 };
 
@@ -53,7 +53,7 @@ export var getClient = async (req, res) => {
     var account_id = 0
     jwt.verify(token, config.JWT_SECRET, (err, decode) => {
         if (err) {
-          res.status(401).send({ message: 'Invalid Token' }); 
+          res.status(401).send({ message: 'Error in authentication' }); 
           return 0
         }
         account_id = decode.id
@@ -69,6 +69,7 @@ export var getClient = async (req, res) => {
           return -1
         }
     }
+    return 0
 }
 
 //export { getToken, isAuth, checkAdmin, getClient };

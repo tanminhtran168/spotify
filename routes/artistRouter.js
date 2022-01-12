@@ -7,13 +7,13 @@ const router = express.Router();
 router.use(bodyParser.json())
 router.use(bodyParser.urlencoded({extended:true}))
 
-router.get('/', isAuth, getAllArtist);
+router.get('/', getAllArtist);
 
-router.get('/get', isAuth, get_getArtistInfobyId); 
-router.post('/get', isAuth, post_getArtistInfobyId);
+router.get('/get', get_getArtistInfobyId); 
+router.post('/get', post_getArtistInfobyId);
 
-router.get('/search', isAuth, get_searchArtist); 
-router.post('/search', isAuth, post_searchArtist);
+router.get('/search', get_searchArtist); 
+router.post('/search', post_searchArtist);
 
 router.get('/add', isAuth, checkAdmin, get_addNewArtist);
 router.post('/add', isAuth, checkAdmin, post_addNewArtist);

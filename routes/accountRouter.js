@@ -1,13 +1,15 @@
 import express from 'express'
 import bodyParser from 'body-parser';
 import { checkAdmin, isAuth } from '../utils.js'
-import {getAllAccount, get_getAccountInfobyId, post_getAccountInfobyId, get_searchAccount, post_searchAccount, post_addNewAccount, get_addNewAccount, post_deleteAccount, get_deleteAccount, get_updateAccount, post_updateAccount} from '../controllers/accountController.js'
+import {getAllAccount, get_getAccountInfobyId, post_getAccountInfobyId, get_searchAccount, post_searchAccount, post_addNewAccount, get_addNewAccount, post_deleteAccount, get_deleteAccount, get_updateAccount, post_updateAccount, getMyAccountInfo} from '../controllers/accountController.js'
 const router = express.Router();
 
 router.use(bodyParser.json())
 router.use(bodyParser.urlencoded({extended:true}))
 
 router.get('/', isAuth, checkAdmin,  getAllAccount);
+
+router.get('/mine', isAuth,  getMyAccountInfo);
 
 router.get('/get', isAuth, checkAdmin, get_getAccountInfobyId); 
 router.post('/get', isAuth, checkAdmin, post_getAccountInfobyId);

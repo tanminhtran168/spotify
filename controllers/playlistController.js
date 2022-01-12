@@ -1,5 +1,4 @@
 import express from 'express'
-import jwt from 'jsonwebtoken';
 import pg from 'pg'
 import config from '../config.js'
 import { getClient } from '../utils.js';

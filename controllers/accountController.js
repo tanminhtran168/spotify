@@ -1,5 +1,6 @@
 import express from 'express'
 import pg from 'pg'
+import jwt from 'jsonwebtoken';
 import config from '../config.js'
 const router = express.Router()
 const Pool = pg.Pool
@@ -13,10 +14,25 @@ export const getAllAccount = async (req, res) => {
         console.log(err.stack)
     }
 }
+
+export const getMyAccountInfo = async (req, res) => {
+    const token = req.cookies.token
+    var account_id
+    jwt.verify(token, config.JWT_SECRET, (err, decode) => {
+        if (err) return res.status(401).send({ message: 'Error in authentication' });
+        account_id = decode.id
+    })
+    try {
+        var account = await pool.query('SELECT * FROM account WHERE account_id = $1', [account_id])
+        res.send(account.rows)
+    } catch (err) {
+        console.log(err.stack)
+    }    
+}
+
 export const get_getAccountInfobyId = async (req, res) => {
     res.render('accountViews/getInfobyId')
 }
-
 export const post_getAccountInfobyId = async (req, res) => {
     const {account_id} = req.body
     try {
