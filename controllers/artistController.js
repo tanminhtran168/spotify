@@ -35,7 +35,8 @@ export const post_searchArtist = async (req, res) => {
     key_word = "%" + key_word + "%"
     try {
         var artist = await pool.query('SELECT * FROM artist WHERE artist_name LIKE $1', [key_word])
-        res.send(artist.rows)
+        if(artist.rowCount) res.send(artist.rows)
+        else res.status(500).send({message: 'We cound not found anything matching your keyword'})
     } catch (err) {
         console.log(err.stack)
     }    
@@ -69,35 +70,37 @@ export const get_deleteArtist = async(req, res) => {
 export const post_deleteArtist = async (req, res) => {
     const {artist_id} = req.body;
     try {
-        var song = await pool.query('SELECT song_id FROM song WHERE artist_id = $1', [artist_id])
+        var song = await pool.query('SELECT song_id, duration FROM song WHERE artist_id = $1', [artist_id])
         var x = 0
         while(x < song.rowCount) {
             var song_id = song.rows[x].song_id
+            var duration = song.rows[x].duration
             var playlist = await pool.query('SELECT playlist_id FROM song_added_to_playlist WHERE song_id = $1', [song_id])
             // Cập nhật num_of_songs trong playlist
             var y = 0
             while(y < playlist.rowCount) {
                 var playlist_id = playlist.rows[y].playlist_id
-                var update = await pool.query('UPDATE playlist SET num_of_songs = num_of_songs - 1, last_updated_stamp = current_timestamp WHERE playlist_id = $1', [playlist_id])
+                await pool.query('UPDATE playlist SET total_duration = total_duration - $2, num_of_songs = num_of_songs - 1, last_updated_stamp = current_timestamp WHERE playlist_id = $1', [playlist_id, duration])
                 y += 1
             }
-            var delSongaddedtoPlaylist = await pool.query('DELETE FROM song_added_to_playlist WHERE song_id = $1', [song_id])
+            await pool.query('DELETE FROM song_added_to_playlist WHERE song_id = $1', [song_id])
             // Xóa rating, comment của bài hát trong artist cần xóa
-            var delRating = await pool.query('DELETE FROM rating WHERE song_id = $1', [song_id])
-            var delComment = await pool.query('DELETE FROM comment WHERE song_id = $1', [song_id])
+            await pool.query('DELETE FROM rating WHERE song_id = $1', [song_id])
+            await pool.query('DELETE FROM comment WHERE song_id = $1', [song_id])
             x += 1
         }
         // Xóa các bài hát có artist_id
-        var delSong = await pool.query('DELETE FROM song WHERE artist_id = $1', [artist_id])
+        await pool.query('DELETE FROM song WHERE artist_id = $1', [artist_id])
         // Xóa các album có artist_id
-        var delAlbum = await pool.query('DELETE FROM album WHERE artist_id = $1', [artist_id])
+        await pool.query('DELETE FROM album WHERE artist_id = $1', [artist_id])
         var client = await pool.query('SELECT client_id FROM artist_favorite WHERE artist_id = $1', [artist_id])
         // Xóa artist_favorite có artist_id
-        var delArtistFavorite = await pool.query('DELETE FROM artist_favorite WHERE artist_id = $1', [artist_id])
+        await pool.query('DELETE FROM artist_favorite WHERE artist_id = $1', [artist_id])
         // Cập nhật num_artist_favorite của các client
         var x = 0;
         while(x < client.rowCount) {
-            var update = await pool.query('UPDATE client SET num_artist_favorite = (SELECT COUNT(artist_id) FROM artist_favorite WHERE client_id = $1), last_updated_stamp = current_timestamp WHERE client_id = $1', [client.rows[0].client_id])
+            await pool.query('UPDATE client SET num_artist_favorite = num_artist_favorite - 1 WHERE client_id = $1), last_updated_stamp = current_timestamp WHERE client_id = $1', [client.rows[0].client_id])
+            await pool.query('UPDATE account SET last_updated_stamp = current_timestamp WHERE account_id = (SELECT account_id FROM client WHERE client_id = $1 LIMIT 1)', [client.rows[0].client_id])
             x += 1
         }    
         // Xóa artist
@@ -116,9 +119,7 @@ export const post_updateArtist = async (req, res) => {
     var {artist_id, artist_name, artist_image, birth_date, artist_info} = req.body
     try {
         var old_db = await pool.query('SELECT * FROM artist WHERE artist_id = $1', [artist_id])
-        if(old_db.rowCount == 0) {
-            res.status(500).send({message: 'Artist does not exist'})
-        }
+        if(old_db.rowCount == 0) res.status(500).send({message: 'Artist does not exist'})
         else {
             if(artist_name == '') artist_name = old_db.rows[0].artist_name
             if(artist_image == '') artist_image = old_db.rows[0].artist_image
@@ -127,7 +128,7 @@ export const post_updateArtist = async (req, res) => {
             var artistname_db = await pool.query('SELECT artist_name FROM artist WHERE artist_name = $1', [artist_name])
             if(artistname_db.rowCount == 0 || artist_name == old_db.rows[0].artist_name) {
                 var artist = pool.query('UPDATE artist SET artist_name = $2, artist_image = $3, birth_date = $4, artist_info = $5, last_updated_stamp = current_timestamp WHERE artist_id = $1', [artist_id, artist_name, artist_image, birth_date, artist_info])
-                if (artist) res.status(201).send({message: 'Artist updated'})
+                if (artist.rowCount) res.status(201).send({message: 'Artist updated'})
                 else res.status(500).send({message: 'Error in updating artist'})
             }
             else res.status(500).send({message: 'Artist name already exists'})

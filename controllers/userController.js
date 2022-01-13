@@ -28,11 +28,11 @@ export const post_Signup = async (req, res) => {
                                 VALUES(default, $1, $2, $3, \'client\', $4, $5, $6, $7, current_timestamp, default) RETURNING *', [user_name, current_password, avatar, full_name, birth_date,email, phone_number])
                             var client = await pool.query('INSERT INTO client(client_id, account_id, num_artist_favorite, num_playlist) VALUES (default, (SELECT account_id FROM account WHERE username = $1 LIMIT 1), 0, 0)', [user_name])
                             if(client.rowCount == 0) res.status(500).send({message: 'Error in adding new client'})
-                            if (user.rows[0] != null) {
+                            if (user.rowCount) {
                                 res.send({
                                     id: user.rows[0].account_id,
                                     user_name: user.rows[0].username,
-                                    isAdmin: (user.rows[0].user_role == 'admin'),
+                                    isAdmin: false,
                                     token: getToken(user)
                                 })
                             } else res.status(500).send({message: 'Error'});
