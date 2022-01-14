@@ -93,28 +93,4 @@ export const loginAdmin = async(req, res) => {
     res.send({message: 'Admin views'})
 }
 
-export const addArtistFavorite = async(req, res) => {
-    const {artist_id, client_id} = req.body
-    const favorite = await pool.query('INSERT INTO artist_favorite(client_id, artist_id, last_updated_stamp, created_stamp) VALUES ($1, $2, current_timestamp, default)', [client_id, artist_id])
-    if(favorite) {
-        res.status(201).send({message: 'Add artist favorite successful'})
-        const updateNum = await pool.query('UPDATE client SET num_artist_favorite = (SELECT COUNT artist_id FROM artist_favorite WHERE client_id = $1)', [client_id])
-        if(updateNum) res.status(201).send({message: 'Update number of artist favorite successful'})
-        else res.status(500).send({message: 'Error in updating number of artist favorite'})
-    }
-    else res.status(500).send({message: 'Error in adding artist'})
-}
-
-export const deleteArtistFavorite = async(req, res) => {
-    const {artist_id, client_id} = req.body
-    const favorite = await pool.query('DELETE FROM artist_favorite WHERE client_id = $1 and artist_id = $2)', [client_id, artist_id])
-    if(favorite) {
-        res.status(201).send({message: 'Delete artist favorite successful'})
-        const updateNum = await pool.query('UPDATE account, client SET num_artist_favorite = (SELECT COUNT artist_id FROM artist_favorite WHERE client_id = $1), last_updated_timestamp = current_timestamp WHERE client.account_id = account.account_id', [client_id])
-        if(updateNum) res.status(201).send({message: 'Update number of artist favorite successful'})
-        else res.status(500).send({message: 'Error in updating number of artist favorite'})
-    }
-    else res.status(500).send({message: 'Error in deleting artist'})
-}
-
 export default router;

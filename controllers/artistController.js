@@ -1,6 +1,7 @@
 import express from 'express'
 import pg from 'pg'
 import config from '../config.js'
+import { getClient } from '../utils.js';
 const router = express.Router()
 const Pool = pg.Pool
 const pool = new Pool(config.POSTGRES_INFO)
@@ -136,6 +137,63 @@ export const post_updateArtist = async (req, res) => {
     } catch (err) {
         console.log(err.stack)
     }
+}
+
+export const getAllArtistFavorite = async(req, res) => {
+    const client_id = await getClient(req, res)
+    if(client_id == -1) res.status(500).send({message: 'You are admin'})
+    else
+        if(client_id) {
+            const artist = await pool.query('SELECT artist.* from artist, artist_favorite WHERE artist.artist_id = artist_favorite.artist_id and client_id = $1', [client_id])
+            if(artist.rowCount) res.send(artist.rows)
+            else res.status(500).send({message: 'Error in getting your favorite artist list'})
+        }
+}
+
+export const get_addArtistFavorite = async(req, res) => {
+    res.render('artistViews/addArtistFavorite')
+}
+export const post_addArtistFavorite = async(req, res) => {
+    const {artist_id} = req.body
+    const client_id = await getClient(req, res)
+    if(client_id == -1) res.status(500).send({message: 'You are admin'})
+    else
+        if(client_id) {
+            const artist = await pool.query('SELECT artist_id FROM artist_favorite WHERE client_id = $1 and artist_id = $2', [client_id, artist_id])
+            if(artist.rowCount) res.status(500).send({message: 'This artist has been added to your artist favorite list'})
+            else {
+                const favorite = await pool.query('INSERT INTO artist_favorite(client_id, artist_id, created_stamp) VALUES ($1, $2, default)', [client_id, artist_id])
+                const updateNum = await pool.query('UPDATE client SET num_artist_favorite = num_artist_favorite + 1 WHERE client_id = $1', [client_id])
+                if(favorite.rowCount) {
+                    if(updateNum.rowCount) res.status(201).send({message: 'Add artist favorite successful'})
+                    else res.status(500).send({message: 'Error in updating number of artist favorite'})
+                }
+                else res.status(500).send({message: 'Error in adding artist favorite'})
+            }
+        }
+}
+
+export const get_deleteArtistFavorite = async(req, res) => {
+    res.render('artistViews/delArtistFavorite')
+}
+export const post_deleteArtistFavorite = async(req, res) => {
+    const {artist_id} = req.body
+    const client_id = await getClient(req, res)
+    if(client_id == -1) res.status(500).send({message: 'You are admin'})
+    else
+        if(client_id) { 
+            const artist = await pool.query('SELECT artist_id FROM artist_favorite WHERE client_id = $1 and artist_id = $2', [client_id, artist_id])
+            if(artist.rowCount) {
+                const favorite = await pool.query('DELETE FROM artist_favorite WHERE client_id = $1 and artist_id = $2', [client_id, artist_id])
+                const updateNum = await pool.query('UPDATE client SET num_artist_favorite = num_artist_favorite - 1 WHERE client_id = $1', [client_id])
+                if(favorite) {
+                    if(updateNum) res.status(201).send({message: 'Delete artist favorite successful'})
+                    else res.status(500).send({message: 'Error in updating number of artist favorite'})
+                }
+            }
+            else res.status(500).send({message: 'This artist is not in your artist favorite list'})
+        } 
+        else res.status(500).send({message: 'Error in deleting artist'})
 }
 
 export default router;

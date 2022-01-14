@@ -1,7 +1,7 @@
 import express from 'express'
 import bodyParser from 'body-parser';
 import { checkAdmin, isAuth } from '../utils.js'
-import {getAllArtist, get_getArtistInfobyId, post_getArtistInfobyId, get_searchArtist, post_searchArtist, get_addNewArtist, post_addNewArtist, get_deleteArtist, post_deleteArtist, get_updateArtist, post_updateArtist} from '../controllers/artistController.js'
+import {getAllArtist,getAllArtistFavorite, get_addArtistFavorite, post_addArtistFavorite, get_deleteArtistFavorite, post_deleteArtistFavorite, get_getArtistInfobyId, post_getArtistInfobyId, get_searchArtist, post_searchArtist, get_addNewArtist, post_addNewArtist, get_deleteArtist, post_deleteArtist, get_updateArtist, post_updateArtist} from '../controllers/artistController.js'
 const router = express.Router();
 
 router.use(bodyParser.json())
@@ -23,5 +23,13 @@ router.post('/delete', isAuth, checkAdmin, post_deleteArtist);
 
 router.get('/update', isAuth, checkAdmin, get_updateArtist);
 router.post('/update', isAuth, checkAdmin, post_updateArtist);
+
+router.get('/getfavor', isAuth, getAllArtistFavorite);
+
+router.get('/addfavor', isAuth, get_addArtistFavorite);
+router.post('/addfavor', isAuth, post_addArtistFavorite);
+
+router.get('/deletefavor', isAuth, get_deleteArtistFavorite);
+router.post('/deletefavor', isAuth, post_deleteArtistFavorite);
 
 export default router;
