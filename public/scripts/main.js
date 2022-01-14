@@ -14,8 +14,10 @@ const songName = document.getElementById("songname");
 const artist = document.getElementById("artist");
 const songTime = document.getElementById("song-time");
 const playerCurrentTime = document.getElementById("current-time");
+const queueBtn = document.getElementById("queue-button");
 const loginBtn = document.getElementById("login");
 const homeBtn = document.getElementById("home");
+
 const app = {
     currentIndex: 0,
     isPlaying: false,
@@ -221,14 +223,22 @@ const app = {
         };
         loginBtn.onclick = function () {
             navigateTo('/login')
-            //history.pushState({}, 'login', 'login')
-            //document.getElementById('page-content').innerHTML = 'Login'
         }
 
         homeBtn.onclick = function () {
             navigateTo('/')
-            //history.pushState({}, 'Home', '/')
-            //document.getElementById('page-content').innerHTML = 'You are at homepage'
+        }
+        queueBtn.onclick = function () {
+            if(window.location.pathname === '/queue')
+            {
+                queueBtn.classList.remove('active')
+                window.history.back()
+            }
+            else
+            {
+                queueBtn.classList.add('active')
+                navigateTo('/queue')
+            }
         }
     },
 
@@ -298,12 +308,8 @@ app.start();
 
 //handle routing
 let root = document.getElementById('page-content');
-window.onload = () => {
-    //get root div for rendering
-   
-
+window.onload = () => {   
     let path = window.location.pathname;
-
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
         if(this.readyState == 4)
@@ -312,38 +318,15 @@ window.onload = () => {
             history.replaceState({ejs: this.responseText}, `${path}`, `${path}`)
         }
     }
-    xhttp.open("GET", `/ejs${path}`, true);
+    if(path == '/')
+        xhttp.open("GET", `/ejs/dashboard`, true);
+    else
+        xhttp.open("GET", `/ejs${path}`, true);
     xhttp.send();
-    
-    /*
-    fetch(`/ejs${path}`).then(function (response) {
-        // The API call was successful!
-        return response.text();
-    }).then(function (html) {
-        // This is the HTML from our response as a text string
-        console.log(html);
-        root.innerHTML = html;
-        history.replaceState({ejs: html}, `${path}`, `${path}`)
-    }).catch(function (err) {
-        // There was an error
-        console.warn('Something went wrong.', err);
-    });*/
 }
 
 function navigateTo(path)
 {
-    /*fetch(`/ejs${path}`).then(function (response) {
-        // The API call was successful!
-        return response.text();
-    }).then(function (html) {
-        // This is the HTML from our response as a text string
-        console.log(html);
-        root.innerHTML = html;
-        history.pushState({ejs: html}, `${path}`, `${path}`)
-    }).catch(function (err) {
-        // There was an error
-        console.warn('Something went wrong.', err);
-    });*/
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
         if(this.readyState == 4)
@@ -352,7 +335,10 @@ function navigateTo(path)
             history.pushState({ejs: this.responseText}, `${path}`, `${path}`)
         }
     }
-    xhttp.open("GET", `/ejs${path}`, true);
+    if(path == '/')
+        xhttp.open("GET", `/ejs/dashboard`, true);
+    else
+        xhttp.open("GET", `/ejs${path}`, true);
     xhttp.send();
 }
 
@@ -360,3 +346,6 @@ addEventListener('popstate', function (event) {
     //console.log(event.state.content); // this contains the state data from `pushState`. Use it to decide what to change the page back to.
     document.getElementById('page-content').innerHTML = event.state.ejs;
 })
+
+
+

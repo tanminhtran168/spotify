@@ -18,7 +18,7 @@ app.set('view engine','ejs');
 app.use(express.static('public'));
 
 //for frontend testing
-
+/*
 app.get("/ejs/login", (req, res) => {
 	res.sendFile(path.join(__dirname, 'views/userViews/login.ejs'))
 })
@@ -27,6 +27,17 @@ app.get("/ejs", (req, res) => {
 	res.sendFile(path.join(__dirname, 'views/dashboard.ejs'))
 })
 
+app.get("/ejs/queue", (req, res) => {
+	res.sendFile(path.join(__dirname, 'views/queue.ejs'))
+})
+
+app.get("/ejs/song", (req, res) => {
+	res.sendFile(path.join(__dirname, 'views/queue.ejs'))
+})
+*/
+app.get("/ejs/:filename", (req, res)=>{
+	res.sendFile(path.join(__dirname, `views/${req.params.filename}.ejs`));
+})
 app.get("/*", (req, res) => {
 	res.render('main');
 })
