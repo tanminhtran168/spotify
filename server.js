@@ -38,6 +38,10 @@ app.get("/ejs/song", (req, res) => {
 app.get("/ejs/:filename", (req, res)=>{
 	res.sendFile(path.join(__dirname, `views/${req.params.filename}.ejs`));
 })
+app.get("/login", (req, res) => {
+	res.render('login');
+})
+
 app.get("/*", (req, res) => {
 	res.render('main');
 })
