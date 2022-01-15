@@ -22,6 +22,18 @@ export const post_Signup = async (req, res) => {
                 if(current_password == confirm_password) {
                     var email_db = await pool.query('SELECT email FROM account WHERE email = $1', [email])
                     if(email_db.rowCount == 0) {
+                        if(phone_number.length > 13 || phone_number.length < 7) {
+                            res.status(500).send({message: 'You have typed wrong phone number'})
+                            return
+                        }
+                        var x = 0
+                        while(x < phone_number.length) {
+                            if(phone_number[x] > '9' || phone_number[x] < 0) {
+                                res.status(500).send({message: 'You have typed wrong phone number'})
+                                return
+                            }
+                            x += 1
+                        }
                         var phone_db = await pool.query('SELECT phone_number FROM account WHERE phone_number = $1', [phone_number])
                         if(phone_db.rowCount == 0) {
                             var user = await pool.query('INSERT INTO account(account_id, username, current_password, avatar, user_role, full_name, birth_date, email, phone_number, last_updated_stamp, created_stamp) \

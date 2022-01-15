@@ -23,7 +23,7 @@ router.post('/add', isAuth, checkAdmin, post_addNewAccount);
 router.get('/delete', isAuth, checkAdmin, get_deleteAccount);
 router.post('/delete', isAuth, checkAdmin, post_deleteAccount);
 
-router.get('/update', isAuth, checkAdmin, get_updateAccount);
-router.post('/update', isAuth, checkAdmin, post_updateAccount);
+router.get('/update', isAuth, get_updateAccount);
+router.post('/update', isAuth, post_updateAccount);
 
 export default router;
