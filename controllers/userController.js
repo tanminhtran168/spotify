@@ -20,6 +20,12 @@ export const post_Signup = async (req, res) => {
             var username_db = await pool.query('SELECT username FROM account WHERE username = $1', [user_name])
             if(username_db.rowCount == 0) {
                 if(current_password == confirm_password) {
+                    var now = new Date()
+                    var birth = new Date(birth_date)
+                    if(now.getTime() < birth.getTime()) {
+                        res.status(500).send({message: 'Your birthday must be earlier than today'})
+                        return
+                    }
                     var email_db = await pool.query('SELECT email FROM account WHERE email = $1', [email])
                     if(email_db.rowCount == 0) {
                         if(phone_number.length > 13 || phone_number.length < 7) {

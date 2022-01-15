@@ -3,6 +3,7 @@ import pg from 'pg'
 import jwt from 'jsonwebtoken'
 import config from '../config.js'
 import { getClient } from '../utils.js'
+import { get_editComment } from './commentController.js'
 const router = express.Router()
 const Pool = pg.Pool
 const pool = new Pool(config.POSTGRES_INFO)
@@ -69,6 +70,12 @@ export const post_addNewAccount = async (req, res) => {
             var username_db = await pool.query('SELECT username FROM account WHERE username = $1', [user_name])
             if(username_db.rowCount == 0) {
                 if(current_password == confirm_password) {
+                    var now = new Date()
+                    var birth = new Date(birth_date)
+                    if(now.getTime() < birth.getTime()) {
+                        res.status(500).send({message: 'Your birthday must be earlier than today'})
+                        return
+                    }
                     var email_db = await pool.query('SELECT email FROM account WHERE email = $1', [email])
                     if(email_db.rowCount == 0) {
                         if(phone_number.length > 13 || phone_number.length < 7) {
@@ -160,6 +167,12 @@ export const post_updateAccount = async (req, res) => {
                     var username_db = await pool.query('SELECT username FROM account WHERE username = $1', [user_name])
                     if(username_db.rowCount == 0 || user_name == old_db.rows[0].username) {
                         if(new_password == confirm_new_password) {
+                            var now = new Date()
+                            var birth = new Date(birth_date)
+                            if(now.getTime() < birth.getTime()) {
+                                res.status(500).send({message: 'Your birthday must be earlier than today'})
+                                return
+                            }
                             var email_db = await pool.query('SELECT email FROM account WHERE email = $1', [email])
                             if(email_db.rowCount == 0 || email == old_db.rows[0].email) {
                                 if(phone_number.length > 13 || phone_number.length < 7) {
