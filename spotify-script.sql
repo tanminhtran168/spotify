@@ -163,7 +163,7 @@ INSERT INTO album(album_id, artist_id, album_name, album_image, album_info, num_
             VALUES(default, 2, 'Songs', '', 'Nhac nhe', 1, 100, current_timestamp, default);
            
 INSERT INTO song(song_id, artist_id, album_id, song_name, song_image, song_info, song_link, category, duration, sum_rate, num_of_ratings, num_of_comments, last_updated_stamp, created_stamp) 
-            VALUES(default, 1, 1, 'Toi yeu CHL', '', 'Nhac CHL', '', 'Nhac viet', 100, 4, 1, 1, current_timestamp, default);
+            VALUES(default, 1, 1, 'Toi yeu CHL', '', 'Nhac CHL', '/tracks/track.flac', 'Nhac viet', 100, 4, 1, 1, current_timestamp, default);
 INSERT INTO song(song_id, artist_id, album_id, song_name, song_image, song_info, song_link, category, duration, sum_rate, num_of_ratings, num_of_comments, last_updated_stamp, created_stamp) 
             VALUES(default, 1, 1, 'Cur rap song', '', 'Nhac VN', '', 'Nhac My', 300, 8, 2, 1, current_timestamp, default);
 INSERT INTO song(song_id, artist_id, album_id, song_name, song_image, song_info, song_link, category, duration, sum_rate, num_of_ratings, num_of_comments, last_updated_stamp, created_stamp) 
@@ -225,7 +225,6 @@ select * from song  ;
 select * from song_added_to_playlist  ;
 select * from rating ;
 select * from comment;
-
 
 drop table artist_favored, rating, client, comment, playlist, song_added_to_playlist, song,album ,artist, account, admin;
 drop table account, client, artist, album, song, song_added_to_playlist, playlist, comment, rating , artist_favorite ;

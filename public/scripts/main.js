@@ -29,6 +29,12 @@ const getCookie = (cname) => {
     }
     return "";
   };
+function convertIntToTimeString (x){
+    if(Math.floor(x%60) < 10)
+        return Math.floor(x/60) + ":0" + Math.floor(x%60);
+    else
+        return Math.floor(x/60) +":" + Math.floor(x%60);
+}
 
 const app = {
     currentIndex: 0,
@@ -39,21 +45,21 @@ const app = {
     config: {},
     currentVolume: 100,
     songs: [
-        {
+        /*{
             name: "Damn",
-            singer: "Raftaar x kr$na",
+            artist: "Raftaar x kr$na",
             path: "https://mp3.filmisongs.com/go.php?id=Damn%20Song%20Raftaar%20Ft%20KrSNa.mp3",
             image: "https://filmisongs.xyz/wp-content/uploads/2020/07/Damn-Song-Raftaar-KrNa.jpg"
         },
-        {
+        */{
             name: "Du mua thoi roi",
-            singer: "kr$na",
+            artist: "kr$na",
             path: "https://tainhac123.com/listen/du-mua-thoi-roi-thuy-chi.j3awUEpymF4A.html",
             image: "https://hololive.hololivepro.com/wp-content/uploads/2021/09/%E6%98%9F%E8%A1%97%E3%81%99%E3%81%84%E3%81%9B%E3%81%84_Still-Still-Stellar_jk-1000x1000.png"
         },
         {
             name: "Du mua thoi roi",
-            singer: "kr$na",
+            artist: "kr$na",
             path: "https://tainhac123.com/listen/du-mua-thoi-roi-thuy-chi.j3awUEpymF4A.html",
             image: "https://images.unsplash.com/photo-1587410131477-f01b22c59e1c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80",
         },
@@ -112,10 +118,7 @@ const app = {
         progress.oninput = function (e) {
             if (audio.duration)
                 progress.style.background = 'linear-gradient(to right, #4AB1BB 0%, #4AB1BB ' + Math.ceil(e.target.value/audio.duration*100) + '%, #244659 ' + Math.ceil(e.target.value/audio.duration*100) + '%, #244659 100%)';
-            if(Math.floor(e.target.value%60) < 10)
-                playerCurrentTime.innerHTML = Math.floor(e.target.value/60) + ":0" + Math.floor(e.target.value%60);
-            else
-                playerCurrentTime.innerHTML = Math.floor(e.target.value/60) + ':' + Math.floor(e.target.value%60);
+            playerCurrentTime.innerHTML = convertIntToTimeString(e.target.value);
         };
         
         // Khi tiến độ bài hát thay đổi
@@ -126,10 +129,7 @@ const app = {
             if(!(progress === document.activeElement))
             {
                 progress.value = Math.floor(audio.currentTime);
-                if(Math.floor(audio.currentTime%60) < 10)
-                     playerCurrentTime.innerHTML = Math.floor(audio.currentTime/60) + ":0" + Math.floor(audio.currentTime%60);
-                else
-                    playerCurrentTime.innerHTML = Math.floor(audio.currentTime/60) + ':' + Math.floor(audio.currentTime%60);
+                playerCurrentTime.innerHTML = convertIntToTimeString(audio.currentTime);
             }
             
         };
@@ -186,7 +186,7 @@ const app = {
 
         // Update song duration when changed
         audio.ondurationchange = function () {
-            songTime.innerHTML = Math.floor(audio.duration/60) +":" + Math.floor(audio.duration%60); 
+            songTime.innerHTML = convertIntToTimeString(audio.duration)
             playerCurrentTime.innerHTML = "0:00";
             progress.setAttribute("max",audio.duration);
         };
@@ -246,8 +246,109 @@ const app = {
             else
             {
                 document.getElementById("queue-button").classList.add('active')
-                navigateTo('/queue')
+                navigateTo('/queue', ()=> {
+                    for(var i=0; i<_this.songs.length; ++i)
+                    {
+                        var div = document.createElement("div");
+                        div.className = "list-item-song"
+                        //div.setAttribute("onclick", `goToSong(${parsedJSON[i].song_id})`)
+                        //div.setAttribute("ondblclick", ``)
+                        div.innerHTML = `
+                        <img class="list-song-cover" src="${_this.songs[i].image}">
+                        <div class="list-song-title">${_this.songs[i].name}</div>
+                        <div class="list-song-artist">${_this.songs[i].artist}</div>
+                        <div class="list-song-album">${_this.songs[i].album}</div>
+                        <div class="list-song-duration">${convertIntToTimeString(_this.songs[i].duration)}</div>
+                        <div class="list-song-options">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </div>`;
+                        document.getElementById("queue").appendChild(div);
+                    }
+                })
             }
+        }
+        document.getElementById("search-button").onclick = function(){
+            navigateTo('/search' , ()=>
+            {
+                var searchInput = document.getElementById("search-box-input").value;
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {
+                    if(this.readyState == 4)
+                    {
+                        let songRes = document.getElementById("Songs-result");
+                        var res = this.responseText;
+                        var parsedJSON = JSON.parse(res);
+                        for (var i=0;i<parsedJSON.length;i++) {
+                            var div = document.createElement("div");
+                            div.className = "list-item-song"
+                            div.setAttribute("ondblclick", `goToSong(${parsedJSON[i].song_id})`)
+                            div.setAttribute("onclick", `playSong(${parsedJSON[i].song_id})`)
+                            div.innerHTML = 
+                            `
+                                <img class="list-song-cover" src="../images/album.png">
+                                <div class="list-song-title">${parsedJSON[i].song_name}</div>
+                                <div class="list-song-artist">${parsedJSON[i].artist_name}</div>
+                                <div class="list-song-album">${parsedJSON[i].album_name}</div>
+                                <div class="list-song-duration">${convertIntToTimeString(parsedJSON[i].duration)}</div>
+                                <div class="list-song-options">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </div>`;
+                            songRes.appendChild(div);
+                        }
+                    }
+                }
+                
+                xhttp.open("POST", `/song/search`, true);
+                xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                xhttp.send(`key_word=${searchInput}`);
+                
+                xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {
+                    if(this.readyState == 4)
+                    {
+                        let albumRes = document.getElementById("Albums-result-content");
+                        var res = this.responseText;
+                        var parsedJSON = JSON.parse(res);
+                        for (var i=0;i<parsedJSON.length;i++) {
+                            var div = document.createElement("div");
+                            div.className = "box-album"
+                            div.innerHTML = 
+                            `
+                            <img class="box-album-cover" src="../images/album.png">
+                            <div class="box-album-title">${parsedJSON[i].album_name}</div>
+                            <div class="box-album-artist">${parsedJSON[i].artist_name}</div>`;
+                            albumRes.appendChild(div);
+                        }
+                    }
+                }
+                
+                xhttp.open("POST", `/album/search`, true);
+                xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                xhttp.send(`key_word=${searchInput}`);
+
+                xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {
+                    if(this.readyState == 4)
+                    {
+                        let artistRes = document.getElementById("Artists-result-content");
+                        var res = this.responseText;
+                        var parsedJSON = JSON.parse(res);
+                        for (var i=0;i<parsedJSON.length;i++) {
+                            var div = document.createElement("div");
+                            div.className = "box-artist"
+                            div.innerHTML = 
+                            `
+                            <img class="box-artist-cover" src="../images/album.png">
+                            <div class="box-artist-name">${parsedJSON[i].artist_name}</div>`;
+                            artistRes.appendChild(div);
+                        }
+                    }
+                }
+                
+                xhttp.open("POST", `/artist/search`, true);
+                xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                xhttp.send(`key_word=${searchInput}`);
+            })
         }
     },
 
@@ -255,10 +356,9 @@ const app = {
     loadCurrentSong: function () {
         audio.src = this.currentSong.path;
         songName.innerText=this.currentSong.name;
-        artist.innerText=this.currentSong.singer;
+        artist.innerText=this.currentSong.artist;
         albumImage.src=this.currentSong.image;
         progress.value=0;
-        console.log(this.currentSong.name);
     },
     loadConfig: function () {
         // console.log(audio.volume);
@@ -288,6 +388,7 @@ const app = {
         this.currentIndex = newIndex;
         this.loadCurrentSong();
     },
+    
     start: function () {
         // Gán cấu hình từ config vào ứng dụng
         // Assign configuration from config to application
@@ -362,7 +463,7 @@ window.onload = () => {
     xhttp.send();
 }
 
-function navigateTo(path)
+function navigateTo(path, callback = null)
 {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
@@ -370,6 +471,10 @@ function navigateTo(path)
         {
             root.innerHTML = this.responseText;
             history.pushState({ejs: this.responseText}, `${path}`, `${path}`)
+            if(callback)
+            {
+                callback();
+            }
         }
     }
     if(path == '/')
@@ -412,5 +517,81 @@ function openTab(evt, tabName) {
     evt.currentTarget.className += " active";
   }
 
+function goToSong(id){
+    navigateTo('/song', () => {
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if(this.readyState == 4)
+            {
+                var res = this.responseText;
+                var parsedJSON = JSON.parse(res);
+                document.getElementById("song-title").innerHTML = parsedJSON[0].song_name;
+                document.getElementById("song-artist").innerHTML = parsedJSON[0].artist_name;
+                document.getElementById("song-album").innerHTML = parsedJSON[0].album_name;
+                document.getElementById("song-rating").innerHTML = Math.floor(parsedJSON[0].sum_rate/ parsedJSON[0].num_of_ratings);
+                document.getElementById("song-category").innerHTML = parsedJSON[0].category;
+                document.getElementById("song-details-info").innerHTML = parsedJSON[0].song_info;
+            }
+        }
+        
+        xhttp.open("POST", `/song/get`, true);
+        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhttp.send(`song_id=${id}`);
+
+        xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if(this.readyState == 4)
+            {
+                var res = this.responseText;
+                var parsedJSON = JSON.parse(res);
+                divRes = document.getElementById("comments");
+                for (var i=0;i<parsedJSON.length;i++) {
+                    var div = document.createElement("div");
+                    div.className = "comment"
+                    div.innerHTML = 
+                    `
+                        <img class="comment-user-avatar" src="../images/eguitar.jpg">
+                        <div class="comment-text">
+                            <h1>User2</h1>
+                            <p>${parsedJSON[i].comment_content}</p>
+                        </div>`;
+                    divRes.appendChild(div);
+                }
+            }
+        }
+        
+        xhttp.open("POST", `/comment/get`, true);
+        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhttp.send(`song_id=${id}`);
+    })
+}
 
 
+function playSong(id){
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if(this.readyState == 4)
+        {
+            var res = this.responseText;
+            var parsedJSON = JSON.parse(res);
+            app.songs.push(
+                {
+                    songid: id,
+                    name: parsedJSON[0].song_name,
+                    artist: parsedJSON[0].artist_name,
+                    path: parsedJSON[0].song_link,
+                    image: parsedJSON[0].song_image,
+                    album: parsedJSON[0].album_name,
+                    duration: parsedJSON[0].duration
+                },
+            );
+            app.currentIndex = app.songs.length - 1;
+            app.loadCurrentSong();
+            audio.play();
+        }
+    }
+    xhttp.open("POST", `/song/get`, true);
+    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.send(`song_id=${id}`);
+
+}
