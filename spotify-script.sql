@@ -227,6 +227,6 @@ select * from rating ;
 select * from comment;
 
 
-drop table artist_favored, rating, client, comment, playlist, song_added_to_playlist, song,album ,artist, account, admin
-drop table account, client, artist, album, song, song_added_to_playlist, playlist, comment, rating , artist_favorite 
+drop table artist_favored, rating, client, comment, playlist, song_added_to_playlist, song,album ,artist, account, admin;
+drop table account, client, artist, album, song, song_added_to_playlist, playlist, comment, rating , artist_favorite ;
 

@@ -167,7 +167,9 @@ input[type=range]:hover::-webkit-slider-thumb{
     margin-left: 5px;
     margin-right: 5px;
 }
-
+#queue-button.active{
+    color: #4AB1BB;
+}
 #volume{
     background: #4AB1BB;
     margin-left: 10px;
@@ -236,11 +238,6 @@ input[type=range]:hover::-webkit-slider-thumb{
     display: block;
     margin-top: 80px;
     color: white;
-    /*background-image: linear-gradient(0deg, rgba(0,0,0,1) 70%, rgba(0,0,0,0.7) 85%, rgba(255,255,255,0) 100%), url("../images/eguitar.jpg");
-    background-repeat: no-repeat;
-    background-size:    contain;
-    object-fit: cover;
-    */
 }
 
 #welcome-message {
@@ -562,8 +559,9 @@ hr {
     left:0;
     width: 100%;
     max-height: 1000px;
-    filter: blur(16px);
+    filter: blur(16px) brightness(50%);
     object-fit: cover;
+    z-index: -1;
 }
 #song-box {
     display: flex;
@@ -833,8 +831,7 @@ hr {
 #login-box > button{
     width: 100%;
     border-radius: 100px;
-    border: none;
-    background-color: #4AB1BB;
+    
     color: #FFFFFF;
     height: 40px;
     font-family: "Poppins";
@@ -843,6 +840,14 @@ hr {
     margin-top: 20px;
     margin-bottom: 20px;
 }
+#login-submit, #signup-submit{
+    border: none;
+    background-color: #4AB1BB;
+}
+#login-redirect, #signup-redirect{
+    background-color: transparent;
+    border: solid 1px #FFFFFF;
+}
 #login-box > form{
     width: 100%;
 }
@@ -850,27 +855,35 @@ hr {
     margin-top: 10px;
     margin-bottom: 10px;
 }
-.label{
+label{
     height: 20px;
     margin-left: 20px;
     margin-bottom: 10px;
     color: #797979;
 }
+.input-field:focus-within > label{
+    color: #4AB1BB;
+}
 .input-field > input{
     width: 100%;
     border-radius: 100px;
-    border-style: solid;
-    border-color: #C2C2C2;
+    border: solid #C2C2C2 2px;
     background-color: #101214;
     color: #FFFFFF;
     padding-left: 25px;
     padding-right: 25px;
     box-sizing: border-box;
-    font-family: "Poppins";
+    font-family: "Roboto";
     font-size: 15px;
-    font-weight: 400;
     height: 50px;
 }
+.input-field > input:focus{
+    transition: 0.5s;
+    border: solid #4AB1BB 2px;
+    outline: #4AB1BB;
+    color: #FFFFFF;
+}
+
 .login-header{
     font-size: 30px;
     margin: 10px auto;
@@ -879,4 +892,33 @@ hr {
 }
 .filler{
     flex: 1 1 auto;
+}
+#search-result-box{
+    margin-top: 200px;
+}
+#search-result-box > hr {
+    margin-top: 0px;
+    margin-bottom: 2px;
+}
+.tab{
+    display: none;
+}
+#tab-bar{
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+}
+.tab-bar-button{
+    background: none;
+    border: none;
+    color: #FFFFFF;
+    font-family: "Poppins";
+    font-size: 13px;
+    font-weight: 400;
+}
+.tab-bar-button:hover{
+    background: #202427;
+}
+.tab-bar-button.active{
+    border-bottom: solid 2px #4AB1BB;
 }

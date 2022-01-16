@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sign up</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="styles/styles.css" type="text/css" rel="stylesheet">
+    <link rel="shortcut icon" href="#">
+    <script src="https://kit.fontawesome.com/5b0c22fb92.js" crossorigin="anonymous"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
+    
+</head>
+
+<body>
+    <img id="background-image" src="../images/eguitar.jpg">
+    <div id="login-box">        
+        <div class="login-header">
+            Register
+        </div>
+        <form action="signup" method="post">
+            <div id="username-field" class="input-field">
+                <label for="username" class="label">Username</label>
+                <input type="text" name="username">
+            </div>
+            <div id="email-field" class="input-field">
+                <label class="label">Email</label>
+                <input type="text" name="Username">
+            </div>
+            <div id="password-field" class="input-field">
+                <label class="label">Password</label>
+                <input id="password-input" type="password" name="password">
+            </div>
+            <div id="input-field" class="input-field">
+                <label class="label">Your name</label>
+                <input type="text" name="fullname">
+            </div>
+            <div id="phone-field" class="input-field">
+                <label class="label">Phone</label>
+                <input type="text" name="phonenumber">
+            </div>
+            <div id="phone-field" class="input-field">
+                <label class="label">Birthday</label>
+                <input type="date" name="birth_date">
+            </div>
+        </form>
+        <button type="submit" id="signup-submit">Sign up</button>
+        <hr style="width: 100%;">
+        <div class="login-header">
+            Already have an account?
+        </div>
+        <button id="login-redirect">
+            Login
+        </button>
+    </div>
+    
+</body>
+
+</html>

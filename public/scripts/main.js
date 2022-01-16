@@ -14,9 +14,6 @@ const songName = document.getElementById("songname");
 const artist = document.getElementById("artist");
 const songTime = document.getElementById("song-time");
 const playerCurrentTime = document.getElementById("current-time");
-const queueBtn = document.getElementById("queue-button");
-const loginBtn = document.getElementById("login");
-const homeBtn = document.getElementById("home");
 
 const app = {
     currentIndex: 0,
@@ -221,22 +218,26 @@ const app = {
             }
             
         };
-        loginBtn.onclick = function () {
-            navigateTo('/login')
+        document.getElementById("login").onclick = function () {
+            document.location = "/login";
         }
 
-        homeBtn.onclick = function () {
+        document.getElementById("signup").onclick = function () {
+            document.location = "/signup";
+        }
+
+        document.getElementById("home").onclick = function () {
             navigateTo('/')
         }
-        queueBtn.onclick = function () {
+        document.getElementById("queue-button").onclick = function () {
             if(window.location.pathname === '/queue')
             {
-                queueBtn.classList.remove('active')
+                document.getElementById("queue-button").classList.remove('active')
                 window.history.back()
             }
             else
             {
-                queueBtn.classList.add('active')
+                document.getElementById("queue-button").classList.add('active')
                 navigateTo('/queue')
             }
         }
@@ -346,6 +347,20 @@ addEventListener('popstate', function (event) {
     //console.log(event.state.content); // this contains the state data from `pushState`. Use it to decide what to change the page back to.
     document.getElementById('page-content').innerHTML = event.state.ejs;
 })
+
+function openTab(evt, tabName) {
+    var i, x, tablinks;
+    x = document.getElementsByClassName("tab");
+    for (i = 0; i < x.length; i++) {
+      x[i].style.display = "none";
+    }
+    tablinks = document.getElementsByClassName("tab-bar-button");
+    for (i = 0; i < x.length; i++) {
+      tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+    document.getElementById(`${tabName}-result`).style.display= "block";
+    evt.currentTarget.className += " active";
+  }
 
 
 

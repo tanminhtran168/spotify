@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Homepage</title>
+    <title>Login</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="styles/styles.css" type="text/css" rel="stylesheet">
     <link rel="shortcut icon" href="#">
     <script src="https://kit.fontawesome.com/5b0c22fb92.js" crossorigin="anonymous"></script>
-    
 </head>
 
 <body>
@@ -18,25 +17,25 @@
         </div>
         <form action="login" method="post">
             <div id="username-field" class="input-field">
-                <div class="label">Username</div>
-                <input type="text" name="Username">
+                <label class="label">Username</label>
+                <input id="username-input" type="text" name="Username">
             </div>
             <div id="password-field" class="input-field">
-                <div class="label">Password</div>
-                <input type="password" name="password">
+                <label class="label">Password</label>
+                <input id="password-input" type="password" name="password">
             </div>
             
         </form>
-        <button type="submit">Login</button>
+        <button type="submit" id="login-submit">Login</button>
         <hr style="width: 100%;">
         <div class="login-header">
             Don't have an account?
         </div>
-        <button>
+        <button id="signup-redirect">
             Sign up
         </button>
     </div>
-    
+    <script src="./scripts/login.js"></script>
 </body>
 
 </html>

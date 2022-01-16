@@ -9,6 +9,8 @@ import cookieParser from 'cookie-parser';
 import rating from './routes/ratingRouter.js'
 import comment from './routes/commentRouter.js'
 import path from 'path'
+import {get_Signup, post_Signup, get_Login, post_Login, loginAdmin, get_logout, post_logout} from './controllers/userController.js'
+import bodyParser from 'body-parser'
 const app = express();
 const __dirname = path.resolve(path.dirname(''));
 app.use(cookieParser())
@@ -17,38 +19,10 @@ app.set('views','views');
 app.set('view engine','ejs');
 app.use(express.static('public'));
 
-//for frontend testing
-/*
-app.get("/ejs/login", (req, res) => {
-	res.sendFile(path.join(__dirname, 'views/userViews/login.ejs'))
-})
+app.use(bodyParser.json()); // support json encoded bodies
+app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
-app.get("/ejs", (req, res) => {
-	res.sendFile(path.join(__dirname, 'views/dashboard.ejs'))
-})
-
-app.get("/ejs/queue", (req, res) => {
-	res.sendFile(path.join(__dirname, 'views/queue.ejs'))
-})
-
-app.get("/ejs/song", (req, res) => {
-	res.sendFile(path.join(__dirname, 'views/queue.ejs'))
-})
-*/
-app.get("/ejs/:filename", (req, res)=>{
-	res.sendFile(path.join(__dirname, `views/${req.params.filename}.ejs`));
-})
-app.get("/login", (req, res) => {
-	res.render('login');
-})
-
-app.get("/*", (req, res) => {
-	res.render('main');
-})
-
-
-
-app.use("/", user);
+app.use("/user/", user);
 app.use("/account", account);
 app.use("/artist", artist);
 app.use("/song", song);
@@ -56,5 +30,18 @@ app.use("/playlist", playlist);
 app.use("/album", album);
 app.use("/rating", rating);
 app.use("/comment", comment);
+app.get("/ejs/:filename", (req, res)=>{
+	res.sendFile(path.join(__dirname, `views/${req.params.filename}.ejs`));
+})
+app.get("/login", (req, res) => {
+	res.render('login');
+})
+app.get("/signup", (req, res) => {
+	res.render('signup');
+})
+app.get("/*", (req, res) => {
+	res.render('main');
+})
+
 
 app.listen(5000, () => { console.log("Server started at http://localhost:5000")});
