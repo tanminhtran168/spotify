@@ -18,7 +18,12 @@ body{
     box-shadow: 0px 5px 5px #000000;
     z-index: 9999;
 }
-
+#account-header-box{
+    margin-left: auto;
+    height: 100%;
+    display: flex;
+    width: 20%;
+}
 .header-button{
     background-color: transparent;
     border: none;
@@ -33,15 +38,47 @@ body{
     color: #4AB1BB;
 }
 
-#login, #signup{
-    float: right;
+#login, #signup {
+    width: 50%;
+}
+#logout{
+    width: 40%;
+    margin-left: auto;
+}
+#account-header{
+    display: flex;
+    width: 60%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+#account-head-name{
+    margin-top: auto;
+    margin-bottom: auto;
+    width: auto;
+    line-height: 14px;
+    font-size: 14px;
+}
+#header-avatar{
+    height: 60%;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+.avatar{
+    border-radius: 50%;
+    aspect-ratio: 1/1;
+    border: none;
+    background-color: transparent;
 }
 #search-box{
     display: flex;
     width: 40%;
     height: 40px;
-    margin: auto;
-    float: left;
+    margin-left: 20%;
+    margin-right: 10%;
+    margin-top: auto;
+    margin-bottom: auto;
     background-color: transparent;
 }
 #search-box > input {
@@ -562,6 +599,7 @@ hr {
     filter: blur(16px) brightness(50%);
     object-fit: cover;
     z-index: -1;
+    color: #040505;
 }
 #song-box {
     display: flex;
@@ -720,6 +758,7 @@ hr {
     max-width: 280px;
     min-width: 280px;
     aspect-ratio: 1/1;
+    color: #040505;
 }
 #album-box{
     display: block;

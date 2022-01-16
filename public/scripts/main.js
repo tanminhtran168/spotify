@@ -14,6 +14,21 @@ const songName = document.getElementById("songname");
 const artist = document.getElementById("artist");
 const songTime = document.getElementById("song-time");
 const playerCurrentTime = document.getElementById("current-time");
+const getCookie = (cname) => {
+    let name = cname + "=";
+    let decodedCookie = decodeURIComponent(document.cookie);
+    let ca = decodedCookie.split(';');
+    for(let i = 0; i <ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) == ' ') {
+        c = c.substring(1);
+      }
+      if (c.indexOf(name) == 0) {
+        return c.substring(name.length, c.length);
+      }
+    }
+    return "";
+  };
 
 const app = {
     currentIndex: 0,
@@ -218,13 +233,6 @@ const app = {
             }
             
         };
-        document.getElementById("login").onclick = function () {
-            document.location = "/login";
-        }
-
-        document.getElementById("signup").onclick = function () {
-            document.location = "/signup";
-        }
 
         document.getElementById("home").onclick = function () {
             navigateTo('/')
@@ -299,6 +307,34 @@ const app = {
 
         // Hiển thị trạng thái ban đầu của button repeat & random
         // Display the initial state of the repeat & random button
+        
+        if(getCookie("token"))
+        {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if(this.readyState == 4)
+                {
+                    var res = this.responseText;
+                    var Data = JSON.parse(res.substring(1,res.length - 1));
+                    document.getElementById("account-header-box").innerHTML = 
+                    `<button id="account-header" class="header-button">
+                        <img src="${Data.avatar}" alt="" id="header-avatar" class="avatar">
+                        <div id="account-head-name">${Data.full_name}</div>
+                    </button>
+                    <button id="logout" class="header-button" onclick="logout()">LOGOUT</button>`;
+                }
+            }
+            
+            xhttp.open("GET", `/account/mine`, true);
+            xhttp.send();
+            
+        }
+           
+        else
+            document.getElementById("account-header-box").innerHTML = 
+            `<button class="header-button" id="login" onclick="redirectTo('/login')">LOGIN</button>
+            <button class="header-button" id="signup" onclick="redirectTo('/signup')">SIGN UP</button>`
+            
         randomBtn.classList.toggle("active", this.isRandom);
         repeatBtn.classList.toggle("active", this.isRepeat);
     }
@@ -343,6 +379,20 @@ function navigateTo(path)
     xhttp.send();
 }
 
+function redirectTo(path){
+    window.location = path;
+}
+function logout(){
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if(this.readyState == 4)
+        {
+            location.reload()
+        }
+    }
+    xhttp.open("POST", `/user/logout`, true);
+    xhttp.send();
+}
 addEventListener('popstate', function (event) {
     //console.log(event.state.content); // this contains the state data from `pushState`. Use it to decide what to change the page back to.
     document.getElementById('page-content').innerHTML = event.state.ejs;

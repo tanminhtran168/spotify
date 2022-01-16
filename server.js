@@ -9,7 +9,6 @@ import cookieParser from 'cookie-parser';
 import rating from './routes/ratingRouter.js'
 import comment from './routes/commentRouter.js'
 import path from 'path'
-import {get_Signup, post_Signup, get_Login, post_Login, loginAdmin, get_logout, post_logout} from './controllers/userController.js'
 import bodyParser from 'body-parser'
 const app = express();
 const __dirname = path.resolve(path.dirname(''));
