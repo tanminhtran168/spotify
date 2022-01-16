@@ -1,7 +1,7 @@
 import express from 'express'
 import bodyParser from 'body-parser';
 import { isAuth } from '../utils.js'
-import {getAllRating, getAllMyRating, get_getSongRating, post_getSongRating, get_getAllRatingofSong, post_getAllRatingofSong, get_addNewRating, post_addNewRating, get_deleteRating, post_deleteRating} from '../controllers/ratingController.js'
+import {getAllRating, getAllMyRating, get_getSongRating, post_getSongRating, get_getAllRatingofSong, post_getAllRatingofSong, get_addNewRating, post_addNewRating, get_deleteRating, post_deleteRating, get_getSongbyRating, post_getSongbyRating} from '../controllers/ratingController.js'
 const router = express.Router();
 
 router.use(bodyParser.json())
@@ -22,5 +22,8 @@ router.post('/add', isAuth, post_addNewRating);
 
 router.get('/delete', isAuth, get_deleteRating);
 router.post('/delete', isAuth, post_deleteRating);
+
+router.get('/sort', get_getSongbyRating)
+router.post('/sort', post_getSongbyRating)
 
 export default router;

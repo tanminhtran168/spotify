@@ -52,6 +52,14 @@ export const post_addNewSong = async (req, res) => {
     else 
         try {
             duration = duration == '' ? 0 : duration;
+            var x = 0;
+            while(x < duration.length) {
+                if(duration[x] > '9' || duration[x] < '0') {
+                    res.status(500).send({message: 'You must type a number'})
+                    return
+                }
+                x += 1
+            }
             // Kiểm tra tên bài hát có trùng không
             var name = await pool.query('SELECT * FROM song WHERE song_name = $1', [song_name])
             // Nếu artist này chưa có song nào cùng song_name
@@ -142,6 +150,14 @@ export const post_updateSong = async (req, res) => {
                 if(song_info == '') song_info = old_db.rows[0].song_info
                 if(duration == '') duration = old_db.rows[0].duration
                 if(category == '') category = old_db.rows[0].category
+                var x = 0;
+                while(x < duration.length) {
+                    if(duration[x] > '9' || duration[x] < '0') {
+                        res.status(500).send({message: 'You must type a number'})
+                        return
+                    }
+                    x += 1
+                }
                 var songname_db = await pool.query('SELECT song_name FROM song WHERE song_name = $1', [song_name])
                 if(songname_db.rowCount == 0 || song_name == old_db.rows[0].song_name) {
                     var old_artist = await pool.query('SELECT * FROM artist WHERE artist_id = $1', [old_db.rows[0].artist_id])
