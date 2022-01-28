@@ -663,7 +663,8 @@ hr {
 }
 
 #comment-section{
-    display: block;
+    display: flex;
+    flex-direction: column;
     padding-left: 100px;
     padding-top: 80px;
 }
@@ -710,25 +711,25 @@ hr {
     color: #FFFFFF;
 }
 #comment-button, #comment-cancel{
-    float: right;
+    width: 100px;
     color: #FFFFFF;
     font-family: "Roboto";
     border: none;
     padding: 10px 10px 10px 10px;
     margin-top: 5px;
-    margin-left: 5px;
-    opacity: 0.7;;
+    
+    opacity: 0.7;
 }
 #comment-button:hover, #comment-cancel:hover{
     opacity: 1;
 }
 #comment-button{
     background-color: #4AB1BB;
-    visibility: hidden;
+    margin-left: 5px;
 }
 #comment-cancel{
     background-color: #202427;
-    visibility: hidden;
+    margin-left: auto;
 }
 #album-headings{
     margin-top: 300px;

@@ -4,6 +4,9 @@ const setCookie = (cname, cvalue, exdays) => {
     let expires = "expires="+ d.toUTCString();
     document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
   }
+function redirectTo(path){
+    window.location = path;
+}
 document.getElementById("login-submit").onclick = function () {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
