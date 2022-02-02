@@ -3,7 +3,6 @@ import pg from 'pg'
 import jwt from 'jsonwebtoken'
 import config from '../config.js'
 import { getClient } from '../utils.js'
-import { get_editComment } from './commentController.js'
 const router = express.Router()
 const Pool = pg.Pool
 const pool = new Pool(config.POSTGRES_INFO)
@@ -128,7 +127,7 @@ export const post_deleteAccount = async (req, res) => {
             await pool.query('DELETE FROM rating WHERE client_id = $1', [client.rows[0].client_id])
             await pool.query('DELETE FROM comment WHERE client_id = $1', [client.rows[0].client_id])
             await pool.query('DELETE FROM artist_favorite WHERE client_id = $1', [client.rows[0].client_id])
-            pool.query('DELETE FROM playlist WHERE client_id = $1', [client.rows[0].client_id])
+            await pool.query('DELETE FROM playlist WHERE client_id = $1', [client.rows[0].client_id])
             await pool.query('DELETE FROM client WHERE account_id = $1', [account_id])
         }
         var delAccount = await pool.query('DELETE FROM account WHERE account_id = $1', [account_id])    
@@ -181,7 +180,7 @@ export const post_updateAccount = async (req, res) => {
                                 }
                                 var x = 0
                                 while(x < phone_number.length) {
-                                    if(phone_number[x] > '9' || phone_number[x] < 0) {
+                                    if(phone_number[x] > '9' || phone_number[x] < '0') {
                                         res.status(500).send({message: 'You have typed wrong phone number'})
                                         return
                                     }

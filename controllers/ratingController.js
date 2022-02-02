@@ -104,4 +104,10 @@ export const post_getSongbyRating = async (req, res) => {
     res.send(song.rows)
 }
 
+export const getRatingsbyfilter = async (req, res) => {
+    const {rate} = req.body
+    const rating = await pool.query('SELECT * FROM rating WHERE rating = $1', [rate])
+    res.send(rating.rows)
+}
+
 export default router;

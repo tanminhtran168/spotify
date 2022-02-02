@@ -41,6 +41,17 @@ export const post_searchSong = async (req, res) => {
     }    
 }
 
+export const searchCategory = async (req, res) => {
+    var {key_word} = req.body
+    key_word = "%" + key_word +  "%"
+    try {
+        var song = await pool.query('SELECT DISTINCT category FROM song WHERE category LIKE keyword', [key_word])
+        res.send(song.rows)
+    } catch (err) {
+        console.log(err.stack)
+    }    
+}
+
 export const get_addNewSong = async (req, res) => {
     res.render('songViews/addNewSong')
 }
