@@ -25,7 +25,19 @@ document.getElementById("login-submit").onclick = function () {
             
         }
     }
-    xhttp.open("POST", `/user/login`, true);
+    var details = {
+        'user_name': document.getElementById("username-input").value,
+        'password': document.getElementById("password-input").value,
+    };
+    
+    var formBody = [];
+    for (var property in details) {
+      var encodedKey = encodeURIComponent(property);
+      var encodedValue = encodeURIComponent(details[property]);
+      formBody.push(encodedKey + "=" + encodedValue);
+    }
+    formBody = formBody.join("&");
+    xhttp.open("POST", `/login`, true);
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xhttp.send(`user_name=${document.getElementById("username-input").value}&password=${document.getElementById("password-input").value}`);
+    xhttp.send(formBody)
 }

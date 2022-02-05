@@ -1,7 +1,7 @@
 import express from 'express'
 import pg from 'pg'
 import config from '../config.js'
-import { getClient } from '../utils.js';
+import { getClient, convertIntToTimeString } from '../utils.js';
 const router = express.Router()
 const Pool = pg.Pool
 const pool = new Pool(config.POSTGRES_INFO)
@@ -22,7 +22,29 @@ export const getAllPlaylist = async (req, res) => {
 }
 
 export const get_getPlaylistbyId = async(req, res) => {
-    res.render('playlistViews/getInfobyId')
+    const playlist_id = req.params.playlistId
+    const client_id = await getClient(req, res)
+    const client = await pool.query('SELECT client_id FROM playlist WHERE playlist_id = $1', [playlist_id])
+    if(client_id == -1 || client_id == client.rows[0].client_id) {
+        try {
+            const playlist = await pool.query('SELECT * FROM playlist WHERE playlist_id = $1', [playlist_id])     
+            res.locals.data = playlist.rows[0]
+        } catch (err) {
+            console.log(err.stack)
+        }
+
+        try {
+            const songs = await pool.query('SELECT song.*, artist_name, album_name FROM song, artist, album, song_added_to_playlist WHERE song.artist_id = artist.artist_id and song.album_id = album.album_id and song.song_id = song_added_to_playlist.song_id and playlist_id = $1', [playlist_id])     
+            songs.rows.forEach(row => {
+                row.duration = convertIntToTimeString(row.duration)
+            })
+            res.locals.songs = songs.rows
+        } catch (err) {
+            console.log(err.stack)
+        }
+    }
+    else res.status(500).send({message: 'You do not have permission to do this'})
+    res.render('playlist')
 }
 export const post_getPlaylistbyId = async (req, res) => {
     const {playlist_id} = req.body
@@ -37,11 +59,11 @@ export const post_getPlaylistbyId = async (req, res) => {
             console.log(err.stack)
         }
     }
-    else res.status(500).send({message: 'You are not have permission to do this'})
+    else res.status(500).send({message: 'You do not have permission to do this'})
 }
 
 export const get_addNewPlaylist = async (req, res) => {
-    res.render('playlistViews/createNewPlaylist')
+    res.render('add-playlist')
 }
 export const post_addNewPlaylist = async (req, res) => {
     const {playlist_name, playlist_info} = req.body
@@ -137,7 +159,7 @@ export const post_getAllSonginPlaylist = async (req, res) => {
     if(client.rowCount) {
         if(client_id == client.rows[0].client_id) {
             try {
-                var playlist = await pool.query('SELECT song.* FROM song, song_added_to_playlist WHERE song.song_id = song_added_to_playlist.song_id and playlist_id = $1', [playlist_id])
+                var playlist = await pool.query('SELECT song.*, artist_name, album_name FROM song, song_added_to_playlist, artist, album WHERE song.artist_id = artist.artist_id and song.album_id = album.album_id and song.song_id = song_added_to_playlist.song_id and playlist_id = $1', [playlist_id])
                 res.send(playlist.rows)
             } catch (err) {
                 console.log(err.stack)
@@ -160,7 +182,7 @@ export const post_addNewSongToPlaylist = async (req, res) => {
             try {
                 const song = await pool.query('SELECT duration FROM song WHERE song_id = $1', [song_id])
                 const check = await pool.query('SELECT * FROM song_added_to_playlist WHERE song_id = $1 and playlist_id = $2', [song_id, playlist_id])
-                if(check.rowCount) res.status(500).send({message: 'This song has been added to your playlist'})
+                if(check.rowCount) res.status(500).send({message: 'This song has already been in your playlist'})
                 else {
                     const playlist = await pool.query('INSERT INTO song_added_to_playlist(song_id, playlist_id, created_stamp) \
                         VALUES($1, $2, default) RETURNING *', [song_id, playlist_id])
@@ -176,7 +198,7 @@ export const post_addNewSongToPlaylist = async (req, res) => {
         }
         else res.status(500).send({message: 'You are not have permission to do this'})
     }
-    else res.status(500).send({message: 'Playlist is not exist'})
+    else res.status(500).send({message: 'Playlist does not exist'})
 }
 
 export const get_deleteSongInPlaylist = async (req, res) => {

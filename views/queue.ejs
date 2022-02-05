@@ -1,4 +1,14 @@
 <div id="queue">
     <h1>Now Playing</h1>
     <hr>
+    <% if(songs){%>
+    <% songs.forEach(song => { %>
+        <div class="list-item-song" onclick = "navigateTo('/song/<%=song.songid%>')">
+            <img class="list-song-cover" src="../images/album.png">
+            <div class="list-song-title"><%= song.name%></div>
+            <div class="list-song-artist"><%=song.artist%></div>
+            <div class="list-song-album"><%=song.album%></div>
+            <div class="list-song-duration"><%= song.duration %></div>
+        </div>
+    <% })} %>
 </div>

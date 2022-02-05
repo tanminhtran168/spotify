@@ -1,9 +1,12 @@
 import express from 'express'
 import pg from 'pg'
+import jwt from 'jsonwebtoken'
 import config from '../config.js'
+import { convertIntToTimeString } from '../utils.js'
 const router = express.Router()
 const Pool = pg.Pool
 const pool = new Pool(config.POSTGRES_INFO)
+router.use(express.static('public'));
 
 export const getAllSong = async (req, res) => {
     try {
@@ -15,16 +18,57 @@ export const getAllSong = async (req, res) => {
 }
 
 export const get_getSongInfobyId = async (req, res) => {
-    res.render('songViews/getInfobyId')
-}
-export const post_getSongInfobyId = async (req, res) => {
     const {song_id} = req.body
     try {
         var song = await pool.query('SELECT song.*, artist_name, album_name FROM song, artist, album WHERE song.artist_id = artist.artist_id and song.album_id = album.album_id and song_id = $1', [song_id])
-        res.send(song.rows)
+        song.rows[0].duration = convertIntToTimeString(song.rows[0].duration)
+        //console.log(song.rows[0])
+        res.send(song.rows[0])
     } catch (err) {
         console.log(err.stack)
     }    
+}
+export const post_getSongInfobyId = async (req, res) => {
+    const song_id = req.params.songId
+    try {
+        var song = await pool.query('SELECT song.*, artist_name, album_name FROM song, artist, album WHERE song.artist_id = artist.artist_id and song.album_id = album.album_id and song_id = $1', [song_id])
+        //res.send(song.rows)
+        //console.log(song.rows[0])
+        res.locals.data = song.rows[0]
+        res.locals.rating = Math.round(song.rows[0].sum_rate / song.rows[0].num_of_ratings)
+        
+    } catch (err) {
+        console.log(err.stack)
+    }   
+
+    try {
+        const comment = await pool.query('SELECT full_name, comment_content FROM comment, client, account WHERE song_id = $1 and comment.client_id = client.client_id and account.account_id = client.account_id', [song_id])
+        res.locals.comments = comment.rows
+        //console.log(comment.rows)
+    } catch (err) {
+        console.log(err.stack)
+    }
+    const token = req.cookies.token
+    if(token)
+    {
+        res.locals.loggedIn = true;
+        var account_id
+        jwt.verify(token, config.JWT_SECRET, (err, decode) => {
+            if (err) return res.status(401).send({ message: 'Error in authentication' });
+            account_id = decode.id
+        })
+        try {
+            var playlists = await pool.query('SELECT playlist.* FROM playlist, client, account  WHERE playlist.client_id = client.client_id and account.account_id = client.account_id and account.account_id = $1', [account_id])
+            res.locals.playlists = playlists.rows
+        }
+        catch (err) {
+            console.log(err.stack)
+        }    
+    }
+    else
+        res.locals.loggedIn = false;
+
+    res.render('song', {layout: 'layout'})
 }
 
 export const get_searchSong = async (req, res) => {

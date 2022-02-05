@@ -7,10 +7,8 @@ const router = express.Router();
 router.use(bodyParser.json())
 router.use(bodyParser.urlencoded({extended:true}))
 
-router.get('/', getAllSong);
-
 router.get('/get/', get_getSongInfobyId); 
-router.post('/get/', post_getSongInfobyId);
+router.post('/get/', get_getSongInfobyId);
 
 router.get('/search/', get_searchSong); 
 router.post('/search/', post_searchSong);
@@ -23,5 +21,7 @@ router.post('/delete/', isAuth, checkAdmin, post_deleteSong);
 
 router.get('/update/', isAuth, checkAdmin, get_updateSong);
 router.post('/update/', isAuth, checkAdmin, post_updateSong);
+
+router.get('/:songId', post_getSongInfobyId);
 
 export default router;

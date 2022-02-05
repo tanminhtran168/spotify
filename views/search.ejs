@@ -5,21 +5,41 @@
             Your Search Result:
         </h1>
         <div id="tab-bar">
-            <button class="tab-bar-button" onclick="openTab(event, 'Songs')">Songs</button>
+            <button class="tab-bar-button active" onclick="openTab(event, 'Songs')">Songs</button>
             <button class="tab-bar-button" onclick="openTab(event, 'Albums')">Albums</button>
             <button class="tab-bar-button" onclick="openTab(event, 'Artists')">Artists</button>
         </div>
         <hr>
-        <div id="Songs-result" class="tab">
+        <div id="Songs-result" style="display: block;" class="tab">
+            <% song_result.forEach(song => { %>
+                <div class="list-item-song" onclick = "navigateTo('/song/<%=song.song_id%>')">
+                    <img class="list-song-cover" src="../images/album.png">
+                    <div class="list-song-title"><%= song.song_name%></div>
+                    <div class="list-song-artist"><%=song.artist_name%></div>
+                    <div class="list-song-album"><%=song.album_name%></div>
+                    <div class="list-song-duration"><%= song.duration %></div>
+                </div>
+            <% }) %>
         </div>
         <div id="Albums-result" class="tab">
             <div id="Albums-result-content" class="catalogue">
-               
+               <% album_result.forEach(album => { %>
+                <div class="box-album" onclick = "navigateTo('/album/<%=album.album_id%>')">
+                    <img class="box-album-cover" src="../images/album.png">
+                    <div class="box-album-title"><%=album.album_name%></div>
+                    <div class="box-album-artist"><%=album.artist_name%></div>
+                </div>
+                <% }) %> 
             </div>
         </div>
         <div id="Artists-result" class="tab">
             <div id="Artists-result-content" class="catalogue">
-               
+               <% artist_result.forEach(artist => { %>
+                    <div class="box-artist" onclick = "navigateTo('/artist/<%=artist.artist_id%>')">
+                        <img class="box-artist-cover" src="../images/album.png">
+                        <div class="box-artist-name"><%= artist.artist_name%></div>
+                    </div>
+               <% }) %>
             </div>
         </div>
     </div>

@@ -1,7 +1,7 @@
 import express from 'express'
 import pg from 'pg'
 import config from '../config.js'
-import { getClient } from '../utils.js';
+import { getClient, convertIntToTimeString } from '../utils.js';
 const router = express.Router()
 const Pool = pg.Pool
 const pool = new Pool(config.POSTGRES_INFO)
@@ -19,13 +19,31 @@ export const get_getArtistInfobyId = async (req, res) => {
     res.render('artistViews/getInfobyId')
 }
 export const post_getArtistInfobyId = async (req, res) => {
-    const {artist_id} = req.body
+    const artist_id = req.params.artistId
     try {
         var artist = await pool.query('SELECT * FROM artist WHERE artist_id = $1', [artist_id])
-        res.send(artist.rows)
+        res.locals.data = artist.rows[0];
     } catch (err) {
         console.log(err.stack)
-    }    
+    } 
+
+    try {
+        var song = await pool.query('SELECT song.*, artist_name, album_name FROM song, artist, album WHERE song.artist_id = artist.artist_id and song.album_id = album.album_id and artist.artist_id = $1', [artist_id])
+        song.rows.forEach(row => {
+            row.duration = convertIntToTimeString(row.duration)
+        })
+        res.locals.songs = song.rows;
+    } catch (err) {
+        console.log(err.stack)
+    } 
+
+    try {
+        var album = await pool.query('SELECT album.*, artist_name FROM album, artist WHERE album.artist_id = artist.artist_id and artist.artist_id = $1', [artist_id])
+        res.locals.albums = album.rows;
+    } catch (err) {
+        console.log(err.stack)
+    } 
+    res.render('artist')
 }
 
 export const get_searchArtist = async (req, res) => {

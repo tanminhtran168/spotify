@@ -1,7 +1,8 @@
 import express from 'express'
 import pg from 'pg'
+import jwt from 'jsonwebtoken'
 import config from '../config.js'
-import { getToken } from '../utils.js'
+import { getToken, convertIntToTimeString } from '../utils.js'
 
 const router = express.Router()
 const Pool = pg.Pool
@@ -9,7 +10,7 @@ const pool = new Pool(config.POSTGRES_INFO)
 
 export const get_Signup = (req,res) =>{
     if(req.cookies.token != null) res.status(500).send({message: 'You must log out first'}) 
-    else res.render('userViews/signup');
+    else res.render('signup', {layout: false});
 }
 export const post_Signup = async (req, res) => {
     const {user_name, current_password, confirm_password, avatar, full_name, birth_date, email, phone_number} = req.body
@@ -70,7 +71,7 @@ export const post_Signup = async (req, res) => {
 
 export const get_Login = async (req, res) => {
     if(req.cookies.token != null) res.status(500).send({message: 'You must log out first'}) 
-    else res.render('userViews/login');
+    else res.render('login', {layout: false});
 }
 export const post_Login = async (req, res) => {
     const {user_name, password} = req.body
@@ -111,4 +112,70 @@ export const loginAdmin = async(req, res) => {
     res.send({message: 'Admin views'})
 }
 
+export const get_dashboard = async(req, res) => {
+    const token = req.cookies.token
+    if(token)
+    {
+        res.locals.loggedIn = true;
+        var account_id
+        jwt.verify(token, config.JWT_SECRET, (err, decode) => {
+            if (err) return res.status(401).send({ message: 'Error in authentication' });
+            account_id = decode.id
+        })
+        try {
+            var playlists = await pool.query('SELECT playlist.* FROM playlist, client, account  WHERE playlist.client_id = client.client_id and account.account_id = client.account_id and account.account_id = $1', [account_id])
+            res.locals.playlists = playlists.rows
+        }
+        catch (err) {
+            console.log(err.stack)
+        }    
+
+        try {
+            var artist = await pool.query('SELECT artist.* FROM artist, artist_favorite, client WHERE artist.artist_id = artist_favorite.artist_id and client.client_id = artist_favorite.client_id and account_id = $1', [account_id])
+            res.locals.artists = artist.rows
+        } catch (err) {
+            console.log(err.stack)
+        }    
+    }
+    else
+        res.locals.loggedIn = false;
+    res.render('dashboard')
+}
+export const get_queue = async(req, res) =>{
+    res.locals.songs = null
+    res.render('queue')
+}
+export const post_queue = async(req, res) =>{
+    //console.log(req.body)
+    res.locals.songs = req.body
+    res.render('queue')
+}
+export const searchQuery = async(req, res) => {
+    var key_word = req.params.keyword;
+    key_word = "%" + key_word +  "%"
+    try {
+        var song = await pool.query('SELECT song.*, artist_name, album_name FROM song, artist, album WHERE song_name LIKE $1 and song.artist_id = artist.artist_id and song.album_id = album.album_id', [key_word])
+        res.locals.song_result = song.rows;
+        song.rows.forEach(row => {
+            row.duration = convertIntToTimeString(row.duration)
+        })
+    } catch (err) {
+        console.log(err.stack)
+    }    
+
+    try {
+        var album = await pool.query('SELECT album.*, artist_name FROM album, artist WHERE album_name LIKE $1 and artist.artist_id = album.artist_id', [key_word])
+        res.locals.album_result = album.rows
+    } catch (err) {
+        console.log(err.stack)
+    }    
+
+    try {
+        var artist = await pool.query('SELECT * FROM artist WHERE artist_name LIKE $1', [key_word])
+        res.locals.artist_result = artist.rows
+    } catch (err) {
+        console.log(err.stack)
+    }    
+    res.render('search')
+}
 export default router;

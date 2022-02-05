@@ -221,10 +221,12 @@ select * from playlist;
 select * from artist  ;
 select * from artist_favorite ;
 select * from album ;
-select * from song  ;
+select * from song;
 select * from song_added_to_playlist  ;
 select * from rating ;
 select * from comment;
+
+SELECT client.account_id, playlist.* FROM playlist, client, account  WHERE playlist.client_id = client.client_id and account.account_id = client.account_id and account.account_id = 1
 
 drop table artist_favored, rating, client, comment, playlist, song_added_to_playlist, song,album ,artist, account, admin;
 drop table account, client, artist, album, song, song_added_to_playlist, playlist, comment, rating , artist_favorite ;

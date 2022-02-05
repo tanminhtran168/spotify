@@ -1,6 +1,7 @@
 import express from 'express'
 import pg from 'pg'
 import config from '../config.js'
+import { convertIntToTimeString } from '../utils.js'
 const router = express.Router()
 const Pool = pg.Pool
 const pool = new Pool(config.POSTGRES_INFO)
@@ -18,14 +19,24 @@ export const get_getAlbumbyId = async (req, res) => {
     res.render('albumViews/getInfobyId')
 }
 export const post_getAlbumbyId = async (req, res) => {
-    const {album_id} = req.body
+    const album_id = req.params.albumId
     try {
         const album = await pool.query('SELECT * FROM album WHERE album_id = $1', [album_id])
-        if(album.rowCount) res.send(album.rows)
-        else res.status(500).send({message: 'Album is not exist'})
+        album.rows[0].total_duration = convertIntToTimeString(album.rows[0].total_duration)
+        res.locals.data = album.rows[0]
     } catch (err) {
         console.log(err.stack)
     }
+    try {
+        const songs = await pool.query('SELECT song.*, artist_name, album_name FROM song, artist, album WHERE song.artist_id = artist.artist_id and song.album_id = album.album_id and album.album_id = $1', [album_id])
+        songs.rows.forEach(row => {
+            row.duration = convertIntToTimeString(row.duration)
+        })
+        res.locals.songs = songs.rows
+    } catch (err) {
+        console.log(err.stack)
+    }
+    res.render('album')
 }
 
 export const get_searchAlbum = async (req, res) => {

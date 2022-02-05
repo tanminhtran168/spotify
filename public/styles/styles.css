@@ -313,7 +313,9 @@ input[type=range]:hover::-webkit-slider-thumb{
     font-size: 16px;
     font-weight: 600;
 }
-.content-box > a{
+#add-playlist-button{
+    background-color: transparent;
+    border: none;
     float: right;
     display: inline;
     color: #4AB1BB;
@@ -321,7 +323,7 @@ input[type=range]:hover::-webkit-slider-thumb{
     font-size: 16px;
     opacity: 0.7;
 }
-.content-box > a:hover{
+#add-playlist-button:hover{
     opacity: 1;
 }
 
@@ -335,6 +337,8 @@ hr {
 
 .catalogue {
     display: flex;
+    font-family: "Poppins";
+    font-size: 14px;
 }
 
 .box-playlist{
@@ -717,7 +721,8 @@ hr {
     border: none;
     padding: 10px 10px 10px 10px;
     margin-top: 5px;
-    
+    margin-left: auto;
+    margin-right: 0;
     opacity: 0.7;
 }
 #comment-button:hover, #comment-cancel:hover{
@@ -900,6 +905,7 @@ label{
     margin-left: 20px;
     margin-bottom: 10px;
     color: #797979;
+    background-color: transparent;
 }
 .input-field:focus-within > label{
     color: #4AB1BB;
@@ -961,4 +967,61 @@ label{
 }
 .tab-bar-button.active{
     border-bottom: solid 2px #4AB1BB;
+}
+
+#song-play-button, #song-add-queue, #song-add-to-playlist, #delete-playlist{
+    height: 50px;
+    border-radius: 25px;
+    border: none;
+    color: #FFFFFF;
+    text-align: center;
+    font-size: 20px;
+    font-family: 'Poppins';
+    opacity: 0.7;
+    font-weight: 400;
+}
+#song-play-button:hover, #song-add-queue:hover, #song-add-to-playlist:hover, #delete-playlist:hover{
+    opacity: 1;
+}
+#song-play-button{
+    padding-left: 40px;
+    padding-right: 40px;
+    background-color: #4AB1BB;
+}
+#song-add-queue, #song-add-to-playlist, #delete-playlist{
+    background-color: transparent;
+   
+}
+#song-add-queue{
+    margin-left: 25px;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 9999;
+    
+  }
+.dropdown {
+    margin-left: 25px;
+    display: inline-block;
+}
+.dropdown:hover .dropdown-content {
+    display: flex;
+    flex-direction: column;
+}
+.dropdown-content-button {
+    border: none;
+    background-color:#101214;
+    color: #FFFFFF;
+    font-family: "Poppins";
+    font-size: 14px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+.dropdown-content-button:hover {
+    background-color:#202427;
 }

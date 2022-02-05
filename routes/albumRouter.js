@@ -7,7 +7,7 @@ const router = express.Router();
 router.use(bodyParser.json())
 router.use(bodyParser.urlencoded({extended:true}))
 
-router.get('/', getAllAlbum);
+router.get('/:albumId', post_getAlbumbyId);
 
 router.get('/get', get_getAlbumbyId); 
 router.post('/get', post_getAlbumbyId);

@@ -9,7 +9,7 @@ router.use(bodyParser.urlencoded({extended:true}))
 
 router.get('/', isAuth, getAllPlaylist);
 
-router.get('/get/', isAuth, get_getPlaylistbyId); 
+
 router.post('/get/', isAuth, post_getPlaylistbyId);
 
 router.get('/add/', isAuth, get_addNewPlaylist);
@@ -30,5 +30,6 @@ router.post('/song/add/', isAuth, post_addNewSongToPlaylist);
 router.get('/song/delete/', isAuth, get_deleteSongInPlaylist);
 router.post('/song/delete/', isAuth, post_deleteSongInPlaylist);
 
+router.get('/:playlistId', isAuth, get_getPlaylistbyId); 
 
 export default router;

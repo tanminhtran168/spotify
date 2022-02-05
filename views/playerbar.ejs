@@ -1,0 +1,45 @@
+<!-- Player bar-->
+<div id="player-bar">
+    <div id="song-info">
+        <img id="song-album-cover">
+        <div id="song-textinfo">
+            <p id="songname"></p>
+            <p id="artist"></p>
+        </div>
+    </div>
+    <div id="media-controls">
+        <div id="media-controls-buttons">
+            <button id="random" class="icon-button">
+                <i class="fas fa-random"></i>
+            </button>
+            <button id="prev" class="icon-button">
+                <i class="fas fa-step-backward"></i>
+            </button>
+            <button id="play-pause" class="icon-button">
+                <i id="play-toggle" class="fas fa-play-circle" ></i>
+            </button>
+            <button id="next" class="icon-button">
+                <i class="fas fa-step-forward"></i>
+            </button>
+            <button id="loop" class="icon-button">
+                <i class="fas fa-sync-alt"></i>
+            </button>
+        </div>
+        <div progressbar id="progress-bar">
+            <span id="current-time"></span>
+            <input type="range" id="progress" value="0"></input>
+            <span id=song-time></span>
+        </div>
+        <audio id="audio" src=""></audio>
+    </div>
+    <div id="volume-controls">
+        <button id="queue-button" class="icon-button">
+            <i id="queue-icon" class="fas fa-list"></i>
+        </button>
+        <button id="volume-button" class="icon-button">
+            <i id="volume-toggle" class="fas fa-volume-up"></i>
+        </button>
+        <input type="range" id="volume" value="100"></input>
+    </div>
+    
+</div>

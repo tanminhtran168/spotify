@@ -51,7 +51,7 @@ const app = {
             path: "https://mp3.filmisongs.com/go.php?id=Damn%20Song%20Raftaar%20Ft%20KrSNa.mp3",
             image: "https://filmisongs.xyz/wp-content/uploads/2020/07/Damn-Song-Raftaar-KrNa.jpg"
         },
-        */{
+        {
             name: "Du mua thoi roi",
             artist: "kr$na",
             path: "https://tainhac123.com/listen/du-mua-thoi-roi-thuy-chi.j3awUEpymF4A.html",
@@ -62,7 +62,7 @@ const app = {
             artist: "kr$na",
             path: "https://tainhac123.com/listen/du-mua-thoi-roi-thuy-chi.j3awUEpymF4A.html",
             image: "https://images.unsplash.com/photo-1587410131477-f01b22c59e1c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80",
-        },
+        },*/
     ],
     setConfig: function (key, value) {
         this.config[key] = value;
@@ -247,7 +247,7 @@ const app = {
             {
                 document.getElementById("queue-button").classList.add('active')
                 navigateTo('/queue', ()=> {
-                    for(var i=0; i<_this.songs.length; ++i)
+                    /*for(var i=0; i<_this.songs.length; ++i)
                     {
                         var div = document.createElement("div");
                         div.className = "list-item-song"
@@ -263,92 +263,12 @@ const app = {
                             <i class="fas fa-ellipsis-v"></i>
                         </div>`;
                         document.getElementById("queue").appendChild(div);
-                    }
-                })
+                    }*/
+                }, "POST", app.songs)
             }
         }
         document.getElementById("search-button").onclick = function(){
-            navigateTo('/search' , ()=>
-            {
-                var searchInput = document.getElementById("search-box-input").value;
-                var xhttp = new XMLHttpRequest();
-                xhttp.onreadystatechange = function() {
-                    if(this.readyState == 4)
-                    {
-                        let songRes = document.getElementById("Songs-result");
-                        var res = this.responseText;
-                        var parsedJSON = JSON.parse(res);
-                        for (var i=0;i<parsedJSON.length;i++) {
-                            var div = document.createElement("div");
-                            div.className = "list-item-song"
-                            div.setAttribute("ondblclick", `goToSong(${parsedJSON[i].song_id})`)
-                            div.setAttribute("onclick", `playSong(${parsedJSON[i].song_id})`)
-                            div.innerHTML = 
-                            `
-                                <img class="list-song-cover" src="../images/album.png">
-                                <div class="list-song-title">${parsedJSON[i].song_name}</div>
-                                <div class="list-song-artist">${parsedJSON[i].artist_name}</div>
-                                <div class="list-song-album">${parsedJSON[i].album_name}</div>
-                                <div class="list-song-duration">${convertIntToTimeString(parsedJSON[i].duration)}</div>
-                                <div class="list-song-options">
-                                    <i class="fas fa-ellipsis-v"></i>
-                                </div>`;
-                            songRes.appendChild(div);
-                        }
-                    }
-                }
-                
-                xhttp.open("POST", `/song/search`, true);
-                xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-                xhttp.send(`key_word=${searchInput}`);
-                
-                xhttp = new XMLHttpRequest();
-                xhttp.onreadystatechange = function() {
-                    if(this.readyState == 4)
-                    {
-                        let albumRes = document.getElementById("Albums-result-content");
-                        var res = this.responseText;
-                        var parsedJSON = JSON.parse(res);
-                        for (var i=0;i<parsedJSON.length;i++) {
-                            var div = document.createElement("div");
-                            div.className = "box-album"
-                            div.innerHTML = 
-                            `
-                            <img class="box-album-cover" src="../images/album.png">
-                            <div class="box-album-title">${parsedJSON[i].album_name}</div>
-                            <div class="box-album-artist">${parsedJSON[i].artist_name}</div>`;
-                            albumRes.appendChild(div);
-                        }
-                    }
-                }
-                
-                xhttp.open("POST", `/album/search`, true);
-                xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-                xhttp.send(`key_word=${searchInput}`);
-
-                xhttp = new XMLHttpRequest();
-                xhttp.onreadystatechange = function() {
-                    if(this.readyState == 4)
-                    {
-                        let artistRes = document.getElementById("Artists-result-content");
-                        var res = this.responseText;
-                        var parsedJSON = JSON.parse(res);
-                        for (var i=0;i<parsedJSON.length;i++) {
-                            var div = document.createElement("div");
-                            div.className = "box-artist"
-                            div.innerHTML = 
-                            `
-                            <img class="box-artist-cover" src="../images/album.png">
-                            <div class="box-artist-name">${parsedJSON[i].artist_name}</div>`;
-                            artistRes.appendChild(div);
-                        }
-                    }
-                }
-                
-                xhttp.open("POST", `/artist/search`, true);
-                xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-                xhttp.send(`key_word=${searchInput}`);
-            })
+            navigateTo(`/search/${document.getElementById("search-box-input").value}`)
         }
     },
 
@@ -404,7 +324,7 @@ const app = {
 
         // Tải thông tin bài hát đầu tiên vào UI khi chạy ứng dụng
         // Load the first song information into the UI when running the app
-        this.loadCurrentSong();
+        //this.loadCurrentSong();
 
         // Hiển thị trạng thái ban đầu của button repeat & random
         // Display the initial state of the repeat & random button
@@ -448,40 +368,37 @@ app.start();
 let root = document.getElementById('page-content');
 window.onload = () => {   
     let path = window.location.pathname;
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-        if(this.readyState == 4)
-        {
-            root.innerHTML = this.responseText;
-            history.replaceState({ejs: this.responseText}, `${path}`, `${path}`)
-        }
-    }
-    if(path == '/')
-        xhttp.open("GET", `/ejs/dashboard`, true);
-    else
-        xhttp.open("GET", `/ejs${path}`, true);
-    xhttp.send();
+    history.pushState({ejs: root.innerHTML}, `${path}`, `${path}`)
+    document.getElementById("queue-button").classList.remove('active')
 }
 
-function navigateTo(path, callback = null)
+function navigateTo(path, callback = null, reqType = "GET", details = null)
 {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
         if(this.readyState == 4)
         {
             root.innerHTML = this.responseText;
-            history.pushState({ejs: this.responseText}, `${path}`, `${path}`)
+            history.pushState({ejs: root.innerHTML}, `${path}`, `${path}`)
             if(callback)
             {
                 callback();
             }
         }
     }
-    if(path == '/')
-        xhttp.open("GET", `/ejs/dashboard`, true);
+    
+    xhttp.open(reqType, `${path}`, true);
+    xhttp.setRequestHeader("X-Requested-With", "XMLHttpRequest")
+    
+    if(details)
+    {
+        xhttp.setRequestHeader("Content-type", "application/json");
+        xhttp.send(JSON.stringify(details));
+    }   
     else
-        xhttp.open("GET", `/ejs${path}`, true);
-    xhttp.send();
+        xhttp.send();
+    if(path!= "/queue")
+        document.getElementById("queue-button").classList.remove('active')
 }
 
 function redirectTo(path){
@@ -495,7 +412,7 @@ function logout(){
             location.reload()
         }
     }
-    xhttp.open("POST", `/user/logout`, true);
+    xhttp.open("POST", `/logout`, true);
     xhttp.send();
 }
 addEventListener('popstate', function (event) {
@@ -519,7 +436,7 @@ function openTab(evt, tabName) {
 
 function goToSong(id){
     navigateTo('/song', () => {
-        var xhttp = new XMLHttpRequest();
+        /*var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
             if(this.readyState == 4)
             {
@@ -562,7 +479,7 @@ function goToSong(id){
         
         xhttp.open("POST", `/comment/get`, true);
         xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        xhttp.send(`song_id=${id}`);
+        xhttp.send(`song_id=${id}`);*/
     })
 }
 
@@ -573,16 +490,16 @@ function playSong(id){
         if(this.readyState == 4)
         {
             var res = this.responseText;
-            var parsedJSON = JSON.parse(res);
+            var parsedJSON = JSON.parse(res);   
             app.songs.push(
                 {
                     songid: id,
-                    name: parsedJSON[0].song_name,
-                    artist: parsedJSON[0].artist_name,
-                    path: parsedJSON[0].song_link,
-                    image: parsedJSON[0].song_image,
-                    album: parsedJSON[0].album_name,
-                    duration: parsedJSON[0].duration
+                    name: parsedJSON.song_name,
+                    artist: parsedJSON.artist_name,
+                    path: parsedJSON.song_link,
+                    image: parsedJSON.song_image,
+                    album: parsedJSON.album_name,
+                    duration: parsedJSON.duration
                 },
             );
             app.currentIndex = app.songs.length - 1;
@@ -593,5 +510,190 @@ function playSong(id){
     xhttp.open("POST", `/song/get`, true);
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xhttp.send(`song_id=${id}`);
+}
 
+function addToQueue(id){
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if(this.readyState == 4)
+        {
+            var res = this.responseText;
+            var parsedJSON = JSON.parse(res);
+            app.songs.push(
+                {
+                    songid: id,
+                    name: parsedJSON.song_name,
+                    artist: parsedJSON.artist_name,
+                    path: parsedJSON.song_link,
+                    image: parsedJSON.song_image,
+                    album: parsedJSON.album_name,
+                    duration: parsedJSON.duration
+                },
+            );
+        }
+    }
+    xhttp.open("POST", `/song/get`, true);
+    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.send(`song_id=${id}`);
+}
+
+function addSongToPlaylist(songId, playlistId)
+{
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if(this.readyState == 4)
+        {
+            var Data = JSON.parse(this.responseText);
+            alert(Data.message);
+        }
+    }
+    var details = {
+        'playlist_id': playlistId,
+        'song_id': songId
+    };
+    
+    var formBody = [];
+    for (var property in details) {
+      var encodedKey = encodeURIComponent(property);
+      var encodedValue = encodeURIComponent(details[property]);
+      formBody.push(encodedKey + "=" + encodedValue);
+    }
+    formBody = formBody.join("&");
+    xhttp.open("POST", `/playlist/song/add`, true);
+    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.send(formBody)
+}
+
+function createPlaylist() 
+{
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if(this.readyState == 4)
+        {
+            var Data = JSON.parse(this.responseText);
+            alert(Data.message);
+            navigateTo('/')
+        }
+    }
+    var details = {
+        'playlist_name': document.getElementById("playlist-name-input").value,
+        'playlist_info': document.getElementById("playlist-info-input").value
+    };
+    
+    var formBody = [];
+    for (var property in details) {
+      var encodedKey = encodeURIComponent(property);
+      var encodedValue = encodeURIComponent(details[property]);
+      formBody.push(encodedKey + "=" + encodedValue);
+    }
+    formBody = formBody.join("&");
+    xhttp.open("POST", `/playlist/add`, true);
+    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.send(formBody)
+}
+
+function playPlaylist(playlist_id){
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if(this.readyState == 4)
+        {
+            app.currentIndex = app.songs.length;
+            var res = this.responseText;
+            var parsedJSONs = JSON.parse(res);  
+            for(var i = 0; i<parsedJSONs.length; i++)
+            {
+                var parsedJSON = parsedJSONs[i] 
+                app.songs.push(
+                    {
+                        songid: parsedJSON.song_id,
+                        name: parsedJSON.song_name,
+                        artist: parsedJSON.artist_name,
+                        path: parsedJSON.song_link,
+                        image: parsedJSON.song_image,
+                        album: parsedJSON.album_name,
+                        duration: parsedJSON.duration
+                    },
+                );
+            }
+            console.log(app.songs)
+            app.loadCurrentSong();
+            audio.play();
+        }
+    }
+    xhttp.open("POST", `/playlist/song`, true);
+    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.send(`playlist_id=${playlist_id}`);
+}
+
+function addPlaylistToQueue(playlist_id){
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if(this.readyState == 4)
+        {
+            var res = this.responseText;
+            var parsedJSONs = JSON.parse(res);  
+            for(var i = 0; i<parsedJSONs.length; i++)
+            {
+                var parsedJSON = parsedJSONs[i] 
+                app.songs.push(
+                    {
+                        songid: parsedJSON.song_id,
+                        name: parsedJSON.song_name,
+                        artist: parsedJSON.artist_name,
+                        path: parsedJSON.song_link,
+                        image: parsedJSON.song_image,
+                        album: parsedJSON.album_name,
+                        duration: parsedJSON.duration
+                    },
+                );
+            }
+        }
+    }
+    xhttp.open("POST", `/playlist/song`, true);
+    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.send(`playlist_id=${playlist_id}`);
+}
+
+function deletePlaylist(playlist_id){
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if(this.readyState == 4)
+        {
+            var Data = JSON.parse(this.responseText);
+            alert(Data.message);
+            navigateTo('/')
+        }
+    }
+    xhttp.open("POST", `/playlist/delete`, true);
+    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.send(`playlist_id=${playlist_id}`);
+}
+function deleteFromPlaylist(playlist_id, song_id){
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if(this.readyState == 4)
+        {
+            var Data = JSON.parse(this.responseText);
+            alert(Data.message);
+            location.reload()
+        }
+    }
+    xhttp.open("POST", `/playlist/song/delete`, true);
+    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.send(`playlist_id=${playlist_id}&song_id=${song_id}`);
+}
+
+function submitComment(song_id){
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if(this.readyState == 4)
+        {
+            var Data = JSON.parse(this.responseText);
+            alert(Data.message);
+            location.reload()
+        }
+    }
+    xhttp.open("POST", `/comment/add`, true);
+    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.send(`comment_content=${document.getElementById("comment-input").value}&song_id=${song_id}`);
 }

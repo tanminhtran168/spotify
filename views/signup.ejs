@@ -21,39 +21,43 @@
         <form action="signup" method="post">
             <div id="username-field" class="input-field">
                 <label for="username" class="label">Username</label>
-                <input type="text" name="username">
+                <input id="username-input" type="text" name="username">
             </div>
             <div id="email-field" class="input-field">
                 <label class="label">Email</label>
-                <input type="text" name="Username">
+                <input id="email-input" type="text" name="Username">
             </div>
             <div id="password-field" class="input-field">
                 <label class="label">Password</label>
                 <input id="password-input" type="password" name="password">
             </div>
-            <div id="input-field" class="input-field">
+            <div id="confirm-password-field" class="input-field">
+                <label class="label">Confirm Password</label>
+                <input id="confirm-password-input" type="password" name="confirm-password">
+            </div>
+            <div id="name-field" class="input-field">
                 <label class="label">Your name</label>
-                <input type="text" name="fullname">
+                <input id="name-input" type="text" name="fullname">
             </div>
             <div id="phone-field" class="input-field">
                 <label class="label">Phone</label>
-                <input type="text" name="phonenumber">
+                <input id="phone-input" type="text" name="phonenumber">
             </div>
-            <div id="phone-field" class="input-field">
+            <div id="birthdate-field" class="input-field">
                 <label class="label">Birthday</label>
-                <input type="date" name="birth_date">
+                <input id="birthdate-input" type="date" name="birth_date">
             </div>
         </form>
-        <button type="submit" id="signup-submit">Sign up</button>
+        <button id="signup-submit" onclick = "submit_register()">Sign up</button>
         <hr style="width: 100%;">
         <div class="login-header">
             Already have an account?
         </div>
-        <button id="login-redirect">
+        <button id="login-redirect" onclick = "redirectTo('/login')">
             Login
         </button>
     </div>
-    
+    <script src="/scripts/signup.js"></script>
 </body>
 
 </html>
