@@ -11,6 +11,7 @@ export const getToken = async (user) => {
     {
       id: user.account_id,
       user_name: user.username,
+      password: user.password,
       isAdmin: (user.user_role == 'admin'),
     },
     config.JWT_SECRET,

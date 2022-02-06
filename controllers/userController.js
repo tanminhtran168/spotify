@@ -8,7 +8,7 @@ const router = express.Router()
 const Pool = pg.Pool
 const pool = new Pool(config.POSTGRES_INFO)
 
-export const get_Signup = (req,res) =>{
+export const get_Signup = async (req,res) =>{
     if(req.cookies.token != null) res.status(500).send({message: 'You must log out first'}) 
     else res.render('signup', {layout: false});
 }
