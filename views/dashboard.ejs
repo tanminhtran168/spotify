@@ -5,7 +5,9 @@
         </div>
         <div id="library" class="content-box"> 
             <h1>Your Library</h1> 
+            <%if(loggedIn){ %>
             <button id = "add-playlist-button"  onclick = "navigateTo('/playlist/add')"> Add Playlist</button>
+            <% }%>
             <hr>
             <div class="catalogue">
                 <%if(loggedIn){ %>

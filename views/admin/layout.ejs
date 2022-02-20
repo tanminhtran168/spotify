@@ -1,0 +1,32 @@
+<% if(ajax){ %> 
+    <%- body %>
+<% }else {%> 
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Spotify</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/styles/styles.css" type="text/css" rel="stylesheet">
+    <link rel="shortcut icon" href="#">
+    <script src="https://kit.fontawesome.com/5b0c22fb92.js" crossorigin="anonymous"></script>
+    
+</head>
+
+<body>
+    <%- include('headerbar') %>     
+    
+    <%- include('../playerbar') %>
+    <!-- Page Content-->
+    <div id="page-content">
+        <%- body %>
+    </div>
+    
+    <footer style="height: 500px;">
+
+    </footer>
+    <script src="/scripts/main.js"></script>
+</body>
+
+</html>
+<%}%>

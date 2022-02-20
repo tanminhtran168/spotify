@@ -384,6 +384,7 @@ function navigateTo(path, callback = null, reqType = "GET", details = null)
             {
                 callback();
             }
+            window.scrollTo(0,0);
         }
     }
     

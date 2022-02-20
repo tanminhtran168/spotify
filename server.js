@@ -8,6 +8,7 @@ import album from './routes/albumRouter.js'
 import cookieParser from 'cookie-parser';
 import rating from './routes/ratingRouter.js'
 import comment from './routes/commentRouter.js'
+import admin from './routes/adminRouter.js'
 import path from 'path'
 import bodyParser from 'body-parser'
 import expressLayouts from 'express-ejs-layouts';
@@ -40,10 +41,8 @@ app.use("/playlist", playlist);
 app.use("/album", album);
 app.use("/rating", rating);
 app.use("/comment", comment);
-/*app.get("/:filename", (req, res)=>{
-	res.render(`${req.params.filename}`, {songtitle: 'Stellar'});
-	//console.log(req.xhr)
-})*/
+app.use("/admin", admin);
+
 
 
 app.listen(5000, () => { console.log("Server started at http://localhost:5000")});
