@@ -2,6 +2,7 @@ import express from 'express'
 import jwt from 'jsonwebtoken';
 import config from './config.js';
 import pg from 'pg'
+import fs from 'fs'
 const router = express.Router()
 const Pool = pg.Pool
 const pool = new Pool(config.POSTGRES_INFO)
@@ -71,6 +72,37 @@ export var getClient = async (req, res) => {
         }
     }
     return 0
+}
+
+const getTokenView = async (id) => {
+  return jwt.sign(
+    {
+      id: id
+    },
+    config.JWT_SECRET,
+    {
+      expiresIn: '48h',
+    }
+  );
+}
+
+export const countViews = async (req, res, next) => {
+  if(req.cookies.view == null) {
+    var view = await getTokenView(13)
+    res.cookie('view', view, {expires: new Date(Date.now() + 9000000)})
+    fs.readFile('public/views.txt', function (err, data) {
+      if (err) return console.error(err);
+      console.log("Phuong thuc doc file khong dong bo: " + data.toString());
+      var num = parseInt(data.toString())
+      num += 1;
+      fs.writeFile('public/views.txt', num.toString(), function(err) {
+        if (err) {
+            return console.error(err);
+        }
+     });
+   });
+  }
+  return next();
 }
 
 export function convertIntToTimeString (x){

@@ -67,10 +67,11 @@ export const post_addNewAlbum = async (req, res) => {
                 // Lấy artist
                 var artist = await pool.query('SELECT artist_id FROM artist WHERE artist_name = $1', [artist_name])
                 if (artist.rowCount) {
+                    var image_link = 'public/images/albumImages/' + album_name + '.jpg'
                     var artist_id = artist.rows[0].artist_id
                     var update = await pool.query('UPDATE artist SET num_of_albums = num_of_albums + 1, last_updated_stamp = current_timestamp WHERE artist_id = $1;', [artist_id])
                     var album = await pool.query('INSERT INTO album(album_id, artist_id, album_name, album_image, album_info, num_of_songs, total_duration, last_updated_stamp, created_stamp) \
-                        VALUES(default, $1, $2, $3, $4, 0, 0, current_timestamp, default) RETURNING *', [artist_id, album_name, album_image, album_info])
+                        VALUES(default, $1, $2, $3, $4, 0, 0, current_timestamp, default) RETURNING *', [artist_id, album_name, image_link, album_info])
                     if (album.rowCount) {
                         if (update.rowCount) res.status(201).send({message: 'Album added and #Album updated successfully'});
                         else res.status(500).send({message: 'Error in updating number of albums'})

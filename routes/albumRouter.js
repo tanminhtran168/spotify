@@ -1,19 +1,19 @@
 import express from 'express'
 import bodyParser from 'body-parser';
-import { checkAdmin, isAuth } from '../utils.js'
+import { checkAdmin, countViews, isAuth } from '../utils.js'
 import {getAllAlbum, get_searchAlbum, post_searchAlbum, get_getAlbumbyId, post_getAlbumbyId, get_addNewAlbum, post_addNewAlbum, get_deleteAlbum, post_deleteAlbum, get_updateAlbum, post_updateAlbum} from '../controllers/albumController.js'
 const router = express.Router();
 
 router.use(bodyParser.json())
 router.use(bodyParser.urlencoded({extended:true}))
 
-router.get('/:albumId', post_getAlbumbyId);
+router.get('/:albumId', countViews, post_getAlbumbyId);
 
-router.get('/get', get_getAlbumbyId); 
-router.post('/get', post_getAlbumbyId);
+router.get('/get', countViews, get_getAlbumbyId); 
+router.post('/get', countViews, post_getAlbumbyId);
 
-router.get('/search', get_searchAlbum); 
-router.post('/search', post_searchAlbum);
+router.get('/search', countViews, get_searchAlbum); 
+router.post('/search', countViews, post_searchAlbum);
 
 router.get('/add', isAuth, checkAdmin, get_addNewAlbum);
 router.post('/add', isAuth, checkAdmin, post_addNewAlbum);
