@@ -379,6 +379,7 @@ function navigateTo(path, callback = null, reqType = "GET", details = null)
         if(this.readyState == 4)
         {
             root.innerHTML = this.responseText;
+            console.log(path)
             history.pushState({ejs: root.innerHTML}, `${path}`, `${path}`)
             if(callback)
             {

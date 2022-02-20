@@ -1,0 +1,58 @@
+<div id="song-content">
+    <img id="background-image" src="../../images/album.png">
+    <div id="song-box" class="content-box">
+        <img id="song-cover" src="../../images/album.png">
+        <div id="song-details" class="details">
+            <div id="song-title"><%=data.song_name%></div>
+            <div id="song-artist"><%=data.artist_name%></div>
+            <div style="margin-top: 50px; margin-bottom: 10px">  
+                <button id = "song-play-button" onclick="playSong('<%- data.song_id %>')">Play</button>
+                <button id = "song-add-queue" onclick="navigateTo('<%- data.song_id %>/update')">Edit</button>
+                
+            </div>
+            <hr>
+            <h1>Song details:</h1>
+            <div  class="details-content">
+                <h1>Album</h1>
+                <p id="song-album"><%= data.album_name %></p>
+            </div>
+            <div  class="details-content">
+                <h1>Rating</h1>
+                <p id="song-rating"><%= rating %></p>
+            </div>
+            <div  class="details-content">
+                <h1>Category</h1>
+                <p id="song-category"><%= data.category %></p>
+            </div>
+            <div  class="details-content">
+                <h1>Info</h1>
+                <p id="song-details-info"><%= data.song_info %></p>
+            </div>
+            <hr>
+        </div>
+    </div>
+    <div id="comment-section" class="content-box">
+        <h1>Comments</h1>
+        <hr>
+        <div id="comments">
+            <% comments.forEach(comment => { %>
+                <div class="comment">
+                    <img class="comment-user-avatar" src="../../images/eguitar.jpg">
+                    <div class="comment-text">
+                        <h1><%= comment.full_name %></h1>
+                        <p><%= comment.comment_content %></p>
+                    </div>
+                </div>        
+            <% }); %>
+        </div>
+        <hr>
+        <input type="text" id="comment-input" placeholder="Add a comment"/>
+        <div style = "margin-left: auto">
+            <button id="comment-button" onclick="submitComment('<%= data.song_id %>')">
+                    COMMENT
+            </button>
+        </div>
+        
+        <hr>
+    </div>
+</div>

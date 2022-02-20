@@ -1,5 +1,6 @@
 import express from 'express'
 import pg from 'pg'
+import jwt from 'jsonwebtoken'
 import config from '../config.js'
 import { convertIntToTimeString } from '../utils.js'
 const router = express.Router()
@@ -22,6 +23,53 @@ export const get_song_manage = async (req, res) => {
     }
     
     res.render('admin/manage-song', {layout: 'admin/layout'}) 
+}
+
+export const get_single_song = async (req, res) => {
+    const song_id = req.params.songId
+    try {
+        var song = await pool.query('SELECT song.*, artist_name, album_name FROM song, artist, album WHERE song.artist_id = artist.artist_id and song.album_id = album.album_id and song_id = $1', [song_id])
+        //res.send(song.rows)
+        //console.log(song.rows[0])
+        res.locals.data = song.rows[0]
+        res.locals.rating = Math.round(song.rows[0].sum_rate / song.rows[0].num_of_ratings)
+        
+    } catch (err) {
+        console.log(err.stack)
+    }   
+
+    try {
+        const comment = await pool.query('SELECT full_name, comment_content FROM comment, client, account WHERE song_id = $1 and comment.client_id = client.client_id and account.account_id = client.account_id', [song_id])
+        res.locals.comments = comment.rows
+        //console.log(comment.rows)
+    } catch (err) {
+        console.log(err.stack)
+    }
+
+    res.render('admin/song', {layout: 'admin/layout'})
+}
+export const get_update_song = async(req, res) => {
+    const song_id = req.params.songId
+    try {
+        var song = await pool.query('SELECT song.*, artist_name, album_name FROM song, artist, album WHERE song.artist_id = artist.artist_id and song.album_id = album.album_id and song_id = $1', [song_id])
+        //res.send(song.rows)
+        //console.log(song.rows[0])
+        res.locals.data = song.rows[0]
+        res.locals.rating = Math.round(song.rows[0].sum_rate / song.rows[0].num_of_ratings)
+        
+    } catch (err) {
+        console.log(err.stack)
+    }   
+
+    try {
+        const comment = await pool.query('SELECT full_name, comment_content FROM comment, client, account WHERE song_id = $1 and comment.client_id = client.client_id and account.account_id = client.account_id', [song_id])
+        res.locals.comments = comment.rows
+        //console.log(comment.rows)
+    } catch (err) {
+        console.log(err.stack)
+    }
+
+    res.render('admin/edit-song', {layout: 'admin/layout'})
 }
 export const getNumSong = async (req, res) => {
     const num = await pool.query('SELECT COUNT(song_id) as numsong FROM song')
