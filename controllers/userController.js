@@ -2,6 +2,7 @@ import express from 'express'
 import pg from 'pg'
 import jwt from 'jsonwebtoken'
 import config from '../config.js'
+import fs from 'fs'
 import { getToken, convertIntToTimeString } from '../utils.js'
 
 const router = express.Router()
@@ -178,4 +179,14 @@ export const searchQuery = async(req, res) => {
     }    
     res.render('search')
 }
+
+export const get_countViews = async(req, res) => {
+    fs.readFile('public/views.txt', function (err, data) {
+        if (err) return console.error(err);
+        const num = parseInt(data.toString());
+        //console.log(num)
+        res.status(201).send({'Number of views': num})
+    });
+}
+
 export default router;

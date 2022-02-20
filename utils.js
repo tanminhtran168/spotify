@@ -92,15 +92,14 @@ export const countViews = async (req, res, next) => {
     res.cookie('view', view, {expires: new Date(Date.now() + 9000000)})
     fs.readFile('public/views.txt', function (err, data) {
       if (err) return console.error(err);
-      console.log("Phuong thuc doc file khong dong bo: " + data.toString());
       var num = parseInt(data.toString())
       num += 1;
       fs.writeFile('public/views.txt', num.toString(), function(err) {
         if (err) {
             return console.error(err);
         }
-     });
-   });
+      });
+    });
   }
   return next();
 }
