@@ -1,0 +1,36 @@
+<div id="album-content">
+    <img id="background-image" src="../../images/album.png">
+    <div id="album-headings">
+        <div class="image-input-field">
+            <img id="album-cover" src="../../images/album.png">
+            <label for="upload-file-image" style="margin: 0 0 5px 0; color: #FFFFFF;" >Upload Album Cover Image:</label>
+            <input id="upload-file-image" type="file" style="font-family: 'Poppins'"/>
+        </div>
+        <div id="album-headings-text">
+            <div id="album-name">Add A New Album</div>
+            <div class="input-field">
+                <label>Album Name</label>
+                <input id="album-name-input" ></input>
+            </div>
+            <div class="input-field">
+                <label>Album Artist</label>
+                <input id="album-artist-input"></input>
+            </div>
+        </div>
+    </div>
+    <div id="album-box" class="content-box">
+        <hr>
+        <div id="album-details" class="details">
+            <h1>Album Details</h1>
+            <div class="input-field">
+                <label>Album Info</label>
+                <input id="album-info-input"></input>
+            </div>
+        </div>
+        <div style="margin-top: 50px; margin-bottom: 10px">  
+            <button id = "song-play-button" onclick="addAlbum()">Save</button>
+            <button id = "song-add-queue" onclick="navigateTo('/admin')">Cancel</button>
+        </div>
+    </div>
+    
+</div>

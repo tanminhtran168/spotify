@@ -17,6 +17,7 @@
     "esm": "^3.2.25",
     "express": "^4.17.2",
     "express-ejs-layouts": "^2.5.1",
+    "express-formidable": "^1.2.0",
     "express-session": "^1.17.2",
     "jsonwebtoken": "^8.5.1",
     "nodemon": "^2.0.15",

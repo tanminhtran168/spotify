@@ -1,7 +1,9 @@
 import express from 'express'
 import pg from 'pg'
 import config from '../config.js'
-import { convertIntToTimeString } from '../utils.js'
+import { convertIntToTimeString, saveFile } from '../utils.js'
+import path from 'path'
+const __dirname = path.resolve(path.dirname(''));
 const router = express.Router()
 const Pool = pg.Pool
 const pool = new Pool(config.POSTGRES_INFO)
@@ -57,8 +59,15 @@ export const post_searchAlbum = async (req, res) => {
 export const get_addNewAlbum = async (req, res) => {
     res.render('albumViews/addNewAlbum')
 }
+function isImage(file){
+    return true;
+}
+const uploadFolder = path.join(__dirname, "public","images");
 export const post_addNewAlbum = async (req, res) => {
-    const {album_name, artist_name, album_image, album_info} = req.body
+    const {album_name, artist_name, album_info} = req.fields
+    const {album_image} = req.files
+    saveFile(album_image, uploadFolder)
+    
     try {
         if (album_name == '' || artist_name == '') res.status(500).send({message: 'Missing some value'}) 
         else {

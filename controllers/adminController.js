@@ -90,3 +90,9 @@ export const getNumClient = async (req, res) => {
     const num = await pool.query('SELECT COUNT(client_id) as numclient FROM client')
     res.send(num.rows[0].numclient)
 }
+export const get_album = async (req, res) => {
+    res.render('admin/album', {layout: 'admin/layout'})
+}
+export const get_add_album = async (req, res) => {
+    res.render('admin/add-album', {layout: 'admin/layout'})
+}

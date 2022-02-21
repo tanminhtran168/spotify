@@ -2,7 +2,7 @@ import express from 'express'
 import jwt from 'jsonwebtoken';
 import config from './config.js';
 import pg from 'pg'
-import fs from 'fs'
+import {writeFileSync, readFileSync} from 'fs'
 const router = express.Router()
 const Pool = pg.Pool
 const pool = new Pool(config.POSTGRES_INFO)
@@ -111,4 +111,10 @@ export function convertIntToTimeString (x){
       return Math.floor(x/60) +":" + Math.floor(x%60);
 }
 //export { getToken, isAuth, checkAdmin, getClient };
+
+export function saveFile(file, folder)
+{
+  const {name, path} = file
+  writeFileSync(`${folder}/${name}`, readFileSync(path))
+}
 export default router

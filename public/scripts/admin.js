@@ -8,8 +8,6 @@ function updateSong(song_id){
             navigateTo(`/admin/song/${song_id}`)
         }
     }
-    xhttp.open("POST", `/song/update`, true);
-    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     var details = {
         'song_id': song_id,
         'song_name': document.getElementById("song-title-edit").value,
@@ -31,5 +29,29 @@ function updateSong(song_id){
     formBody = formBody.join("&");
     xhttp.open("POST", `/song/update`, true);
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.send(formBody)
+}
+function addAlbum(){
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if(this.readyState == 4)
+        {
+            var Data = JSON.parse(this.responseText);
+            alert(Data.message);
+        }
+    }
+    var details = {
+        'album_name': document.getElementById("album-name-input").value,
+        'artist_name': document.getElementById("album-artist-input").value,
+        'album_info': document.getElementById("album-info-input").value,
+        'album_image': document.getElementById("upload-file-image").files[0]
+    };
+    var formBody = new FormData();
+    for (var property in details) {
+      var encodedKey = property;
+      var encodedValue = details[property];
+      formBody.append(encodedKey, encodedValue);
+    }
+    xhttp.open("POST", `/album/add`, true);
     xhttp.send(formBody)
 }

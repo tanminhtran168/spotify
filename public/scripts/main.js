@@ -380,7 +380,7 @@ function navigateTo(path, callback = null, reqType = "GET", details = null)
         {
             root.innerHTML = this.responseText;
             console.log(path)
-            history.pushState({ejs: root.innerHTML, randomData: window.Math.random()}, `${path}`, `${path}`)
+            history.pushState({ejs: root.innerHTML/*, randomData: window.Math.random()*/}, `${path}`, `${path}`)
             if(callback)
             {
                 callback();

@@ -1,0 +1,38 @@
+<div id="album-content">
+    <img id="background-image" src="../images/album.png">
+    <div id="album-headings">
+        <img id="album-cover" src="../images/album.png">
+        <div id="album-headings-text">
+            <div id="album-name"><%= data.album_name %></div>
+            <div id="album-artist"><%= data.album_artist %></div>
+        </div>
+    </div>
+    <div id="album-box" class="content-box">
+        <hr>
+        <% songs.forEach(song => { %>
+            <div class="list-item-song" onclick = "navigateTo('/song/<%=song.song_id%>')">
+                <img class="list-song-cover" src="../images/album.png">
+                <div class="list-song-title"><%= song.song_name%></div>
+                <div class="list-song-artist"><%=song.artist_name%></div>
+                <div class="list-song-album"><%=song.album_name%></div>
+                <div class="list-song-duration"><%= song.duration %></div>
+            </div>
+        <% }) %>
+        <hr>
+        <div id="album-details" class="details">
+            <h1>Album Details</h1>
+            <div id="album-song-number" class="details-content">
+                <h1>Total songs</h1>
+                <p><%= data.num_of_songs%></p>
+            </div>
+            <div id="album-duration" class="details-content">
+                <h1>Duration</h1>
+                <p><%= data.total_duration%></p>
+            </div>
+            <div id="album-info" class="details-content">
+                <h1>Info</h1>
+                <p><%= data.album_info%></p>
+            </div>
+        </div>
+    </div>
+</div>
