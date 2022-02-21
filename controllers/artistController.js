@@ -71,8 +71,12 @@ export const post_addNewArtist = async (req, res) => {
         else {
             var name = await pool.query('SELECT artist_name FROM artist WHERE artist_name = $1', [artist_name])
             if(name.rowCount == 0) {
+                var image_link = 'public/images/artistImages/' + artist_name + '.jpg'
+                fs.writeFile(image_link, artist_image, function(err) {
+                    if (err) return console.error(err);
+                })
                 var artist = await pool.query('INSERT INTO artist(artist_id, artist_name, artist_info, artist_image, birth_date, num_of_albums, num_of_songs, last_updated_stamp, created_stamp) \
-                    VALUES(default, $1, $2, $3, $4, 0, 0, current_timestamp, default) RETURNING *', [artist_name, artist_info, artist_image, birth_date])
+                    VALUES(default, $1, $2, $3, $4, 0, 0, current_timestamp, default) RETURNING *', [artist_name, artist_info, image_link, birth_date])
                 if (artist) res.status(201).send({message: 'New artist added'});
                 else res.status(500).send({message: 'Error in added new artist'});
             }
@@ -141,12 +145,16 @@ export const post_updateArtist = async (req, res) => {
         if(old_db.rowCount == 0) res.status(500).send({message: 'Artist does not exist'})
         else {
             if(artist_name == '') artist_name = old_db.rows[0].artist_name
-            if(artist_image == '') artist_image = old_db.rows[0].artist_image
+            //if(artist_image == '') artist_image = old_db.rows[0].artist_image
             if(birth_date == '') birth_date = old_db.rows[0].birth_date
             if(artist_info == '') artist_info = old_db.rows[0].artist_info
+            var image_link = 'public/images/artistImages/' + artist_name + '.jpg'
+            fs.writeFile(image_link, artist_image, function(err) {
+                if (err) return console.error(err);
+            })
             var artistname_db = await pool.query('SELECT artist_name FROM artist WHERE artist_name = $1', [artist_name])
             if(artistname_db.rowCount == 0 || artist_name == old_db.rows[0].artist_name) {
-                var artist = pool.query('UPDATE artist SET artist_name = $2, artist_image = $3, birth_date = $4, artist_info = $5, last_updated_stamp = current_timestamp WHERE artist_id = $1', [artist_id, artist_name, artist_image, birth_date, artist_info])
+                var artist = pool.query('UPDATE artist SET artist_name = $2, artist_image = $3, birth_date = $4, artist_info = $5, last_updated_stamp = current_timestamp WHERE artist_id = $1', [artist_id, artist_name, image_link, birth_date, artist_info])
                 if (artist.rowCount) res.status(201).send({message: 'Artist updated'})
                 else res.status(500).send({message: 'Error in updating artist'})
             }

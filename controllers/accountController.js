@@ -91,8 +91,12 @@ export const post_addNewAccount = async (req, res) => {
                         }
                         var phone_db = await pool.query('SELECT phone_number FROM account WHERE phone_number = $1', [phone_number])
                         if(phone_db.rowCount == 0) {
+                            var image_link = 'public/images/userImages/' + user_name + '.jpg'
+                            fs.writeFile(image_link, avatar, function(err) {
+                                if (err) return console.error(err);
+                            })
                             var user = await pool.query('INSERT INTO account(account_id, username, current_password, avatar, user_role, full_name, birth_date, email, phone_number, last_updated_stamp, created_stamp) \
-                                VALUES(default, $1, $2, $3, \'client\', $4, $5, $6, $7, current_timestamp, default) RETURNING *', [user_name, current_password, avatar, full_name, birth_date, email, phone_number])
+                                VALUES(default, $1, $2, $3, \'client\', $4, $5, $6, $7, current_timestamp, default) RETURNING *', [user_name, current_password, image_link, full_name, birth_date, email, phone_number])
                             var client = await pool.query('INSERT INTO client(client_id, account_id, num_artist_favorite, num_playlist) VALUES (default, (SELECT account_id FROM account WHERE username = $1 LIMIT 1), 0, 0)', [user_name])
                             if(client.rowCount == 0) res.status(500).send({message: 'Error in adding new client'})
                             if (user.rowCount) res.status(201).send({message: 'New account created'})
@@ -158,7 +162,7 @@ export const post_updateAccount = async (req, res) => {
                 else {
                     if(user_name == '') user_name = old_db.rows[0].username
                     if(new_password == '' && confirm_new_password == '') new_password = confirm_new_password = old_password
-                    if(avatar == '') avatar = old_db.rows[0].avatar
+                    //if(avatar == '') avatar = old_db.rows[0].avatar
                     if(full_name == '') full_name = old_db.rows[0].full_name
                     if(birth_date == '') birth_date = old_db.rows[0].birth_date
                     if(email == '') email = old_db.rows[0].email
@@ -188,8 +192,12 @@ export const post_updateAccount = async (req, res) => {
                                 }
                                 var phone_db = await pool.query('SELECT phone_number FROM account WHERE phone_number = $1', [phone_number])
                                 if(phone_db.rowCount == 0 || phone_number == old_db.rows[0].phone_number) {
+                                    var image_link = 'public/images/userImages/' + avatar + '.jpg'
+                                    fs.writeFile(image_link, avatar, function(err) {
+                                        if (err) return console.error(err);
+                                    })
                                     var account = pool.query('UPDATE account SET username = $2, current_password = $3, avatar = $4, full_name = $5, birth_date = $6, email = $7, phone_number = $8, last_updated_stamp = current_timestamp WHERE account_id = $1', 
-                                        [account_id, user_name, new_password, avatar, full_name, birth_date, email, phone_number])
+                                        [account_id, user_name, new_password, image_link, full_name, birth_date, email, phone_number])
                                     if (account) res.status(201).send({message: 'Account updated'});
                                     else res.status(500).send({message: 'Error in updating account'});
                                 }

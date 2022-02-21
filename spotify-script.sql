@@ -11,7 +11,6 @@ CREATE TABLE account (
   last_updated_stamp TIMESTAMP NULL,
   created_stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT pk_account PRIMARY KEY (account_id)
-  
 );
 
 CREATE TABLE client (
@@ -55,7 +54,6 @@ CREATE TABLE song (
   artist_id int NOT NULL,
   album_id int ,
   song_name VARCHAR(60),
-  song_image VARCHAR(100),
   song_info VARCHAR(1000),
   song_link VARCHAR(100),
   duration INTEGER,
@@ -75,7 +73,6 @@ CREATE TABLE rating (
   client_id int NOT NULL,
   song_id int NOT NULL,
   rating NUMERIC,
-  last_updated_stamp TIMESTAMP NULL,
   created_stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT pk_rating PRIMARY KEY (rating_id),
   CONSTRAINT client_creating FOREIGN KEY (client_id) REFERENCES client (client_id),
@@ -125,6 +122,15 @@ CREATE table song_added_to_playlist (
   CONSTRAINT song_added FOREIGN KEY (song_id) REFERENCES song (song_id)
 );
 
+CREATE table recently_listened (
+  song_id int NOT NULL,
+  client_id int NOT NULL,
+  created_stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT pk_song_client PRIMARY KEY (song_id, client_id),
+  CONSTRAINT client_listened FOREIGN KEY (client_id) REFERENCES client (client_id),
+  CONSTRAINT song_listened FOREIGN KEY (song_id) REFERENCES song (song_id)
+);
+
 INSERT INTO account(account_id, username, current_password, avatar, user_role, full_name, birth_date, email, phone_number, last_updated_stamp, created_stamp) 
             VALUES(default, 'minhtt', '161718', '', 'admin', 'Tan Minh Tran', date('2000-01-01'), 'tanminhtran168@gmail.com', '123456789', current_timestamp, default);
 INSERT INTO account(account_id, username, current_password, avatar, user_role, full_name, birth_date, email, phone_number, last_updated_stamp, created_stamp)
@@ -162,12 +168,12 @@ INSERT INTO album(album_id, artist_id, album_name, album_image, album_info, num_
 INSERT INTO album(album_id, artist_id, album_name, album_image, album_info, num_of_songs, total_duration, last_updated_stamp, created_stamp) 
             VALUES(default, 2, 'Songs', '', 'Nhac nhe', 1, 100, current_timestamp, default);
            
-INSERT INTO song(song_id, artist_id, album_id, song_name, song_image, song_info, song_link, category, duration, sum_rate, num_of_ratings, num_of_comments, last_updated_stamp, created_stamp) 
-            VALUES(default, 1, 1, 'Toi yeu CHL', '', 'Nhac CHL', '/tracks/track.flac', 'Nhac viet', 100, 4, 1, 1, current_timestamp, default);
-INSERT INTO song(song_id, artist_id, album_id, song_name, song_image, song_info, song_link, category, duration, sum_rate, num_of_ratings, num_of_comments, last_updated_stamp, created_stamp) 
-            VALUES(default, 1, 1, 'Cur rap song', '', 'Nhac VN', '', 'Nhac My', 300, 8, 2, 1, current_timestamp, default);
-INSERT INTO song(song_id, artist_id, album_id, song_name, song_image, song_info, song_link, category, duration, sum_rate, num_of_ratings, num_of_comments, last_updated_stamp, created_stamp) 
-            VALUES(default, 2, 2, 'Nhac tiktok', '', 'Tiktok', '', 'Nhac viet', 200, 8, 2, 2, current_timestamp, default);
+INSERT INTO song(song_id, artist_id, album_id, song_name, song_info, song_link, category, duration, sum_rate, num_of_ratings, num_of_comments, last_updated_stamp, created_stamp) 
+            VALUES(default, 1, 1, 'Toi yeu CHL', 'Nhac CHL', '', 'Nhac viet', 100, 4, 1, 1, current_timestamp, default);
+INSERT INTO song(song_id, artist_id, album_id, song_name, song_info, song_link, category, duration, sum_rate, num_of_ratings, num_of_comments, last_updated_stamp, created_stamp) 
+            VALUES(default, 1, 1, 'Cur rap song', 'Nhac VN', '', 'Nhac My', 300, 8, 2, 1, current_timestamp, default);
+INSERT INTO song(song_id, artist_id, album_id, song_name, song_info, song_link, category, duration, sum_rate, num_of_ratings, num_of_comments, last_updated_stamp, created_stamp) 
+            VALUES(default, 2, 2, 'Nhac tiktok', 'Tiktok', '', 'Nhac viet', 200, 8, 2, 2, current_timestamp, default);
            
 INSERT INTO song_added_to_playlist (song_id , playlist_id , created_stamp) 
             VALUES(1, 1, default);
@@ -195,16 +201,16 @@ INSERT INTO artist_favorite (client_id, artist_id, created_stamp)
 INSERT INTO artist_favorite (client_id, artist_id, created_stamp) 
             VALUES(3, 1, default);
            
-INSERT INTO rating(rating_id, client_id, song_id, rating, last_updated_stamp, created_stamp) 
-            VALUES(default, 1, 2, 5, current_timestamp, default);
-INSERT INTO rating(rating_id, client_id, song_id, rating, last_updated_stamp, created_stamp) 
-            VALUES(default, 2, 1, 4, current_timestamp, default);
-INSERT INTO rating(rating_id, client_id, song_id, rating, last_updated_stamp, created_stamp) 
-            VALUES(default, 2, 3, 4, current_timestamp, default);
-INSERT INTO rating(rating_id, client_id, song_id, rating, last_updated_stamp, created_stamp) 
-            VALUES(default, 3, 2, 3, current_timestamp, default);
-INSERT INTO rating(rating_id, client_id, song_id, rating, last_updated_stamp, created_stamp) 
-            VALUES(default, 3, 3, 4, current_timestamp, default);
+INSERT INTO rating(rating_id, client_id, song_id, rating, created_stamp) 
+            VALUES(default, 1, 2, 5, default);
+INSERT INTO rating(rating_id, client_id, song_id, rating, created_stamp) 
+            VALUES(default, 2, 1, 4, default);
+INSERT INTO rating(rating_id, client_id, song_id, rating, created_stamp) 
+            VALUES(default, 2, 3, 4, default);
+INSERT INTO rating(rating_id, client_id, song_id, rating, created_stamp) 
+            VALUES(default, 3, 2, 3, default);
+INSERT INTO rating(rating_id, client_id, song_id, rating, created_stamp) 
+            VALUES(default, 3, 3, 4, default);
 
 INSERT INTO comment(comment_id, client_id, song_id, comment_content, last_updated_stamp, created_stamp) 
             VALUES(default, 1, 2, 'Hay', current_timestamp, default);
@@ -221,13 +227,14 @@ select * from playlist;
 select * from artist  ;
 select * from artist_favorite ;
 select * from album ;
-select * from song;
+select * from song  ;
 select * from song_added_to_playlist  ;
 select * from rating ;
 select * from comment;
 
-SELECT client.account_id, playlist.* FROM playlist, client, account  WHERE playlist.client_id = client.client_id and account.account_id = client.account_id and account.account_id = 1
 
-drop table artist_favored, rating, client, comment, playlist, song_added_to_playlist, song,album ,artist, account, admin;
-drop table account, client, artist, album, song, song_added_to_playlist, playlist, comment, rating , artist_favorite ;
+drop table account, client, artist, album, song, song_added_to_playlist, playlist, comment, rating , artist_favorite, recently_listened 
+SELECT song.*, (sum_rate/num_of_ratings) as rate FROM song, rating ORDER BY rating DESC LIMIT 5
 
+SELECT COUNT(song_id) as numsong FROM song
+SELECT COUNT(album_id) as numalbum FROM album
