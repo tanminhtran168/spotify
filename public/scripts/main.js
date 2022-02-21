@@ -380,7 +380,7 @@ function navigateTo(path, callback = null, reqType = "GET", details = null)
         {
             root.innerHTML = this.responseText;
             console.log(path)
-            history.pushState({ejs: root.innerHTML}, `${path}`, `${path}`)
+            history.pushState({ejs: root.innerHTML, randomData: window.Math.random()}, `${path}`, `${path}`)
             if(callback)
             {
                 callback();
@@ -699,3 +699,4 @@ function submitComment(song_id){
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xhttp.send(`comment_content=${document.getElementById("comment-input").value}&song_id=${song_id}`);
 }
+

@@ -18,20 +18,16 @@
                 <input id="song-album-edit" value = '<%= data.album_name %>'></input>
             </div>
             <div  class="input-field">
-                <label>Rating</label>
-                <input id="song-rating-edit" value = '<%= rating %>'></input>
-            </div>
-            <div  class="input-field">
                 <label>Category</label>
                 <input id="song-category-edit" value = '<%= data.category %>' ></input>
             </div>
             <div  class="input-field">
                 <label>Info</label>
-                <input id="song-details-info-edit" value = '<%= data.song_info %>'></input>
+                <input id="song-info-edit" value = '<%= data.song_info %>'></input>
             </div>
             <hr>
             <div style="margin-top: 50px; margin-bottom: 10px">  
-                <button id = "song-play-button">Save</button>
+                <button id = "song-play-button" onclick="updateSong('<%= data.song_id %>')">Save</button>
                 <button id = "song-add-queue" onclick="navigateTo('/admin/song/<%- data.song_id %>')">Cancel</button>
             </div>
         </div>
