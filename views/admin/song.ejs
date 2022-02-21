@@ -6,8 +6,8 @@
             <div id="song-title"><%=data.song_name%></div>
             <div id="song-artist"><%=data.artist_name%></div>
             <div style="margin-top: 50px; margin-bottom: 10px">  
-                <button id = "song-play-button" onclick="playSong('<%- data.song_id %>')">Play</button>
-                <button id = "song-add-queue" onclick="navigateTo('<%- data.song_id %>/update')">Edit</button>
+                <button id = "song-play-button" onclick="playSong('/admin/song/<%- data.song_id %>')">Play</button>
+                <button id = "song-add-queue" onclick="navigateTo('/admin/song/<%- data.song_id %>/update')">Edit</button>
                 
             </div>
             <hr>
@@ -45,14 +45,6 @@
                 </div>        
             <% }); %>
         </div>
-        <hr>
-        <input type="text" id="comment-input" placeholder="Add a comment"/>
-        <div style = "margin-left: auto">
-            <button id="comment-button" onclick="submitComment('<%= data.song_id %>')">
-                    COMMENT
-            </button>
-        </div>
-        
         <hr>
     </div>
 </div>
