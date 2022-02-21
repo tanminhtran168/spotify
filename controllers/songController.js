@@ -2,7 +2,7 @@ import express from 'express'
 import pg from 'pg'
 import jwt from 'jsonwebtoken'
 import config from '../config.js'
-import { convertIntToTimeString } from '../utils.js'
+import { convertIntToTimeString, getClient } from '../utils.js'
 const router = express.Router()
 const Pool = pg.Pool
 const pool = new Pool(config.POSTGRES_INFO)
@@ -36,6 +36,8 @@ export const post_getSongInfobyId = async (req, res) => {
         //console.log(song.rows[0])
         res.locals.data = song.rows[0]
         res.locals.rating = Math.round(song.rows[0].sum_rate / song.rows[0].num_of_ratings)
+        const album = await pool.query('SELECT album_image FROM album WHERE album_id = $1', [song.rows[0].album_id])
+        res.locals.album_image = album.rows[0].album_image
         
     } catch (err) {
         console.log(err.stack)
@@ -82,7 +84,7 @@ export const post_searchSong = async (req, res) => {
         res.send(song.rows)
     } catch (err) {
         console.log(err.stack)
-    }    
+    }
 }
 
 export const searchCategory = async (req, res) => {
@@ -101,7 +103,7 @@ export const get_addNewSong = async (req, res) => {
 }
 
 export const post_addNewSong = async (req, res) => {
-    var {song_name, artist_name, album_name, song_image, song_info, song_link, duration, category} = req.body;
+    var {song_name, artist_name, album_name, song_info, song_file, duration, category} = req.body;
     if(song_name == '' || artist_name == '' || album_name == '' , duration == '' , category == '' )
         res.status(500).send({message: 'Missing some value'})
     else 
@@ -126,9 +128,13 @@ export const post_addNewSong = async (req, res) => {
                     var artist_id = artist.rows[0].artist_id
                     var album = await pool.query('SELECT album_id FROM album WHERE album_name = $1 and artist_id = $2', [album_name, artist_id])
                     if (album.rowCount) {
+                        var song_link = 'public/songs/' + song_name + '.mp3'
+                        fs.writeFile(song_link, song_file, function(err) {
+                            if (err) return console.error(err);
+                        })
                         var album_id = album.rows[0].album_id
-                        var song = await pool.query('INSERT INTO song(song_id, artist_id, album_id, song_name, song_image, song_info, song_link, duration, category, sum_rate, num_of_ratings, num_of_comments, last_updated_stamp, created_stamp) \
-                            VALUES(default, $1, $2, $3, $4, $5, $6, $7, $8, 0, 0, 0, current_timestamp, default) RETURNING *', [artist_id, album_id, song_name, song_image, song_info, song_link, duration, category])
+                        var song = await pool.query('INSERT INTO song(song_id, artist_id, album_id, song_name, song_info, song_link, duration, category, sum_rate, num_of_ratings, num_of_comments, last_updated_stamp, created_stamp) \
+                            VALUES(default, $1, $2, $3, $4, $5, $6, $7, 0, 0, 0, current_timestamp, default) RETURNING *', [artist_id, album_id, song_name, song_info, song_link, duration, category])
                         if (song.rowCount) {
                             // Lấy artist_id và album_id để cập nhật
                             var artist_id = artist.rows[0].artist_id
@@ -192,7 +198,7 @@ export const get_updateSong = async (req, res) => {
     res.render('songViews/updateSong')
 }
 export const post_updateSong = async (req, res) => {
-    var {song_id, song_name, artist_name, album_name, song_image, song_info, song_link, duration, category} = req.body
+    var {song_id, song_name, artist_name, album_name, song_info, song_file, duration, category} = req.body
     if(song_id == '') res.status(500).send({message: 'Song does not exist'})
     else {
         try {
@@ -200,8 +206,7 @@ export const post_updateSong = async (req, res) => {
             if(old_db.rowCount == 0) res.status(500).send({message: 'Song does not exist'})
             else {
                 if(song_name == '') song_name = old_db.rows[0].song_name
-                if(song_image == '') song_image = old_db.rows[0].song_image
-                if(song_link == '') song_link = old_db.rows[0].song_link
+                //if(song_link == '') song_link = old_db.rows[0].song_link
                 if(song_info == '') song_info = old_db.rows[0].song_info
                 if(duration == '') duration = old_db.rows[0].duration
                 if(category == '') category = old_db.rows[0].category
@@ -240,8 +245,12 @@ export const post_updateSong = async (req, res) => {
                                     await pool.query('UPDATE playlist SET total_duration = total_duration - $1 + $2, last_updated_stamp = current_timestamp WHERE playlist_id = $3;', [old_db.rows[0].duration, duration, playlist.rows[x].playlist_id])
                                     x += 1
                                 }
+                                var song_link = 'public/songs/' + song_name + '.mp3'
+                                fs.writeFile(song_link, song_file, function(err) {
+                                    if (err) return console.error(err);
+                                })
                                 // Cập nhật song
-                                var song = pool.query('UPDATE song SET artist_id = $2, album_id = $3, song_name = $4, song_image = $5, song_info = $6, song_link = $7, duration = $8, category = $9, last_updated_stamp = current_timestamp WHERE song_id = $1', [song_id, new_artist.rows[0].artist_id, new_album.rows[0].album_id, song_name, song_image, song_info, song_link, duration, category])
+                                var song = pool.query('UPDATE song SET artist_id = $2, album_id = $3, song_name = $4, song_info = $5, song_link = $6, duration = $7, category = $8, last_updated_stamp = current_timestamp WHERE song_id = $1', [song_id, new_artist.rows[0].artist_id, new_album.rows[0].album_id, song_name, song_info, song_link, duration, category])
                                 if (song) res.status(201).send({message: 'Song updated'})
                                 else res.status(500).send({message: 'Error in updating song'})
                             }
@@ -257,6 +266,28 @@ export const post_updateSong = async (req, res) => {
             console.log(err.stack)
         }
     }
+}
+
+export const addNewRecentlyListenedSong = async (req, res) => {
+    const {song_id} = req.body
+    const client_id = await getClient(req, res)
+    const song = await pool.query('SELECT * FROM song WHERE song_id = $1 and client_id = $2', [song_id, client_id])
+    if(song == null) {
+        const latest_song = await pool.query('SELECT * FROM recently_listened WHERE client_id = $1 ORDER BY created_stamp ASC', [client_id])
+        const num = await pool.query('SELECT COUNT(song_id) as num FROM recently_listened WHERE client_id = $1', [client_id])
+        if(num.rows[0].num == 10) await pool.query('DELETE FROM recently_listened WHERE client_id = $1 and song_id = $2', [client_id, latest_song.rows[0].song_id])
+        await pool.query('INSERT INTO recently_listened(song_id, client_id, created_stamp) \ VALUES ($1, $2, default)', [song_id, client_id])
+    }
+    else {
+        await pool.query('DELETE FROM recently_listened WHERE client_id = $1 and song_id = $2', [client_id, latest_song.rows[0].song_id])
+        await pool.query('INSERT INTO recently_listened(song_id, client_id, created_stamp) \ VALUES ($1, $2, default)', [song_id, client_id])
+    }
+}
+
+export const getRecentlyListenedSong = async (req, res) => {
+    const client_id = getClient(req, res)
+    const song = await pool.query('SELECT * FROM recently_listened WHERE client_id = $1 ORDER BY created_stamp DESC', [client_id])
+    res.send(song.rows)
 }
 
 export default router;

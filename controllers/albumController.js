@@ -2,6 +2,7 @@ import express from 'express'
 import pg from 'pg'
 import config from '../config.js'
 import { convertIntToTimeString } from '../utils.js'
+import fs from 'fs'
 const router = express.Router()
 const Pool = pg.Pool
 const pool = new Pool(config.POSTGRES_INFO)
@@ -68,6 +69,9 @@ export const post_addNewAlbum = async (req, res) => {
                 var artist = await pool.query('SELECT artist_id FROM artist WHERE artist_name = $1', [artist_name])
                 if (artist.rowCount) {
                     var image_link = 'public/images/albumImages/' + album_name + '.jpg'
+                    fs.writeFile(image_link, album_image, function(err) {
+                        if (err) return console.error(err);
+                    })
                     var artist_id = artist.rows[0].artist_id
                     var update = await pool.query('UPDATE artist SET num_of_albums = num_of_albums + 1, last_updated_stamp = current_timestamp WHERE artist_id = $1;', [artist_id])
                     var album = await pool.query('INSERT INTO album(album_id, artist_id, album_name, album_image, album_info, num_of_songs, total_duration, last_updated_stamp, created_stamp) \
@@ -157,7 +161,11 @@ export const post_updateAlbum = async (req, res) => {
                     await pool.query('UPDATE artist SET num_of_albums = num_of_albums - 1, num_of_songs = num_of_songs - $2, last_updated_stamp = current_timestamp WHERE artist_id = $1', [old_artist.rows[0].artist_id, old_db.rows[0].num_of_songs])
                     await pool.query('UPDATE artist SET num_of_albums = num_of_albums + 1, num_of_songs = num_of_songs + $2, last_updated_stamp = current_timestamp WHERE artist_id = $1', [new_artist.rows[0].artist_id, old_db.rows[0].num_of_songs])
                     // Cập nhật album
-                    var album = pool.query('UPDATE album SET album_name = $2, artist_id = $3, album_image = $4, album_info = $5, last_updated_stamp = current_timestamp WHERE album_id = $1', [album_id, album_name, new_artist.rows[0].artist_id, album_image, album_info])
+                    var image_link = 'public/images/albumImages/' + album_name + '.jpg'
+                    fs.writeFile(image_link, album_image, function(err) {
+                        if (err) return console.error(err);
+                    })
+                    var album = pool.query('UPDATE album SET album_name = $2, artist_id = $3, album_image = $4, album_info = $5, last_updated_stamp = current_timestamp WHERE album_id = $1', [album_id, album_name, new_artist.rows[0].artist_id, image_link, album_info])
                     if (album) res.status(201).send({message: 'Album updated'});
                     else res.status(500).send({message: 'Error in updating album'});
                 }
