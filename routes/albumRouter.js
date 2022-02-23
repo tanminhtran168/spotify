@@ -2,6 +2,7 @@ import express from 'express'
 import bodyParser from 'body-parser';
 import { checkAdmin, countViews, isAuth } from '../utils.js'
 import {getAllAlbum, get_searchAlbum, post_searchAlbum, get_getAlbumbyId, post_getAlbumbyId, get_addNewAlbum, post_addNewAlbum, get_deleteAlbum, post_deleteAlbum, get_updateAlbum, post_updateAlbum} from '../controllers/albumController.js'
+import ExpressFormidable from 'express-formidable';
 const router = express.Router();
 
 router.use(bodyParser.json())
@@ -16,7 +17,7 @@ router.get('/search', countViews, get_searchAlbum);
 router.post('/search', countViews, post_searchAlbum);
 
 router.get('/add', isAuth, checkAdmin, get_addNewAlbum);
-router.post('/add', post_addNewAlbum);
+router.post('/add', isAuth, ExpressFormidable(), checkAdmin, post_addNewAlbum);
 
 router.get('/delete', isAuth, checkAdmin, get_deleteAlbum);
 router.post('/delete', isAuth, checkAdmin, post_deleteAlbum);

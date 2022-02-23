@@ -1,0 +1,37 @@
+<div id="song-content">
+    <img id="background-image" src="/../images/album.png">
+    <div id="song-box" class="content-box">
+        <div id="song-details" style="margin-right: auto;" class="details">
+            <div id="album-name">Add A New Song</div>
+            <div  class="input-field">
+                <label>Title</label>
+                <input id="song-title-edit"></input>
+            </div>
+            <div class="input-field" style="height: fit-content;">
+                <label>Artist</label>
+                <input id="song-artist-edit" ></input>
+            </div>
+            <hr>
+            <h1>Song details:</h1>
+            <div class="input-field">
+                <label>Album</label>
+                <input id="song-album-edit"></input>
+            </div>
+            <div  class="input-field">
+                <label>Category</label>
+                <input id="song-category-edit" ></input>
+            </div>
+            <div class="input-field">
+                <label>Info</label>
+                <input id="song-info-edit"></input>
+            </div>
+            <label for="upload-file-song" style="margin: 0 0px 10px 0; color: #FFFFFF;" >Upload Audio File:</label>
+            <input id="upload-file-song" type="file" style="font-family: 'Poppins'"/>
+            <hr>
+            <div style="margin-top: 50px; margin-bottom: 10px">  
+                <button id = "song-play-button" onclick="addSong()">Save</button>
+                <button id = "song-add-queue" onclick="navigateTo('/admin/manage/song')">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -96,3 +96,15 @@ export const get_album = async (req, res) => {
 export const get_add_album = async (req, res) => {
     res.render('admin/add-album', {layout: 'admin/layout'})
 }
+export const get_add_artist = async (req, res) => {
+    res.render('admin/add-artist', {layout: 'admin/layout'})
+}
+export const get_add_song = async (req, res) => {
+    res.render('admin/add-song', {layout: 'admin/layout'})
+}
+export const get_update_artist = async (req, res) => {
+    res.render('admin/edit-artist', {layout: 'admin/layout'})
+}
+export const get_update_album = async (req, res) => {
+    res.render('admin/edit-album', {layout: 'admin/layout'})
+}

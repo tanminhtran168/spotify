@@ -12,6 +12,7 @@ document.getElementById("login-submit").onclick = function () {
     xhttp.onreadystatechange = function() {
         if(this.readyState == 4)
         {
+            
             var Data = JSON.parse(this.responseText);
             if(this.status!=200)
             {

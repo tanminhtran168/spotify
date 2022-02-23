@@ -3,6 +3,7 @@ import pg from 'pg'
 import config from '../config.js'
 import { convertIntToTimeString, saveFile } from '../utils.js'
 import path from 'path'
+import fs from 'fs'
 const __dirname = path.resolve(path.dirname(''));
 const router = express.Router()
 const Pool = pg.Pool
