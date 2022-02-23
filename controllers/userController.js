@@ -3,7 +3,9 @@ import pg from 'pg'
 import jwt from 'jsonwebtoken'
 import config from '../config.js'
 import fs from 'fs'
-import { getToken, convertIntToTimeString } from '../utils.js'
+import path from 'path'
+const __dirname = path.resolve(path.dirname(''));
+import { getToken, convertIntToTimeString, saveFile } from '../utils.js'
 
 const router = express.Router()
 const Pool = pg.Pool
@@ -13,8 +15,10 @@ export const get_Signup = async (req,res) =>{
     if(req.cookies.token != null) res.status(500).send({message: 'You must log out first'}) 
     else res.render('signup', {layout: false});
 }
+const uploadFolder = path.join(__dirname, "public","images", "userImages");
 export const post_Signup = async (req, res) => {
-    const {user_name, current_password, confirm_password, avatar, full_name, birth_date, email, phone_number} = req.body
+    const {user_name, current_password, confirm_password, full_name, birth_date, email, phone_number} = req.fields
+    const {avatar} = req.files
     if(user_name == '' || current_password == '' || confirm_password == '' || full_name == '' || email == '' || phone_number == '' || birth_date == '')
         res.status(500).send({message: 'Missing some value'});
     else {
@@ -44,8 +48,11 @@ export const post_Signup = async (req, res) => {
                         }
                         var phone_db = await pool.query('SELECT phone_number FROM account WHERE phone_number = $1', [phone_number])
                         if(phone_db.rowCount == 0) {
+                            var image_link = 'public/images/userImages/' + user_name + '.jpg'
+                            const imageName = user_name + '.jpg';
+                            saveFile(avatar, uploadFolder, imageName)
                             var user = await pool.query('INSERT INTO account(account_id, username, current_password, avatar, user_role, full_name, birth_date, email, phone_number, last_updated_stamp, created_stamp) \
-                                VALUES(default, $1, $2, $3, \'client\', $4, $5, $6, $7, current_timestamp, default) RETURNING *', [user_name, current_password, avatar, full_name, birth_date,email, phone_number])
+                                VALUES(default, $1, $2, $3, \'client\', $4, $5, $6, $7, current_timestamp, default) RETURNING *', [user_name, current_password, image_link, full_name, birth_date,email, phone_number])
                             var client = await pool.query('INSERT INTO client(client_id, account_id, num_artist_favorite, num_playlist) VALUES (default, (SELECT account_id FROM account WHERE username = $1 LIMIT 1), 0, 0)', [user_name])
                             if(client.rowCount == 0) res.status(500).send({message: 'Error in adding new client'})
                             if (user.rowCount) {

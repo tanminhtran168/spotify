@@ -96,7 +96,7 @@ export const post_addNewAccount = async (req, res) => {
                         var phone_db = await pool.query('SELECT phone_number FROM account WHERE phone_number = $1', [phone_number])
                         if(phone_db.rowCount == 0) {
                             var image_link = 'public/images/userImages/' + user_name + '.jpg'
-                            const imageName = user_name + '.jpg';[p9]
+                            const imageName = user_name + '.jpg';
                             saveFile(avatar, uploadFolder, imageName)
                             var user = await pool.query('INSERT INTO account(account_id, username, current_password, avatar, user_role, full_name, birth_date, email, phone_number, last_updated_stamp, created_stamp) \
                                 VALUES(default, $1, $2, $3, \'client\', $4, $5, $6, $7, current_timestamp, default) RETURNING *', [user_name, current_password, image_link, full_name, birth_date, email, phone_number])
