@@ -103,11 +103,18 @@ export const searchCategory = async (req, res) => {
 export const get_addNewSong = async (req, res) => {
     res.render('songViews/addNewSong')
 }
-
+function isSong(file) {
+    if(file.type.slice(0, 5) == 'audio') return true
+    return false
+}
 const uploadFolder = path.join(__dirname, "public","songs");
 export const post_addNewSong = async (req, res) => {
     var {song_name, artist_name, album_name, song_info, duration, category} = req.fields;
     const {song_file} = req.files
+    if(!isSong(song_file)) {
+        res.status(500).send({message: 'Wrong file format'}) 
+        return
+    }
     if(song_name == '' || artist_name == '' || album_name == '' , duration == '' , category == '' )
         res.status(500).send({message: 'Missing some value'})
     else 
@@ -132,7 +139,7 @@ export const post_addNewSong = async (req, res) => {
                     var artist_id = artist.rows[0].artist_id
                     var album = await pool.query('SELECT album_id FROM album WHERE album_name = $1 and artist_id = $2', [album_name, artist_id])
                     if (album.rowCount) {
-                        var song_link = 'public/songs' + song_name + '.mp3'
+                        var song_link = 'public/songs/' + song_name + '.mp3'
                         const songName = song_name + '.mp3'
                         saveFile(song_file, uploadFolder, songName)
                         var album_id = album.rows[0].album_id
@@ -203,6 +210,10 @@ export const get_updateSong = async (req, res) => {
 export const post_updateSong = async (req, res) => {
     var {song_id, song_name, artist_name, album_name, song_info, duration, category} = req.fields
     const {song_file} = req.files
+    if(!isSong(song_file)) {
+        res.status(500).send({message: 'Wrong file format'}) 
+        return
+    }
     if(song_id == '') res.status(500).send({message: 'Song does not exist'})
     else {
         try {

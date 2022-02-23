@@ -1,7 +1,7 @@
 import express from 'express'
 import pg from 'pg'
 import config from '../config.js'
-import { convertIntToTimeString, saveFile } from '../utils.js'
+import { convertIntToTimeString, saveFile, isImage } from '../utils.js'
 import path from 'path'
 const __dirname = path.resolve(path.dirname(''));
 const router = express.Router()
@@ -59,14 +59,15 @@ export const post_searchAlbum = async (req, res) => {
 export const get_addNewAlbum = async (req, res) => {
     res.render('albumViews/addNewAlbum')
 }
-function isImage(file){
-    return true;
-}
 const uploadFolder = path.join(__dirname, "public","images", "albumImages");
 export const post_addNewAlbum = async (req, res) => {
     const {album_name, artist_name, album_info} = req.fields
     const {album_image} = req.files
-    
+    if(!isImage(album_image)) {
+        res.status(500).send({message: 'Wrong file format'}) 
+        return
+    }
+
     try {
         if (album_name == '' || artist_name == '') res.status(500).send({message: 'Missing some value'}) 
         else {
@@ -150,6 +151,10 @@ export const get_updateAlbum = async (req, res) => {
 export const post_updateAlbum = async (req, res) => {
     var {album_id, album_name, artist_name, album_info} = req.fields
     const {album_image} = req.files
+    if(!isImage(album_image)) {
+        res.status(500).send({message: 'Wrong file format'})
+        return
+    } 
     try {
         var old_db = await pool.query('SELECT * FROM album WHERE album_id = $1', [album_id])
         if(old_db.rowCount == 0) res.status(500).send({message: 'Album does not exist'})

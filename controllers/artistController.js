@@ -1,7 +1,7 @@
 import express from 'express'
 import pg from 'pg'
 import config from '../config.js'
-import { getClient, convertIntToTimeString, saveFile } from '../utils.js';
+import { getClient, convertIntToTimeString, saveFile, isImage } from '../utils.js';
 import path from 'path'
 const __dirname = path.resolve(path.dirname(''));
 const router = express.Router()
@@ -70,6 +70,10 @@ export const get_addNewArtist = async (req, res) => {
 export const post_addNewArtist = async (req, res) => {
     const {artist_name, birth_date, artist_info} = req.fields
     const {artist_image} = req.files
+    if(!isImage(artist_image)) {
+        res.status(500).send({message: 'Wrong file format'}) 
+        return
+    }
     try {
         if(artist_name == '' || birth_date == '' ) res.status(500).send({message: 'Missing some value'})
         else {
@@ -144,6 +148,10 @@ export const get_updateArtist = async (req, res) => {
 export const post_updateArtist = async (req, res) => {
     var {artist_id, artist_name, birth_date, artist_info} = req.fields
     const {artist_image} = req.files
+    if(!isImage(artist_image)) {
+        res.status(500).send({message: 'Wrong file format'}) 
+        return
+    }
     try {
         var old_db = await pool.query('SELECT * FROM artist WHERE artist_id = $1', [artist_id])
         if(old_db.rowCount == 0) res.status(500).send({message: 'Artist does not exist'})

@@ -118,4 +118,9 @@ export function saveFile(file, folder, nameFile)
   //console.log(name)
   writeFileSync(`${folder}/${nameFile}`, readFileSync(path))
 }
+
+export function isImage(file) {
+  if(file.type.slice(0, 5) == 'image') return true;
+  return false;
+}
 export default router
