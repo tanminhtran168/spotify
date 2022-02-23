@@ -105,6 +105,7 @@ export const countViews = async (req, res, next) => {
 }
 
 export function convertIntToTimeString (x){
+  x = Math.floor(x)
   if(Math.floor(x%60) < 10)
       return Math.floor(x/60) + ":0" + Math.floor(x%60);
   else

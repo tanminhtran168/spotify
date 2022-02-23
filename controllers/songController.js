@@ -4,6 +4,8 @@ import jwt from 'jsonwebtoken'
 import config from '../config.js'
 import { convertIntToTimeString, getClient, saveFile } from '../utils.js'
 import path from 'path'
+import ffprobe from 'ffprobe'
+import ffprobeStatic from 'ffprobe-static'
 const __dirname = path.resolve(path.dirname(''));
 const router = express.Router()
 const Pool = pg.Pool
@@ -109,25 +111,21 @@ function isSong(file) {
 }
 const uploadFolder = path.join(__dirname, "public","songs");
 export const post_addNewSong = async (req, res) => {
-    var {song_name, artist_name, album_name, song_info, duration, category} = req.fields;
+    var {song_name, artist_name, album_name, song_info, category} = req.fields;
     const {song_file} = req.files
+    var duration
     if(!isSong(song_file)) {
         res.status(500).send({message: 'Wrong file format'}) 
         return
     }
-    if(song_name == '' || artist_name == '' || album_name == '' , duration == '' , category == '' )
+    ffprobe(song_file.path, { path: ffprobeStatic.path }, function (err, info) {
+        if (err) return err;
+        duration = info.streams[0].duration;
+    })
+    if(song_name == '' || artist_name == '' || album_name == '' || category == '' )
         res.status(500).send({message: 'Missing some value'})
     else 
         try {
-            duration = duration == '' ? 0 : duration;
-            var x = 0;
-            while(x < duration.length) {
-                if(duration[x] > '9' || duration[x] < '0') {
-                    res.status(500).send({message: 'You must type a number'})
-                    return
-                }
-                x += 1
-            }
             // Kiểm tra tên bài hát có trùng không
             var name = await pool.query('SELECT * FROM song WHERE song_name = $1', [song_name])
             // Nếu artist này chưa có song nào cùng song_name
@@ -139,7 +137,7 @@ export const post_addNewSong = async (req, res) => {
                     var artist_id = artist.rows[0].artist_id
                     var album = await pool.query('SELECT album_id FROM album WHERE album_name = $1 and artist_id = $2', [album_name, artist_id])
                     if (album.rowCount) {
-                        var song_link = 'public/songs/' + song_name + '.mp3'
+                        var song_link = '/songs/' + song_name + '.mp3'
                         const songName = song_name + '.mp3'
                         saveFile(song_file, uploadFolder, songName)
                         var album_id = album.rows[0].album_id
@@ -208,12 +206,17 @@ export const get_updateSong = async (req, res) => {
     res.render('songViews/updateSong')
 }
 export const post_updateSong = async (req, res) => {
-    var {song_id, song_name, artist_name, album_name, song_info, duration, category} = req.fields
+    var {song_id, song_name, artist_name, album_name, song_info, category} = req.fields
     const {song_file} = req.files
+    var duration
     if(!isSong(song_file)) {
         res.status(500).send({message: 'Wrong file format'}) 
         return
     }
+    ffprobe(song_file.path, { path: ffprobeStatic.path }, function (err, info) {
+        if (err) return err;
+        duration = info.streams[0].duration;
+    })
     if(song_id == '') res.status(500).send({message: 'Song does not exist'})
     else {
         try {
@@ -223,16 +226,8 @@ export const post_updateSong = async (req, res) => {
                 if(song_name == '') song_name = old_db.rows[0].song_name
                 //if(song_link == '') song_link = old_db.rows[0].song_link
                 if(song_info == '') song_info = old_db.rows[0].song_info
-                if(duration == '') duration = old_db.rows[0].duration
+                //if(duration == '') duration = old_db.rows[0].duration
                 if(category == '') category = old_db.rows[0].category
-                var x = 0;
-                while(x < duration.length) {
-                    if(duration[x] > '9' || duration[x] < '0') {
-                        res.status(500).send({message: 'You must type a number'})
-                        return
-                    }
-                    x += 1
-                }
                 var songname_db = await pool.query('SELECT song_name FROM song WHERE song_name = $1', [song_name])
                 if(songname_db.rowCount == 0 || song_name == old_db.rows[0].song_name) {
                     var old_artist = await pool.query('SELECT * FROM artist WHERE artist_id = $1', [old_db.rows[0].artist_id])

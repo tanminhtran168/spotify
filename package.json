@@ -19,6 +19,9 @@
     "express-ejs-layouts": "^2.5.1",
     "express-formidable": "^1.2.0",
     "express-session": "^1.17.2",
+    "ffprobe": "^1.1.2",
+    "ffprobe-static": "^3.0.0",
+    "get-audio-duration": "^3.0.0",
     "jsonwebtoken": "^8.5.1",
     "nodemon": "^2.0.15",
     "pg": "^8.7.1"

@@ -55,7 +55,6 @@ export const post_searchAlbum = async (req, res) => {
         console.log(err.stack)
     }    
 }
-
 export const get_addNewAlbum = async (req, res) => {
     res.render('albumViews/addNewAlbum')
 }
@@ -76,7 +75,7 @@ export const post_addNewAlbum = async (req, res) => {
                 // Lấy artist
                 var artist = await pool.query('SELECT artist_id FROM artist WHERE artist_name = $1', [artist_name])
                 if (artist.rowCount) {
-                    var image_link = 'public/images/albumImages/' + album_name + '.jpg'
+                    var image_link = '/images/albumImages/' + album_name + '.jpg'
                     const imageName = album_name + '.jpg'
                     saveFile(album_image, uploadFolder, imageName)
                     var artist_id = artist.rows[0].artist_id
@@ -173,7 +172,7 @@ export const post_updateAlbum = async (req, res) => {
                     await pool.query('UPDATE artist SET num_of_albums = num_of_albums - 1, num_of_songs = num_of_songs - $2, last_updated_stamp = current_timestamp WHERE artist_id = $1', [old_artist.rows[0].artist_id, old_db.rows[0].num_of_songs])
                     await pool.query('UPDATE artist SET num_of_albums = num_of_albums + 1, num_of_songs = num_of_songs + $2, last_updated_stamp = current_timestamp WHERE artist_id = $1', [new_artist.rows[0].artist_id, old_db.rows[0].num_of_songs])
                     // Cập nhật album
-                    var image_link = 'public/images/albumImages/' + album_name + '.jpg'
+                    var image_link = '/images/albumImages/' + album_name + '.jpg'
                     const imageName = album_name + '.jpg'
                     saveFile(album_image, uploadFolder, imageName)
                     var album = pool.query('UPDATE album SET album_name = $2, artist_id = $3, album_image = $4, album_info = $5, last_updated_stamp = current_timestamp WHERE album_id = $1', [album_id, album_name, new_artist.rows[0].artist_id, image_link, album_info])

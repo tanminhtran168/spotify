@@ -79,7 +79,7 @@ export const post_addNewArtist = async (req, res) => {
         else {
             var name = await pool.query('SELECT artist_name FROM artist WHERE artist_name = $1', [artist_name])
             if(name.rowCount == 0) {
-                var image_link = 'public/images/artistImages/' + artist_name + '.jpg'
+                var image_link = '/images/artistImages/' + artist_name + '.jpg'
                 const imageName = artist_name + '.jpg'
                 saveFile(artist_image, uploadFolder, imageName)
                 var artist = await pool.query('INSERT INTO artist(artist_id, artist_name, artist_info, artist_image, birth_date, num_of_albums, num_of_songs, last_updated_stamp, created_stamp) \
@@ -160,7 +160,7 @@ export const post_updateArtist = async (req, res) => {
             //if(artist_image == '') artist_image = old_db.rows[0].artist_image
             if(birth_date == '') birth_date = old_db.rows[0].birth_date
             if(artist_info == '') artist_info = old_db.rows[0].artist_info
-            var image_link = 'public/images/artistImages/' + artist_name + '.jpg'
+            var image_link = '/images/artistImages/' + artist_name + '.jpg'
             const imageName = artist_name + '.jpg'
             saveFile(artist_image, uploadFolder, imageName)
             var artistname_db = await pool.query('SELECT artist_name FROM artist WHERE artist_name = $1', [artist_name])
