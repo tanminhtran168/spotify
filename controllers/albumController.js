@@ -62,11 +62,10 @@ export const get_addNewAlbum = async (req, res) => {
 function isImage(file){
     return true;
 }
-const uploadFolder = path.join(__dirname, "public","images");
+const uploadFolder = path.join(__dirname, "public","images", "albumImages");
 export const post_addNewAlbum = async (req, res) => {
     const {album_name, artist_name, album_info} = req.fields
     const {album_image} = req.files
-    saveFile(album_image, uploadFolder)
     
     try {
         if (album_name == '' || artist_name == '') res.status(500).send({message: 'Missing some value'}) 
@@ -77,9 +76,8 @@ export const post_addNewAlbum = async (req, res) => {
                 var artist = await pool.query('SELECT artist_id FROM artist WHERE artist_name = $1', [artist_name])
                 if (artist.rowCount) {
                     var image_link = 'public/images/albumImages/' + album_name + '.jpg'
-                    fs.writeFile(image_link, album_image, function(err) {
-                        if (err) return console.error(err);
-                    })
+                    const imageName = album_name + '.jpg'
+                    saveFile(album_image, uploadFolder, imageName)
                     var artist_id = artist.rows[0].artist_id
                     var update = await pool.query('UPDATE artist SET num_of_albums = num_of_albums + 1, last_updated_stamp = current_timestamp WHERE artist_id = $1;', [artist_id])
                     var album = await pool.query('INSERT INTO album(album_id, artist_id, album_name, album_image, album_info, num_of_songs, total_duration, last_updated_stamp, created_stamp) \
@@ -150,13 +148,14 @@ export const get_updateAlbum = async (req, res) => {
     res.render('albumViews/updateAlbum')
 }
 export const post_updateAlbum = async (req, res) => {
-    var {album_id, album_name, artist_name, album_image, album_info} = req.body
+    var {album_id, album_name, artist_name, album_info} = req.fields
+    const {album_image} = req.files
     try {
         var old_db = await pool.query('SELECT * FROM album WHERE album_id = $1', [album_id])
         if(old_db.rowCount == 0) res.status(500).send({message: 'Album does not exist'})
         else {
             if(album_name == '') album_name = old_db.rows[0].album_name
-            if(album_image == '') album_image = old_db.rows[0].album_image
+            //if(album_image == '') album_image = old_db.rows[0].album_image
             if(album_info == '') album_info = old_db.rows[0].album_info
             var albumname_db = await pool.query('SELECT album_name FROM album WHERE album_name = $1', [album_name])
             if(albumname_db.rowCount == 0 || album_name == old_db.rows[0].album_name) {
@@ -170,9 +169,8 @@ export const post_updateAlbum = async (req, res) => {
                     await pool.query('UPDATE artist SET num_of_albums = num_of_albums + 1, num_of_songs = num_of_songs + $2, last_updated_stamp = current_timestamp WHERE artist_id = $1', [new_artist.rows[0].artist_id, old_db.rows[0].num_of_songs])
                     // Cập nhật album
                     var image_link = 'public/images/albumImages/' + album_name + '.jpg'
-                    fs.writeFile(image_link, album_image, function(err) {
-                        if (err) return console.error(err);
-                    })
+                    const imageName = album_name + '.jpg'
+                    saveFile(album_image, uploadFolder, imageName)
                     var album = pool.query('UPDATE album SET album_name = $2, artist_id = $3, album_image = $4, album_info = $5, last_updated_stamp = current_timestamp WHERE album_id = $1', [album_id, album_name, new_artist.rows[0].artist_id, image_link, album_info])
                     if (album) res.status(201).send({message: 'Album updated'});
                     else res.status(500).send({message: 'Error in updating album'});

@@ -16,7 +16,7 @@ router.get('/search', countViews, get_searchAlbum);
 router.post('/search', countViews, post_searchAlbum);
 
 router.get('/add', isAuth, checkAdmin, get_addNewAlbum);
-router.post('/add', isAuth, checkAdmin, post_addNewAlbum);
+router.post('/add', post_addNewAlbum);
 
 router.get('/delete', isAuth, checkAdmin, get_deleteAlbum);
 router.post('/delete', isAuth, checkAdmin, post_deleteAlbum);

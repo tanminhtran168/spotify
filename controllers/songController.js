@@ -2,7 +2,9 @@ import express from 'express'
 import pg from 'pg'
 import jwt from 'jsonwebtoken'
 import config from '../config.js'
-import { convertIntToTimeString, getClient } from '../utils.js'
+import { convertIntToTimeString, getClient, saveFile } from '../utils.js'
+import path from 'path'
+const __dirname = path.resolve(path.dirname(''));
 const router = express.Router()
 const Pool = pg.Pool
 const pool = new Pool(config.POSTGRES_INFO)
@@ -102,8 +104,10 @@ export const get_addNewSong = async (req, res) => {
     res.render('songViews/addNewSong')
 }
 
+const uploadFolder = path.join(__dirname, "public","songs");
 export const post_addNewSong = async (req, res) => {
-    var {song_name, artist_name, album_name, song_info, song_file, duration, category} = req.body;
+    var {song_name, artist_name, album_name, song_info, duration, category} = req.fields;
+    const {song_file} = req.files
     if(song_name == '' || artist_name == '' || album_name == '' , duration == '' , category == '' )
         res.status(500).send({message: 'Missing some value'})
     else 
@@ -128,10 +132,9 @@ export const post_addNewSong = async (req, res) => {
                     var artist_id = artist.rows[0].artist_id
                     var album = await pool.query('SELECT album_id FROM album WHERE album_name = $1 and artist_id = $2', [album_name, artist_id])
                     if (album.rowCount) {
-                        var song_link = 'public/songs/' + song_name + '.mp3'
-                        fs.writeFile(song_link, song_file, function(err) {
-                            if (err) return console.error(err);
-                        })
+                        var song_link = 'public/songs' + song_name + '.mp3'
+                        const songName = song_name + '.mp3'
+                        saveFile(song_file, uploadFolder, songName)
                         var album_id = album.rows[0].album_id
                         var song = await pool.query('INSERT INTO song(song_id, artist_id, album_id, song_name, song_info, song_link, duration, category, sum_rate, num_of_ratings, num_of_comments, last_updated_stamp, created_stamp) \
                             VALUES(default, $1, $2, $3, $4, $5, $6, $7, 0, 0, 0, current_timestamp, default) RETURNING *', [artist_id, album_id, song_name, song_info, song_link, duration, category])
@@ -198,7 +201,8 @@ export const get_updateSong = async (req, res) => {
     res.render('songViews/updateSong')
 }
 export const post_updateSong = async (req, res) => {
-    var {song_id, song_name, artist_name, album_name, song_info, song_file, duration, category} = req.body
+    var {song_id, song_name, artist_name, album_name, song_info, duration, category} = req.fields
+    const {song_file} = req.files
     if(song_id == '') res.status(500).send({message: 'Song does not exist'})
     else {
         try {
@@ -245,10 +249,9 @@ export const post_updateSong = async (req, res) => {
                                     await pool.query('UPDATE playlist SET total_duration = total_duration - $1 + $2, last_updated_stamp = current_timestamp WHERE playlist_id = $3;', [old_db.rows[0].duration, duration, playlist.rows[x].playlist_id])
                                     x += 1
                                 }
-                                var song_link = 'public/songs/' + song_name + '.mp3'
-                                fs.writeFile(song_link, song_file, function(err) {
-                                    if (err) return console.error(err);
-                                })
+                                var song_link = 'public/songs' + song_name + '.mp3'
+                                const songName = song_name + '.mp3'
+                                saveFile(song_file, uploadFolder, songName)
                                 // Cập nhật song
                                 var song = pool.query('UPDATE song SET artist_id = $2, album_id = $3, song_name = $4, song_info = $5, song_link = $6, duration = $7, category = $8, last_updated_stamp = current_timestamp WHERE song_id = $1', [song_id, new_artist.rows[0].artist_id, new_album.rows[0].album_id, song_name, song_info, song_link, duration, category])
                                 if (song) res.status(201).send({message: 'Song updated'})

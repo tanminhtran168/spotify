@@ -2,7 +2,9 @@ import express from 'express'
 import pg from 'pg'
 import jwt from 'jsonwebtoken'
 import config from '../config.js'
-import { getClient } from '../utils.js'
+import { getClient, saveFile } from '../utils.js'
+import path from 'path'
+const __dirname = path.resolve(path.dirname(''));
 const router = express.Router()
 const Pool = pg.Pool
 const pool = new Pool(config.POSTGRES_INFO)
@@ -57,11 +59,13 @@ export const post_searchAccount = async (req, res) => {
         console.log(err.stack)
     }    
 }
+const uploadFolder = path.join(__dirname, "public","images", "userImages");
 export const get_addNewAccount = (req,res) =>{
     res.render('accountViews/addNewAccount');
 }
 export const post_addNewAccount = async (req, res) => {
-    const {user_name, current_password, confirm_password, avatar, full_name, birth_date, email, phone_number} = req.body
+    const {user_name, current_password, confirm_password, full_name, birth_date, email, phone_number} = req.fields
+    const {avatar} = req.files
     if(user_name == '' || current_password == '' || confirm_password == '' || full_name == '' || email == '' || phone_number == '' || birth_date == '')
         res.status(500).send({message: 'Missing some value'});
     else {
@@ -92,9 +96,8 @@ export const post_addNewAccount = async (req, res) => {
                         var phone_db = await pool.query('SELECT phone_number FROM account WHERE phone_number = $1', [phone_number])
                         if(phone_db.rowCount == 0) {
                             var image_link = 'public/images/userImages/' + user_name + '.jpg'
-                            fs.writeFile(image_link, avatar, function(err) {
-                                if (err) return console.error(err);
-                            })
+                            const imageName = user_name + '.jpg';[p9]
+                            saveFile(avatar, uploadFolder, imageName)
                             var user = await pool.query('INSERT INTO account(account_id, username, current_password, avatar, user_role, full_name, birth_date, email, phone_number, last_updated_stamp, created_stamp) \
                                 VALUES(default, $1, $2, $3, \'client\', $4, $5, $6, $7, current_timestamp, default) RETURNING *', [user_name, current_password, image_link, full_name, birth_date, email, phone_number])
                             var client = await pool.query('INSERT INTO client(client_id, account_id, num_artist_favorite, num_playlist) VALUES (default, (SELECT account_id FROM account WHERE username = $1 LIMIT 1), 0, 0)', [user_name])
@@ -146,7 +149,8 @@ export const get_updateAccount = async (req, res) => {
     res.render('accountViews/updateAcc')
 }
 export const post_updateAccount = async (req, res) => {
-    var {account_id, user_name, old_password, new_password, confirm_new_password, avatar, full_name, birth_date, email, phone_number} = req.body
+    var {account_id, user_name, old_password, new_password, confirm_new_password, full_name, birth_date, email, phone_number} = req.fields
+    const {avatar} = req.files
     const client_id = await getClient(req, res)
     const client = await pool.query('SELECT client_id FROM client WHERE account_id = $1', [account_id])
     if(client_id == -1 || client_id == client.rows[0].client_id) {
@@ -192,10 +196,9 @@ export const post_updateAccount = async (req, res) => {
                                 }
                                 var phone_db = await pool.query('SELECT phone_number FROM account WHERE phone_number = $1', [phone_number])
                                 if(phone_db.rowCount == 0 || phone_number == old_db.rows[0].phone_number) {
-                                    var image_link = 'public/images/userImages/' + avatar + '.jpg'
-                                    fs.writeFile(image_link, avatar, function(err) {
-                                        if (err) return console.error(err);
-                                    })
+                                    var image_link = 'public/images/userImages/' + user_name + '.jpg'
+                                    const imageName = user_name + '.jpg'
+                                    saveFile(avatar, uploadFolder, imageName)
                                     var account = pool.query('UPDATE account SET username = $2, current_password = $3, avatar = $4, full_name = $5, birth_date = $6, email = $7, phone_number = $8, last_updated_stamp = current_timestamp WHERE account_id = $1', 
                                         [account_id, user_name, new_password, image_link, full_name, birth_date, email, phone_number])
                                     if (account) res.status(201).send({message: 'Account updated'});

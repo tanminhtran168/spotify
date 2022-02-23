@@ -2,7 +2,7 @@ import express from 'express'
 import jwt from 'jsonwebtoken';
 import config from './config.js';
 import pg from 'pg'
-import {writeFileSync, readFileSync} from 'fs'
+import {readFile, writeFile, writeFileSync, readFileSync} from 'fs'
 const router = express.Router()
 const Pool = pg.Pool
 const pool = new Pool(config.POSTGRES_INFO)
@@ -90,11 +90,11 @@ export const countViews = async (req, res, next) => {
   if(req.cookies.view == null) {
     var view = await getTokenView(13)
     res.cookie('view', view, {expires: new Date(Date.now() + 9000000)})
-    fs.readFile('public/views.txt', function (err, data) {
+    readFile('public/views.txt', function (err, data) {
       if (err) return console.error(err);
       var num = parseInt(data.toString())
       num += 1;
-      fs.writeFile('public/views.txt', num.toString(), function(err) {
+      writeFile('public/views.txt', num.toString(), function(err) {
         if (err) {
             return console.error(err);
         }
@@ -112,9 +112,10 @@ export function convertIntToTimeString (x){
 }
 //export { getToken, isAuth, checkAdmin, getClient };
 
-export function saveFile(file, folder)
+export function saveFile(file, folder, nameFile)
 {
   const {name, path} = file
-  writeFileSync(`${folder}/${name}`, readFileSync(path))
+  //console.log(name)
+  writeFileSync(`${folder}/${nameFile}`, readFileSync(path))
 }
 export default router
