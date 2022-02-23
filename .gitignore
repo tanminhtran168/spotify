@@ -1,3 +1,5 @@
 node_modules
 config.js
 public/views.txt
+workspace.code-workspace
+.vscode/launch.json
