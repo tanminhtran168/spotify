@@ -14,13 +14,7 @@
     Trần Tấn Minh : Thiết kế database, hỗ trợ viết frontend.
 
 # Chỉ dẫn cài đặt : 
-<<<<<<< HEAD
-- Yeu cau : 
-    - Cài đặt Dbeaver phiên bản 21.3.0 và PostgreSQL 14.  
-    - Cài đặt môi trường Nodejs.  
-- Cai dat :   
-    - Admin : {user_name: minhtt ; password: 161718}  
-    - Client: {user_name: duongnn ; password: 123456}      
+
 - Yêu cầu : 
     - Cài đặt Dbeaver phiên bản 21.3.0 và PostgreSQL 14.  
     - Cài đặt môi trường Nodejs.
@@ -37,11 +31,11 @@
   - Mở DBeaver, chọn Database/New Database Connection, chọn hệ quản trị PostgreSQL. Khi đó Dbeaver sẽ mở ra hộp thoại nhập các thông tin về server cần kết nối. Điền đầy đủ các thông tin về Host (localhost), Port, Database (spotify), Username và Password.  
   - Chuột phải vào Database vừa tạo, chọn Tools/Restore. Chọn Format là Tar, tích chọn 2 tùy chọn “Clean (drop) database objects before recreating  them” và “Discard objects owner”. Chọn file backup là file dump-spotify-202202242233.tar nằm trong file main đã clone về trước đó. Sau đó bấm Start để máy tự cấu hình database. Sau khi cấu hình xong máy có thể sẽ xuất hiện cảnh báo. Ta có thể bỏ qua cảnh báo đó.  
 
-    - Kết nối Database vừa tạo với Nodejs 
-	    - Tạo file config.js   
-	    - Sửa file config.js theo files config-example.js, chỉnh sửa tên tên user, tên database và password theo cấu hình của máy. 
+  - Kết nối Database vừa tạo với Nodejs 
+   - Tạo file config.js   
+   - Sửa file config.js theo files config-example.js, chỉnh sửa tên tên user, tên database và password theo cấu hình của máy. 
 
-    - Trong Terminal của IDE:   
-        - npm i   
-        - npm start  
-    - Hệ thống sẽ chạy trên localhost:5000  
+  - Trong Terminal của IDE:   
+      - npm i   
+      - npm start  
+  - Hệ thống sẽ chạy trên localhost:5000  
