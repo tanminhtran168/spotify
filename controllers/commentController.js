@@ -27,9 +27,9 @@ export const get_getAllCommentofSong = async (req, res) => {
 export const post_getAllCommentofSong = async (req, res) => {
     const {song_id} = req.body
     try {
-        const comment = await pool.query('SELECT * FROM comment WHERE song_id = $1', [song_id])
+        const comment = await pool.query('SELECT comment.*, account.avatar FROM comment, account, client WHERE song_id = $1 and comment.client_id = client.client_id and client.account_id = account.account_id', [song_id])
         if(comment.rowCount) res.status(201).send(comment.rows)
-        else res.status(500).send({message: 'Error in get all comment'})
+        else res.status(500).send({message: 'Error in getting all comment'})
     } catch (err) {
         console.log(err.stack)
     }

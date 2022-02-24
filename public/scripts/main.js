@@ -334,12 +334,21 @@ const app = {
                 {
                     var res = this.responseText;
                     var Data = JSON.parse(res.substring(1,res.length - 1));
-                    document.getElementById("account-header-box").innerHTML = 
-                    `<button id="account-header" class="header-button">
-                        <img src="../${Data.avatar}" alt="" id="header-avatar" class="avatar">
-                        <div id="account-head-name">${Data.full_name}</div>
-                    </button>
-                    <button id="logout" class="header-button" onclick="logout()">LOGOUT</button>`;
+                    var regex = /admin/
+                    if(regex.test(document.location))
+                        document.getElementById("account-header-box").innerHTML = 
+                        `<button id="account-header" class="header-button">
+                            <img src="../../${Data.avatar}" alt="" id="header-avatar" class="avatar">
+                            <div id="account-head-name">${Data.full_name}</div>
+                        </button>
+                        <button id="logout" class="header-button" onclick="logout()">LOGOUT</button>`;
+                    else
+                        document.getElementById("account-header-box").innerHTML = 
+                        `<button id="account-header" class="header-button">
+                            <img src="../${Data.avatar}" alt="" id="header-avatar" class="avatar">
+                            <div id="account-head-name">${Data.full_name}</div>
+                        </button>
+                        <button id="logout" class="header-button" onclick="logout()">LOGOUT</button>`;
                 }
             }
             

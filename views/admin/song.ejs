@@ -37,7 +37,7 @@
         <div id="comments">
             <% comments.forEach(comment => { %>
                 <div class="comment">
-                    <img class="comment-user-avatar" src="../../images/eguitar.jpg">
+                    <img class="comment-user-avatar" src="../../<%= comment.avatar %>">
                     <div class="comment-text">
                         <h1><%= comment.full_name %></h1>
                         <p><%= comment.comment_content %></p>

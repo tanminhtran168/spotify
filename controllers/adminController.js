@@ -67,9 +67,8 @@ export const get_single_song = async (req, res) => {
     }   
 
     try {
-        const comment = await pool.query('SELECT full_name, comment_content FROM comment, client, account WHERE song_id = $1 and comment.client_id = client.client_id and account.account_id = client.account_id', [song_id])
+        const comment = await pool.query('SELECT full_name, comment_content, avatar FROM comment, client, account WHERE song_id = $1 and comment.client_id = client.client_id and account.account_id = client.account_id', [song_id])
         res.locals.comments = comment.rows
-        //console.log(comment.rows)
     } catch (err) {
         console.log(err.stack)
     }
