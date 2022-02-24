@@ -271,6 +271,13 @@ const app = {
 
     
     loadCurrentSong: function () {
+        if(getCookie("token"))
+        {
+            var xhttp = new XMLHttpRequest();
+            xhttp.open("POST", `/song/recent`, true);
+            xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhttp.send(`song_id=${this.currentSong.songid}`);
+        }
         audio.src = this.currentSong.path;
         songName.innerText=this.currentSong.name;
         artist.innerText=this.currentSong.artist;

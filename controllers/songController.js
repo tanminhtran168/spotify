@@ -54,6 +54,7 @@ export const post_getSongInfobyId = async (req, res) => {
     } catch (err) {
         console.log(err.stack)
     }
+
     const token = req.cookies.token
     if(token)
     {
@@ -69,7 +70,16 @@ export const post_getSongInfobyId = async (req, res) => {
         }
         catch (err) {
             console.log(err.stack)
-        }    
+        }   
+        try { 
+            const client_id = await getClient(req, res)
+            res.locals.my_rating = await pool.query('SELECT * FROM rating WHERE client_id = $1 and song_id = $2', [client_id, song_id])
+            if(res.locals.my_rating) {}
+            else res.locals.my_rating = -1;
+        }
+        catch (err) {
+            console.log(err.stack)
+        }   
     }
     else
         res.locals.loggedIn = false;
@@ -267,14 +277,16 @@ export const post_updateSong = async (req, res) => {
 export const addNewRecentlyListenedSong = async (req, res) => {
     const {song_id} = req.body
     const client_id = await getClient(req, res)
-    const song = await pool.query('SELECT * FROM song WHERE song_id = $1 and client_id = $2', [song_id, client_id])
+    const song = await pool.query('SELECT * FROM recently_listened WHERE song_id = $1 and client_id = $2', [song_id, client_id])
+    const latest_song = await pool.query('SELECT * FROM recently_listened WHERE client_id = $1 ORDER BY created_stamp ASC', [client_id])
     if(song == null) {
-        const latest_song = await pool.query('SELECT * FROM recently_listened WHERE client_id = $1 ORDER BY created_stamp ASC', [client_id])
+        
         const num = await pool.query('SELECT COUNT(song_id) as num FROM recently_listened WHERE client_id = $1', [client_id])
-        if(num.rows[0].num == 10) await pool.query('DELETE FROM recently_listened WHERE client_id = $1 and song_id = $2', [client_id, latest_song.rows[0].song_id])
+        if(num.rows[0].num == 10 && num.rows[0].num != 0) await pool.query('DELETE FROM recently_listened WHERE client_id = $1 and song_id = $2', [client_id, latest_song.rows[0].song_id])
         await pool.query('INSERT INTO recently_listened(song_id, client_id, created_stamp) \ VALUES ($1, $2, default)', [song_id, client_id])
     }
     else {
+        if(latest_song.rows.size)
         await pool.query('DELETE FROM recently_listened WHERE client_id = $1 and song_id = $2', [client_id, latest_song.rows[0].song_id])
         await pool.query('INSERT INTO recently_listened(song_id, client_id, created_stamp) \ VALUES ($1, $2, default)', [song_id, client_id])
     }

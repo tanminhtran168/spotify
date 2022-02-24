@@ -81,7 +81,7 @@ export const post_addNewArtist = async (req, res) => {
         else {
             var name = await pool.query('SELECT artist_name FROM artist WHERE artist_name = $1', [artist_name])
             if(name.rowCount == 0) {
-                if(album_image == null) {
+                if(artist_image == null) {
                     var image_link = '/images/artist.png'
                 }
                 else {

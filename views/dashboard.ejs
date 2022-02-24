@@ -25,13 +25,18 @@
             <h1>Recently played</h1> 
             <hr>
             <div class="catalogue">
-                <div class="recent-song">
-                    <img class="recent-song-cover" src="../images/album.png">
-                    <div class="recent-song-info">
-                        <div class="recent-song-title">Stellar Stellar</div>
-                        <div class="recent-song-artist">Hoshimachi Suisei</div> 
+                <%if(loggedIn){ %>  
+                    <% recents.forEach(song => { %>
+                    <div class="recent-song" onclick="navigateTo('/song/<%= song.song_id %>')">
+                        <img class="recent-song-cover" src="../<%= song.album_image %>">
+                        <div class="recent-song-info">
+                            <div class="recent-song-title"><%= song.song_name %></div>
+                            <div class="recent-song-artist"><%= song.artist_name %></div> 
+                        </div>
                     </div>
-                </div>
+                <% })} else {%> 
+                    Login to view your recent songs
+                <% }%> 
             </div>
         </div>
         

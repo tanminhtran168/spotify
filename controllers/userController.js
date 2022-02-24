@@ -5,7 +5,7 @@ import config from '../config.js'
 import fs from 'fs'
 import path from 'path'
 const __dirname = path.resolve(path.dirname(''));
-import { getToken, convertIntToTimeString, saveFile, isImage } from '../utils.js'
+import { getToken, convertIntToTimeString, saveFile, isImage, getClient } from '../utils.js'
 
 const router = express.Router()
 const Pool = pg.Pool
@@ -148,7 +148,14 @@ export const get_dashboard = async(req, res) => {
         catch (err) {
             console.log(err.stack)
         }    
-
+        try {
+            const client_id = await getClient(req, res)
+            var recents = await pool.query('SELECT song.*, artist.artist_name, album.album_image FROM song, artist, album, recently_listened WHERE song.album_id = album.album_id and recently_listened.song_id = song.song_id and artist.artist_id = album.artist_id and client_id = $1 ORDER BY created_stamp DESC', [client_id])
+            res.locals.recents = recents.rows
+        }
+        catch (err) {
+            console.log(err.stack)
+        }    
         try {
             var artist = await pool.query('SELECT artist.* FROM artist, artist_favorite, client WHERE artist.artist_id = artist_favorite.artist_id and client.client_id = artist_favorite.client_id and account_id = $1', [account_id])
             res.locals.artists = artist.rows

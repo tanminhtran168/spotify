@@ -1,7 +1,7 @@
 import express from 'express'
 import bodyParser from 'body-parser';
 import { checkAdmin, countViews, isAuth } from '../utils.js'
-import {getAllSong, get_getSongInfobyId, post_getSongInfobyId, get_searchSong, post_searchSong, get_addNewSong, post_addNewSong, get_deleteSong, post_deleteSong, get_updateSong, post_updateSong} from '../controllers/songController.js'
+import {getAllSong, get_getSongInfobyId, post_getSongInfobyId, get_searchSong, post_searchSong, get_addNewSong, post_addNewSong, get_deleteSong, post_deleteSong, get_updateSong, post_updateSong, addNewRecentlyListenedSong} from '../controllers/songController.js'
 import ExpressFormidable from 'express-formidable';
 const router = express.Router();
 
@@ -24,5 +24,5 @@ router.get('/update/', isAuth, checkAdmin, get_updateSong);
 router.post('/update/', isAuth, checkAdmin, post_updateSong);
 
 router.get('/:songId', countViews, post_getSongInfobyId);
-
+router.post('/recent', addNewRecentlyListenedSong)
 export default router;
