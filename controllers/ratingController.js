@@ -26,6 +26,13 @@ export const getAllMyRating = async (req, res) => {
         }
 }
 
+export const getMySongRating = async (req, res) => {
+    const client_id = getClient(req, res)
+    const {song_id} = req.body
+    var rating = await pool.query('SELECT * FROM rating WHERE client_id = $1 and song_id = $2', [client_id, song_id])
+    res.send(rating.rows)
+}
+
 export const get_getAllRatingofSong = async (req, res) => {
     res.render('ratingViews/getAllRatingofSong')
 }
