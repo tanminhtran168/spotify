@@ -2,10 +2,10 @@
 
 # Nhom 9 : Xây dựng một website nghe nhạc trực tuyến
 # Các thành viên : 
-    |Đặng Minh Đức|20183709|
-    |Ngô Nam Dương|20180058|
-    |Trần Bình Minh|20180138|
-    |Trần Tấn Minh|20183802|
+    Đặng Minh Đức 20183709
+    Ngô Nam Dương 20180058
+    Trần Bình Minh 20180138
+    Trần Tấn Minh 20183802
 
 # Phân công nhiệm vụ : 
     Đặng Minh Đức : Tạo database mẫu, kết nối database với backend, hỗ trợ xử lý backend, kiểm thử hệ thống.
