@@ -38,4 +38,4 @@
   - Trong Terminal của IDE:   
       > npm i   
       > npm start  
-  - Hệ thống sẽ chạy trên localhost:5000  
+->  Hệ thống sẽ chạy trên localhost:5000  
