@@ -2,7 +2,7 @@ import express from 'express'
 import pg from 'pg'
 import jwt from 'jsonwebtoken'
 import config from '../config.js'
-import { getClient, saveFile } from '../utils.js'
+import { getClient, saveFile, isImage } from '../utils.js'
 import path from 'path'
 const __dirname = path.resolve(path.dirname(''));
 const router = express.Router()
@@ -66,6 +66,10 @@ export const get_addNewAccount = (req,res) =>{
 export const post_addNewAccount = async (req, res) => {
     const {user_name, current_password, confirm_password, full_name, birth_date, email, phone_number} = req.fields
     const {avatar} = req.files
+    if(!isImage(avatar)) {
+        res.status(500).send({message: 'Wrong file format'}) 
+        return
+    }
     if(user_name == '' || current_password == '' || confirm_password == '' || full_name == '' || email == '' || phone_number == '' || birth_date == '')
         res.status(500).send({message: 'Missing some value'});
     else {
@@ -151,6 +155,10 @@ export const get_updateAccount = async (req, res) => {
 export const post_updateAccount = async (req, res) => {
     var {account_id, user_name, old_password, new_password, confirm_new_password, full_name, birth_date, email, phone_number} = req.fields
     const {avatar} = req.files
+    if(!isImage(avatar)) {
+        res.status(500).send({message: 'Wrong file format'}) 
+        return
+    }
     const client_id = await getClient(req, res)
     const client = await pool.query('SELECT client_id FROM client WHERE account_id = $1', [account_id])
     if(client_id == -1 || client_id == client.rows[0].client_id) {

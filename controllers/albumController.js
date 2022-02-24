@@ -1,7 +1,7 @@
 import express from 'express'
 import pg from 'pg'
 import config from '../config.js'
-import { convertIntToTimeString, saveFile } from '../utils.js'
+import { convertIntToTimeString, saveFile, isImage } from '../utils.js'
 import path from 'path'
 import fs from 'fs'
 const __dirname = path.resolve(path.dirname(''));
@@ -56,18 +56,18 @@ export const post_searchAlbum = async (req, res) => {
         console.log(err.stack)
     }    
 }
-
 export const get_addNewAlbum = async (req, res) => {
     res.render('albumViews/addNewAlbum')
-}
-function isImage(file){
-    return true;
 }
 const uploadFolder = path.join(__dirname, "public","images", "albumImages");
 export const post_addNewAlbum = async (req, res) => {
     const {album_name, artist_name, album_info} = req.fields
     const {album_image} = req.files
-    
+    if(!isImage(album_image)) {
+        res.status(500).send({message: 'Wrong file format'}) 
+        return
+    }
+
     try {
         if (album_name == '' || artist_name == '') res.status(500).send({message: 'Missing some value'}) 
         else {
@@ -76,7 +76,7 @@ export const post_addNewAlbum = async (req, res) => {
                 // Lấy artist
                 var artist = await pool.query('SELECT artist_id FROM artist WHERE artist_name = $1', [artist_name])
                 if (artist.rowCount) {
-                    var image_link = 'public/images/albumImages/' + album_name + '.jpg'
+                    var image_link = '/images/albumImages/' + album_name + '.jpg'
                     const imageName = album_name + '.jpg'
                     saveFile(album_image, uploadFolder, imageName)
                     var artist_id = artist.rows[0].artist_id
@@ -151,6 +151,10 @@ export const get_updateAlbum = async (req, res) => {
 export const post_updateAlbum = async (req, res) => {
     var {album_id, album_name, artist_name, album_info} = req.fields
     const {album_image} = req.files
+    if(!isImage(album_image)) {
+        res.status(500).send({message: 'Wrong file format'})
+        return
+    } 
     try {
         var old_db = await pool.query('SELECT * FROM album WHERE album_id = $1', [album_id])
         if(old_db.rowCount == 0) res.status(500).send({message: 'Album does not exist'})
@@ -169,7 +173,7 @@ export const post_updateAlbum = async (req, res) => {
                     await pool.query('UPDATE artist SET num_of_albums = num_of_albums - 1, num_of_songs = num_of_songs - $2, last_updated_stamp = current_timestamp WHERE artist_id = $1', [old_artist.rows[0].artist_id, old_db.rows[0].num_of_songs])
                     await pool.query('UPDATE artist SET num_of_albums = num_of_albums + 1, num_of_songs = num_of_songs + $2, last_updated_stamp = current_timestamp WHERE artist_id = $1', [new_artist.rows[0].artist_id, old_db.rows[0].num_of_songs])
                     // Cập nhật album
-                    var image_link = 'public/images/albumImages/' + album_name + '.jpg'
+                    var image_link = '/images/albumImages/' + album_name + '.jpg'
                     const imageName = album_name + '.jpg'
                     saveFile(album_image, uploadFolder, imageName)
                     var album = pool.query('UPDATE album SET album_name = $2, artist_id = $3, album_image = $4, album_info = $5, last_updated_stamp = current_timestamp WHERE album_id = $1', [album_id, album_name, new_artist.rows[0].artist_id, image_link, album_info])

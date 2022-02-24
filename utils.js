@@ -105,6 +105,7 @@ export const countViews = async (req, res, next) => {
 }
 
 export function convertIntToTimeString (x){
+  x = Math.floor(x)
   if(Math.floor(x%60) < 10)
       return Math.floor(x/60) + ":0" + Math.floor(x%60);
   else
@@ -117,5 +118,10 @@ export function saveFile(file, folder, nameFile)
   const {name, path} = file
   //console.log(name)
   writeFileSync(`${folder}/${nameFile}`, readFileSync(path))
+}
+
+export function isImage(file) {
+  if(file.type.slice(0, 5) == 'image') return true;
+  return false;
 }
 export default router

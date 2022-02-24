@@ -1,7 +1,7 @@
 import express from 'express'
 import pg from 'pg'
 import config from '../config.js'
-import { getClient, convertIntToTimeString, saveFile } from '../utils.js';
+import { getClient, convertIntToTimeString, saveFile, isImage } from '../utils.js';
 import path from 'path'
 const __dirname = path.resolve(path.dirname(''));
 const router = express.Router()
@@ -70,12 +70,16 @@ export const get_addNewArtist = async (req, res) => {
 export const post_addNewArtist = async (req, res) => {
     const {artist_name, birth_date, artist_info} = req.fields
     const {artist_image} = req.files
+    if(!isImage(artist_image)) {
+        res.status(500).send({message: 'Wrong file format'}) 
+        return
+    }
     try {
         if(artist_name == '' || birth_date == '' ) res.status(500).send({message: 'Missing some value'})
         else {
             var name = await pool.query('SELECT artist_name FROM artist WHERE artist_name = $1', [artist_name])
             if(name.rowCount == 0) {
-                var image_link = 'public/images/artistImages/' + artist_name + '.jpg'
+                var image_link = '/images/artistImages/' + artist_name + '.jpg'
                 const imageName = artist_name + '.jpg'
                 saveFile(artist_image, uploadFolder, imageName)
                 var artist = await pool.query('INSERT INTO artist(artist_id, artist_name, artist_info, artist_image, birth_date, num_of_albums, num_of_songs, last_updated_stamp, created_stamp) \
@@ -144,6 +148,10 @@ export const get_updateArtist = async (req, res) => {
 export const post_updateArtist = async (req, res) => {
     var {artist_id, artist_name, birth_date, artist_info} = req.fields
     const {artist_image} = req.files
+    if(!isImage(artist_image)) {
+        res.status(500).send({message: 'Wrong file format'}) 
+        return
+    }
     try {
         var old_db = await pool.query('SELECT * FROM artist WHERE artist_id = $1', [artist_id])
         if(old_db.rowCount == 0) res.status(500).send({message: 'Artist does not exist'})
@@ -152,7 +160,7 @@ export const post_updateArtist = async (req, res) => {
             //if(artist_image == '') artist_image = old_db.rows[0].artist_image
             if(birth_date == '') birth_date = old_db.rows[0].birth_date
             if(artist_info == '') artist_info = old_db.rows[0].artist_info
-            var image_link = 'public/images/artistImages/' + artist_name + '.jpg'
+            var image_link = '/images/artistImages/' + artist_name + '.jpg'
             const imageName = artist_name + '.jpg'
             saveFile(artist_image, uploadFolder, imageName)
             var artistname_db = await pool.query('SELECT artist_name FROM artist WHERE artist_name = $1', [artist_name])

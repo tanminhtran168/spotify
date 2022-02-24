@@ -5,13 +5,13 @@ import config from '../config.js'
 import fs from 'fs'
 import path from 'path'
 const __dirname = path.resolve(path.dirname(''));
-import { getToken, convertIntToTimeString, saveFile } from '../utils.js'
+import { getToken, convertIntToTimeString, saveFile, isImage } from '../utils.js'
 
 const router = express.Router()
 const Pool = pg.Pool
 const pool = new Pool(config.POSTGRES_INFO)
 
-export const get_Signup = async (req,res) =>{
+export const get_Signup = async (req,res) => {
     if(req.cookies.token != null) res.status(500).send({message: 'You must log out first'}) 
     else res.render('signup', {layout: false});
 }
@@ -19,6 +19,10 @@ const uploadFolder = path.join(__dirname, "public","images", "userImages");
 export const post_Signup = async (req, res) => {
     const {user_name, current_password, confirm_password, full_name, birth_date, email, phone_number} = req.fields
     const {avatar} = req.files
+    if(!isImage(avatar)) {
+        res.status(500).send({message: 'Wrong file format'}) 
+        return
+    }
     if(user_name == '' || current_password == '' || confirm_password == '' || full_name == '' || email == '' || phone_number == '' || birth_date == '')
         res.status(500).send({message: 'Missing some value'});
     else {
@@ -82,7 +86,7 @@ export const get_Login = async (req, res) => {
     else res.render('login', {layout: false});
 }
 export const post_Login = async (req, res) => {
-    const {user_name, password} = req.body
+    const {user_name, password} = req.fields
     if(user_name == '' || password == '')
         res.status(500).send({message: 'Missing some value'});
     else {
