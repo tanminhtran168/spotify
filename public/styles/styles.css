@@ -1053,6 +1053,9 @@ label{
     border-radius: 2px;
     border: none;
     padding: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 .button-with-image:hover{
     background: #202427;
