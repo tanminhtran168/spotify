@@ -1,6 +1,6 @@
 # Spotify
 
-# Nhom 9 : Xây dựng một website nghe nhạc trực tuyến
+# Nhóm 9 : Xây dựng một website nghe nhạc trực tuyến
 # Các thành viên : 
     Đặng Minh Đức 20183709
     Ngô Nam Dương 20180058
@@ -28,14 +28,14 @@
   - Sau khi clone project, mở PGAdmin4. Nhập master password để truy cập vào hệ thống.  
   - Chọn server là PostgreSQL, nhập server password để có thể truy cập vào trang quản lý database.  
   - Tại Database, chọn Create/Database… Đặt tên cho Database là spotify.  
-  - Mở DBeaver, chọn Database/New Database Connection, chọn hệ quản trị PostgreSQL. Khi đó Dbeaver sẽ mở ra hộp thoại nhập các thông tin về server cần kết nối. Điền đầy đủ các thông tin về Host (localhost), Port, Database (spotify), Username và Password.  
-  - Chuột phải vào Database vừa tạo, chọn Tools/Restore. Chọn Format là Tar, tích chọn 2 tùy chọn “Clean (drop) database objects before recreating  them” và “Discard objects owner”. Chọn file backup là file dump-spotify-202202242233.tar nằm trong file main đã clone về trước đó. Sau đó bấm Start để máy tự cấu hình database. Sau khi cấu hình xong máy có thể sẽ xuất hiện cảnh báo. Ta có thể bỏ qua cảnh báo đó.  
+  - Mở DBeaver, chọn Database/New Database Connection, chọn PostgreSQL. Trong hộp thoại, điền các thông tin Host (localhost), Port, Database (spotify), Username và Password.  
+  - Chuột phải vào Database vừa tạo, chọn Tools/Restore. Chọn Format là Tar, tích chọn 2 tùy chọn “Clean (drop) database objects before recreating them” và “Discard objects owner”. Chọn file backup là file dump-spotify-202202242233.tar nằm trong file main đã clone về trước đó. Sau đó bấm Start để cấu hình database. 
 
   - Kết nối Database vừa tạo với Nodejs 
    - Tạo file config.js   
    - Sửa file config.js theo files config-example.js, chỉnh sửa tên tên user, tên database và password theo cấu hình của máy. 
 
-  - Trong Terminal của IDE:   
+  - Trong Terminal:   
       > npm i   
       > npm start  
-->  Hệ thống sẽ chạy trên localhost:5000  
+  - Hệ thống sẽ chạy trên localhost:5000  
