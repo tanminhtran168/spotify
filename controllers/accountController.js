@@ -117,7 +117,7 @@ export const post_addNewAccount = async (req, res) => {
                         }
                         var phone_db = await pool.query('SELECT phone_number FROM account WHERE phone_number = $1', [phone_number])
                         if(phone_db.rowCount == 0) {
-                            var image_link = 'public/images/userImages/' + user_name + '.jpg'
+                            var image_link = '/images/userImages/' + user_name + '.jpg'
                             const imageName = user_name + '.jpg';
                             saveFile(avatar, uploadFolder, imageName)
                             var user = await pool.query('INSERT INTO account(account_id, username, current_password, avatar, user_role, full_name, birth_date, email, phone_number, last_updated_stamp, created_stamp) \
@@ -231,7 +231,7 @@ export const post_updateAccount = async (req, res) => {
                                         var image_link = '/images/user.png'
                                     }
                                     else {
-                                        var image_link = 'public/images/userImages/' + user_name + '.jpg'
+                                        var image_link = '/images/userImages/' + user_name + '.jpg'
                                         const imageName = user_name + '.jpg'
                                         saveFile(avatar, uploadFolder, imageName)
                                     }
