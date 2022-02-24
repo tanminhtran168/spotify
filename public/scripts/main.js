@@ -344,14 +344,14 @@ const app = {
                     var regex = /admin/
                     if(regex.test(document.location))
                         document.getElementById("account-header-box").innerHTML = 
-                        `<button id="account-header" class="header-button">
+                        `<button id="account-header" class="header-button" onclick="navigateTo('/account')">
                             <img src="../../${Data.avatar}" alt="" id="header-avatar" class="avatar">
                             <div id="account-head-name">${Data.full_name}</div>
                         </button>
                         <button id="logout" class="header-button" onclick="logout()">LOGOUT</button>`;
                     else
                         document.getElementById("account-header-box").innerHTML = 
-                        `<button id="account-header" class="header-button">
+                        `<button id="account-header" class="header-button" onclick="navigateTo('/account')">
                             <img src="../${Data.avatar}" alt="" id="header-avatar" class="avatar">
                             <div id="account-head-name">${Data.full_name}</div>
                         </button>
@@ -763,4 +763,35 @@ function sendRating(song_id){
     xhttp.open("POST", `/rating/add`, true);
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xhttp.send(formBody);
+}
+function update_account(account_id){
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if(this.readyState == 4)
+        {
+            var Data = JSON.parse(this.responseText);
+            alert(Data.message);
+            navigateTo(`/account`)
+        }
+    }
+    var details = {
+        'account_id': account_id,
+        'user_name': document.getElementById("username-input").value,
+        'email': document.getElementById("email-input").value,
+        'full_name': document.getElementById("name-input").value,
+        'phone_number': document.getElementById("phone-input").value,
+        'birth_date': document.getElementById("birthdate-input").value,
+        'avatar': document.getElementById("upload-file-image").files[0],
+        'old_password': document.getElementById("old-password-input").value,
+        'new_password': document.getElementById("password-input").value,
+        'confirm_new_password': document.getElementById("confirm-password-input").value
+    };
+    var formBody = new FormData();
+    for (var property in details) {
+      var encodedKey = property;
+      var encodedValue = details[property];
+      formBody.append(encodedKey, encodedValue);
+    }
+    xhttp.open("POST", `/account/update`, true);
+    xhttp.send(formBody)
 }

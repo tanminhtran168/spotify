@@ -1,0 +1,52 @@
+
+<body>
+    <img id="background-image" src="../images/eguitar.jpg">
+    <div id="login-box">        
+        <div class="login-header">
+            Update Your Infomation
+        </div>
+        <form action="signup" method="post">
+            <div id="username-field" class="input-field">
+                <label for="username" class="label">Username</label>
+                <input id="username-input" type="text" name="username" value ='<%= data.username %>'>
+            </div>
+            <div id="email-field" class="input-field">
+                <label class="label">Email</label>
+                <input id="email-input" type="text" name="Username" value ='<%= data.email %>'>
+            </div>
+            <div id="password-field" class="input-field">
+                <label class="label">Old Password</label>
+                <input id="old-password-input" type="password" name="password">
+            </div>
+            <div id="password-field" class="input-field">
+                <label class="label">Password</label>
+                <input id="password-input" type="password" name="password">
+            </div>
+            <div id="confirm-password-field" class="input-field">
+                <label class="label">Confirm Password</label>
+                <input id="confirm-password-input" type="password" name="confirm-password">
+            </div>
+            <div id="name-field" class="input-field">
+                <label class="label">Your name</label>
+                <input id="name-input" type="text" name="fullname" value = '<%- data.full_name %>'>
+            </div>
+            <div id="phone-field" class="input-field">
+                <label class="label">Phone</label>
+                <input id="phone-input" type="text" name="phonenumber" value = '<%- data.phone_number %>'>
+            </div>
+            <div id="birthdate-field" class="input-field">
+                <label class="label">Birthday</label>
+                <input id="birthdate-input" type="date" name="birth_date" value = '<%- data.birth_date.toISOString().substr(0, 10) %>'>
+            </div>
+            <div class="image-input-field">
+                <label for="upload-file-image" style="margin: 0 0 5px 0; color: #FFFFFF;">Upload Your Avatar Image:</label>
+                <input id="upload-file-image" type="file" style="font-family: 'Poppins'" oninput="updatePreview()"/>
+                <img id="album-cover" src="../<%=data.avatar%>">
+            </div>
+        </form>
+        <button id="signup-submit" onclick = "update_account('<%=data.account_id%>')">Update</button>
+        <hr style="width: 100%;">
+        <button id="login-redirect" onclick = "navigateTo('/account')">
+            Cancel
+        </button>
+    </div>

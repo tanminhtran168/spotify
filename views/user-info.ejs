@@ -1,0 +1,29 @@
+<div id="song-content">
+    <img id="background-image" src="../<%=data.avatar%>">
+    <div id="song-box" class="content-box">
+        <img id="song-cover" src="../<%=data.avatar%>">
+        <div id="song-details" class="details">
+            <div id="song-title"><%=data.username%></div>
+            <div id="song-artist"><%=data.full_name%></div>
+            <hr>
+            <h1>Account details:</h1>
+            <div  class="details-content">
+                <h1>Birthday</h1>
+                <p id="song-album"><%= data.birth_date %></p>
+            </div>
+            <div  class="details-content">
+                <h1>Email</h1>
+                <p id="song-rating"><%= data.email %></p>
+            </div>
+            <div  class="details-content">
+                <h1>Phone Number</h1>
+                <p id="song-category"><%= data.phone_number %></p>
+            </div>
+            <hr>
+            <div style="margin-top: 50px; margin-bottom: 10px">  
+                <button id = "song-play-button" onclick="navigateTo('/account/update')">Update Info</button>
+            </div>
+        </div>
+    </div>
+        
+</div>

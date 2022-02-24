@@ -17,7 +17,23 @@ export const getAllAccount = async (req, res) => {
         console.log(err.stack)
     }
 }
-
+export const getAccountPage = async (req, res) => {
+    const token = req.cookies.token
+    var account_id
+    jwt.verify(token, config.JWT_SECRET, (err, decode) => {
+        if (err) return res.status(401).send({ message: 'Error in authentication' });
+        account_id = decode.id
+    })
+    try {
+        var account = await pool.query('SELECT * FROM account WHERE account_id = $1', [account_id])
+        account.rows[0].birth_date = `${account.rows[0].birth_date.getDate()}/${account.rows[0].birth_date.getMonth()}/${account.rows[0].birth_date.getFullYear()}`
+        res.locals.data = account.rows[0]
+        
+    } catch (err) {
+        console.log(err.stack)
+    }    
+    res.render('user-info')
+}
 export const getMyAccountInfo = async (req, res) => {
     const token = req.cookies.token
     var account_id
@@ -27,7 +43,9 @@ export const getMyAccountInfo = async (req, res) => {
     })
     try {
         var account = await pool.query('SELECT * FROM account WHERE account_id = $1', [account_id])
+        account.rows[0].birth_date = `${account.rows[0].birth_date.getDate()}/${account.rows[0].birth_date.getMonth()}/${account.rows[0].birth_date.getFullYear()}`
         res.send(account.rows)
+        
     } catch (err) {
         console.log(err.stack)
     }    
@@ -150,7 +168,10 @@ export const post_deleteAccount = async (req, res) => {
 }
 
 export const get_updateAccount = async (req, res) => {
-    res.render('accountViews/updateAcc')
+    var client_id = await getClient(req, res)
+    const account = await pool.query('SELECT account.* FROM account, client WHERE account.account_id = client.account_id and client_id = $1', [client_id])
+    res.locals.data = account.rows[0]
+    res.render('update-user-info')
 }
 export const post_updateAccount = async (req, res) => {
     var {account_id, user_name, old_password, new_password, confirm_new_password, full_name, birth_date, email, phone_number} = req.fields
