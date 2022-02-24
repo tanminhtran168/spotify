@@ -150,7 +150,7 @@ export const get_dashboard = async(req, res) => {
         }    
         try {
             const client_id = await getClient(req, res)
-            var recents = await pool.query('SELECT song.*, artist.artist_name, album.album_image FROM song, artist, album, recently_listened WHERE song.album_id = album.album_id and recently_listened.song_id = song.song_id and artist.artist_id = album.artist_id and client_id = $1 ORDER BY created_stamp DESC', [client_id])
+            var recents = await pool.query('SELECT song.*, artist.artist_name, album.album_image FROM song, artist, album, recently_listened WHERE song.album_id = album.album_id and recently_listened.song_id = song.song_id and artist.artist_id = album.artist_id and client_id = $1 ORDER BY recently_listened.created_stamp DESC', [client_id])
             res.locals.recents = recents.rows
         }
         catch (err) {
