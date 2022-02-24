@@ -15,10 +15,10 @@
 
 # Chỉ dẫn cài đặt : 
 - Yeu cau : 
-    Cài đặt Dbeaver phiên bản 21.3.0 và PostgreSQL 14.
-    Cài đặt môi trường Nodejs.
-- Cai dat : 
-    Admin : {user_name: minhtt ; password: 161718}
+    Cài đặt Dbeaver phiên bản 21.3.0 và PostgreSQL 14.  
+    Cài đặt môi trường Nodejs.  
+- Cai dat :   
+    Admin : {user_name: minhtt ; password: 161718}    
     Client: {user_name: duongnn ; password: 123456}
 
     
