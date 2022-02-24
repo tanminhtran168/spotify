@@ -70,18 +70,25 @@ export const get_addNewArtist = async (req, res) => {
 export const post_addNewArtist = async (req, res) => {
     const {artist_name, birth_date, artist_info} = req.fields
     const {artist_image} = req.files
-    if(!isImage(artist_image)) {
-        res.status(500).send({message: 'Wrong file format'}) 
-        return
+    if(artist_image != null) {
+        if(!isImage(artist_image)) {
+            res.status(500).send({message: 'Wrong file format'}) 
+            return
+        }
     }
     try {
         if(artist_name == '' || birth_date == '' ) res.status(500).send({message: 'Missing some value'})
         else {
             var name = await pool.query('SELECT artist_name FROM artist WHERE artist_name = $1', [artist_name])
             if(name.rowCount == 0) {
-                var image_link = '/images/artistImages/' + artist_name + '.jpg'
-                const imageName = artist_name + '.jpg'
-                saveFile(artist_image, uploadFolder, imageName)
+                if(album_image == null) {
+                    var image_link = '/images/artist.png'
+                }
+                else {
+                    var image_link = '/images/artistImages/' + artist_name + '.jpg'
+                    const imageName = artist_name + '.jpg'
+                    saveFile(artist_image, uploadFolder, imageName)
+                }
                 var artist = await pool.query('INSERT INTO artist(artist_id, artist_name, artist_info, artist_image, birth_date, num_of_albums, num_of_songs, last_updated_stamp, created_stamp) \
                     VALUES(default, $1, $2, $3, $4, 0, 0, current_timestamp, default) RETURNING *', [artist_name, artist_info, image_link, birth_date])
                 if (artist) res.status(201).send({message: 'New artist added'});

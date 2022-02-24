@@ -19,9 +19,11 @@ const uploadFolder = path.join(__dirname, "public","images", "userImages");
 export const post_Signup = async (req, res) => {
     const {user_name, current_password, confirm_password, full_name, birth_date, email, phone_number} = req.fields
     const {avatar} = req.files
-    if(!isImage(avatar)) {
-        res.status(500).send({message: 'Wrong file format'}) 
-        return
+    if(avatar != null) {
+        if(!isImage(avatar)) {
+            res.status(500).send({message: 'Wrong file format'}) 
+            return
+        }
     }
     if(user_name == '' || current_password == '' || confirm_password == '' || full_name == '' || email == '' || phone_number == '' || birth_date == '')
         res.status(500).send({message: 'Missing some value'});
@@ -52,9 +54,14 @@ export const post_Signup = async (req, res) => {
                         }
                         var phone_db = await pool.query('SELECT phone_number FROM account WHERE phone_number = $1', [phone_number])
                         if(phone_db.rowCount == 0) {
-                            var image_link = '/images/userImages/' + user_name + '.jpg'
-                            const imageName = user_name + '.jpg';
-                            saveFile(avatar, uploadFolder, imageName)
+                            if(avatar == null) {
+                                var image_link = '/images/user.png'
+                            }
+                            else {
+                                var image_link = '/images/userImages/' + user_name + '.jpg'
+                                const imageName = user_name + '.jpg';
+                                saveFile(avatar, uploadFolder, imageName)
+                            }
                             var user = await pool.query('INSERT INTO account(account_id, username, current_password, avatar, user_role, full_name, birth_date, email, phone_number, last_updated_stamp, created_stamp) \
                                 VALUES(default, $1, $2, $3, \'client\', $4, $5, $6, $7, current_timestamp, default) RETURNING *', [user_name, current_password, image_link, full_name, birth_date,email, phone_number])
                             var client = await pool.query('INSERT INTO client(client_id, account_id, num_artist_favorite, num_playlist) VALUES (default, (SELECT account_id FROM account WHERE username = $1 LIMIT 1), 0, 0)', [user_name])

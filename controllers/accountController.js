@@ -155,9 +155,11 @@ export const get_updateAccount = async (req, res) => {
 export const post_updateAccount = async (req, res) => {
     var {account_id, user_name, old_password, new_password, confirm_new_password, full_name, birth_date, email, phone_number} = req.fields
     const {avatar} = req.files
-    if(!isImage(avatar)) {
-        res.status(500).send({message: 'Wrong file format'}) 
-        return
+    if(avatar != null) {
+        if(!isImage(avatar)) {
+            res.status(500).send({message: 'Wrong file format'}) 
+            return
+        }
     }
     const client_id = await getClient(req, res)
     const client = await pool.query('SELECT client_id FROM client WHERE account_id = $1', [account_id])
@@ -204,9 +206,14 @@ export const post_updateAccount = async (req, res) => {
                                 }
                                 var phone_db = await pool.query('SELECT phone_number FROM account WHERE phone_number = $1', [phone_number])
                                 if(phone_db.rowCount == 0 || phone_number == old_db.rows[0].phone_number) {
-                                    var image_link = 'public/images/userImages/' + user_name + '.jpg'
-                                    const imageName = user_name + '.jpg'
-                                    saveFile(avatar, uploadFolder, imageName)
+                                    if(avatar == null) {
+                                        var image_link = '/images/user.png'
+                                    }
+                                    else {
+                                        var image_link = 'public/images/userImages/' + user_name + '.jpg'
+                                        const imageName = user_name + '.jpg'
+                                        saveFile(avatar, uploadFolder, imageName)
+                                    }
                                     var account = pool.query('UPDATE account SET username = $2, current_password = $3, avatar = $4, full_name = $5, birth_date = $6, email = $7, phone_number = $8, last_updated_stamp = current_timestamp WHERE account_id = $1', 
                                         [account_id, user_name, new_password, image_link, full_name, birth_date, email, phone_number])
                                     if (account) res.status(201).send({message: 'Account updated'});
