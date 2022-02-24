@@ -36,6 +36,6 @@
    - Sửa file config.js theo files config-example.js, chỉnh sửa tên tên user, tên database và password theo cấu hình của máy. 
 
   - Trong Terminal của IDE:   
-      - npm i   
-      - npm start  
+      > npm i   
+      > npm start  
   - Hệ thống sẽ chạy trên localhost:5000  
