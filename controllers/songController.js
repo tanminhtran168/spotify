@@ -113,6 +113,10 @@ const uploadFolder = path.join(__dirname, "public","songs");
 export const post_addNewSong = async (req, res) => {
     var {song_name, artist_name, album_name, song_info, category} = req.fields;
     const {song_file} = req.files
+    if(song_file == null) {
+        res.status(500).send({message: 'Please upload a file'})
+        return
+    }
     if(!isSong(song_file)) {
         res.status(500).send({message: 'Wrong file format'}) 
         return

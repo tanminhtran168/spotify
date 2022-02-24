@@ -72,9 +72,11 @@ const uploadFolder = path.join(__dirname, "public","images", "albumImages");
 export const post_addNewAlbum = async (req, res) => {
     const {album_name, artist_name, album_info} = req.fields
     const {album_image} = req.files
-    if(!isImage(album_image)) {
-        res.status(500).send({message: 'Wrong file format'}) 
-        return
+    if(album_image != null) {
+        if(!isImage(album_image)) {
+            res.status(500).send({message: 'Wrong file format'}) 
+            return
+        }
     }
 
     try {
@@ -85,9 +87,14 @@ export const post_addNewAlbum = async (req, res) => {
                 // Lấy artist
                 var artist = await pool.query('SELECT artist_id FROM artist WHERE artist_name = $1', [artist_name])
                 if (artist.rowCount) {
-                    var image_link = '/images/albumImages/' + album_name + '.jpg'
-                    const imageName = album_name + '.jpg'
-                    saveFile(album_image, uploadFolder, imageName)
+                    if(album_image == null) {
+                        var image_link = '/images/album.png'
+                    }
+                    else {
+                        var image_link = '/images/albumImages/' + album_name + '.jpg'
+                        const imageName = album_name + '.jpg'
+                        saveFile(album_image, uploadFolder, imageName)
+                    }
                     var artist_id = artist.rows[0].artist_id
                     var update = await pool.query('UPDATE artist SET num_of_albums = num_of_albums + 1, last_updated_stamp = current_timestamp WHERE artist_id = $1;', [artist_id])
                     var album = await pool.query('INSERT INTO album(album_id, artist_id, album_name, album_image, album_info, num_of_songs, total_duration, last_updated_stamp, created_stamp) \
