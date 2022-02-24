@@ -4,7 +4,7 @@
     <% if(songs){%>
     <% songs.forEach(song => { %>
         <div class="list-item-song" onclick = "navigateTo('/song/<%=song.songid%>')">
-            <img class="list-song-cover" src="../images/album.png">
+            <img class="list-song-cover" src="../<%=song.image%>">
             <div class="list-song-title"><%= song.name%></div>
             <div class="list-song-artist"><%=song.artist%></div>
             <div class="list-song-album"><%=song.album%></div>

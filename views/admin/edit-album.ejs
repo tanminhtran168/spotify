@@ -1,20 +1,20 @@
 <div id="album-content">
-    <img id="background-image" src="../../images/album.png">
+    <img id="background-image" src="../../../<%=data.album_image%>">
     <div id="album-headings">
         <div class="image-input-field">
-            <img id="album-cover" src="../../images/album.png">
+            <img id="album-cover" src="../../../<%=data.album_image%>">
             <label for="upload-file-image" style="margin: 0 0 5px 0; color: #FFFFFF;" >Upload Album Cover Image:</label>
-            <input id="upload-file-image" type="file" style="font-family: 'Poppins'"/>
+            <input id="upload-file-image" type="file" style="font-family: 'Poppins'"  oninput="updatePreview()"/>
         </div>
         <div id="album-headings-text">
             <div id="album-name">Edit Album</div>
             <div class="input-field">
                 <label>Album Name</label>
-                <input id="album-name-input" ></input>
+                <input id="album-name-input" value='<%- data.album_name %>'></input>
             </div>
             <div class="input-field">
                 <label>Album Artist</label>
-                <input id="album-artist-input"></input>
+                <input id="album-artist-input" value = '<%- data.artist_name %>'></input>
             </div>
         </div>
     </div>
@@ -24,12 +24,12 @@
             <h1>Album Details</h1>
             <div class="input-field">
                 <label>Album Info</label>
-                <input id="album-info-input"></input>
+                <input id="album-info-input" value='<%- data.album_info %>''></input>
             </div>
         </div>
         <div style="margin-top: 50px; margin-bottom: 10px">  
-            <button id = "song-play-button" onclick="">Save</button>
-            <button id = "song-add-queue" onclick="navigateTo('/admin')">Cancel</button>
+            <button id = "song-play-button" onclick="updateAlbum('<%- data.album_id%>')">Save</button>
+            <button id = "song-add-queue" onclick="navigateTo('/admin/album/<%- data.album_id%>')">Cancel</button>
         </div>
     </div>
     

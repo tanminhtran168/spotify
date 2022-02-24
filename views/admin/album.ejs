@@ -1,17 +1,20 @@
 <div id="album-content">
-    <img id="background-image" src="../images/album.png">
+    <img id="background-image" src="../../<%=data.album_image%>">
     <div id="album-headings">
-        <img id="album-cover" src="../images/album.png">
+        <img id="album-cover" src="../../<%=data.album_image%>">
         <div id="album-headings-text">
             <div id="album-name"><%= data.album_name %></div>
-            <div id="album-artist"><%= data.album_artist %></div>
+            <div id="album-artist"><%= data.artist_name %></div>
         </div>
     </div>
     <div id="album-box" class="content-box">
+        <button id = "song-play-button" onclick="playAlbum('<%= data.album_id%>')">Play</button>
+        <button id = "song-add-queue" onclick="navigateTo('/admin/album/<%= data.album_id%>/update')">Edit Album</button>
+        <button id = "song-add-queue" onclick="deleteAlbum('<%= data.album_id%>')">Delete Album</button>
         <hr>
         <% songs.forEach(song => { %>
-            <div class="list-item-song" onclick = "navigateTo('/song/<%=song.song_id%>')">
-                <img class="list-song-cover" src="../images/album.png">
+            <div class="list-item-song" onclick = "navigateTo('/admin/song/<%=song.song_id%>')">
+                <img class="list-song-cover" src="../../<%=song.album_image%>">
                 <div class="list-song-title"><%= song.song_name%></div>
                 <div class="list-song-artist"><%=song.artist_name%></div>
                 <div class="list-song-album"><%=song.album_name%></div>

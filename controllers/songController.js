@@ -24,7 +24,7 @@ export const getAllSong = async (req, res) => {
 export const get_getSongInfobyId = async (req, res) => {
     const {song_id} = req.body
     try {
-        var song = await pool.query('SELECT song.*, artist_name, album_name FROM song, artist, album WHERE song.artist_id = artist.artist_id and song.album_id = album.album_id and song_id = $1', [song_id])
+        var song = await pool.query('SELECT song.*, artist_name, album_name, album_image FROM song, artist, album WHERE song.artist_id = artist.artist_id and song.album_id = album.album_id and song_id = $1', [song_id])
         song.rows[0].duration = convertIntToTimeString(song.rows[0].duration)
         //console.log(song.rows[0])
         res.send(song.rows[0])
@@ -35,7 +35,7 @@ export const get_getSongInfobyId = async (req, res) => {
 export const post_getSongInfobyId = async (req, res) => {
     const song_id = req.params.songId
     try {
-        var song = await pool.query('SELECT song.*, artist_name, album_name FROM song, artist, album WHERE song.artist_id = artist.artist_id and song.album_id = album.album_id and song_id = $1', [song_id])
+        var song = await pool.query('SELECT song.*, artist_name, album_name, album_image FROM song, artist, album WHERE song.artist_id = artist.artist_id and song.album_id = album.album_id and song_id = $1', [song_id])
         //res.send(song.rows)
         //console.log(song.rows[0])
         res.locals.data = song.rows[0]
@@ -206,17 +206,7 @@ export const get_updateSong = async (req, res) => {
     res.render('songViews/updateSong')
 }
 export const post_updateSong = async (req, res) => {
-    var {song_id, song_name, artist_name, album_name, song_info, category} = req.fields
-    const {song_file} = req.files
-    var duration
-    if(!isSong(song_file)) {
-        res.status(500).send({message: 'Wrong file format'}) 
-        return
-    }
-    ffprobe(song_file.path, { path: ffprobeStatic.path }, function (err, info) {
-        if (err) return err;
-        duration = info.streams[0].duration;
-    })
+    var {song_id, song_name, artist_name, album_name, song_info, category} = req.body
     if(song_id == '') res.status(500).send({message: 'Song does not exist'})
     else {
         try {
@@ -248,18 +238,9 @@ export const post_updateSong = async (req, res) => {
                                 await pool.query('UPDATE album SET num_of_songs = num_of_songs - 1, last_updated_stamp = current_timestamp WHERE album_id = $1', [old_album.rows[0].album_id])
                                 await pool.query('UPDATE album SET num_of_songs = num_of_songs + 1, last_updated_stamp = current_timestamp WHERE album_id = $1', [new_album.rows[0].album_id])
                                 await pool.query('UPDATE album SET total_duration = total_duration - $1, last_updated_stamp = current_timestamp WHERE album_id = $2;', [old_db.rows[0].duration, old_album.rows[0].album_id])
-                                await pool.query('UPDATE album SET total_duration = total_duration + $1, last_updated_stamp = current_timestamp WHERE album_id = $2;', [duration, new_album.rows[0].album_id])
-                                var playlist = await pool.query('SELECT playlist_id FROM song_added_to_playlist WHERE song_id = $1', [song_id])
-                                var x = 0;
-                                while(x < playlist.rowCount) {
-                                    await pool.query('UPDATE playlist SET total_duration = total_duration - $1 + $2, last_updated_stamp = current_timestamp WHERE playlist_id = $3;', [old_db.rows[0].duration, duration, playlist.rows[x].playlist_id])
-                                    x += 1
-                                }
-                                var song_link = 'public/songs' + song_name + '.mp3'
-                                const songName = song_name + '.mp3'
-                                saveFile(song_file, uploadFolder, songName)
+                                await pool.query('UPDATE album SET total_duration = total_duration + $1, last_updated_stamp = current_timestamp WHERE album_id = $2;', [old_db.rows[0].duration, new_album.rows[0].album_id])
                                 // Cập nhật song
-                                var song = pool.query('UPDATE song SET artist_id = $2, album_id = $3, song_name = $4, song_info = $5, song_link = $6, duration = $7, category = $8, last_updated_stamp = current_timestamp WHERE song_id = $1', [song_id, new_artist.rows[0].artist_id, new_album.rows[0].album_id, song_name, song_info, song_link, duration, category])
+                                var song = pool.query('UPDATE song SET artist_id = $2, album_id = $3, song_name = $4, song_info = $5, category = $6, last_updated_stamp = current_timestamp WHERE song_id = $1', [song_id, new_artist.rows[0].artist_id, new_album.rows[0].album_id, song_name, song_info, category])
                                 if (song) res.status(201).send({message: 'Song updated'})
                                 else res.status(500).send({message: 'Error in updating song'})
                             }

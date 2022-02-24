@@ -27,16 +27,18 @@ function submit_register(){
         'full_name': document.getElementById("name-input").value,
         'phone_number': document.getElementById("phone-input").value,
         'birth_date': document.getElementById("birthdate-input").value,
+        'avatar': document.getElementById("upload-file-image").files[0]
     };
     
-    var formBody = [];
+    var formBody = new FormData();
     for (var property in details) {
-      var encodedKey = encodeURIComponent(property);
-      var encodedValue = encodeURIComponent(details[property]);
-      formBody.push(encodedKey + "=" + encodedValue);
+        var encodedKey = property;
+        var encodedValue = details[property];
+        formBody.append(encodedKey, encodedValue);
     }
-    formBody = formBody.join("&");
     xhttp.open("POST", `/signup`, true);
-    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xhttp.send(formBody)
+}
+function updatePreview(){
+    document.getElementById("album-cover").setAttribute("src", URL.createObjectURL(document.getElementById("upload-file-image").files[0]))
 }

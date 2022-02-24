@@ -1,0 +1,18 @@
+<div id="dashboard">
+    <img id="background-image" src="../../images/eguitar.jpg">
+    <div class="content-box">
+        <div id="album-name">Manage Artists</div>
+        <button id = "song-add-queue" onclick="navigateTo('/admin/artist/add')">Add Artist</button>
+        <hr>
+        <div id="Artists-result-content" class="catalogue">
+            <% artists.forEach(artist => { %>
+                <div class="box-artist" onclick = "navigateTo('/admin/artist/<%=artist.artist_id%>')">
+                    <img class="box-artist-cover" src="../../<%=artist.artist_image%>">
+                    <div class="box-artist-name"><%= artist.artist_name%></div>
+                </div>
+            <% }) %>
+        </div>
+        
+        <hr>
+    </div>
+</div>

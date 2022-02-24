@@ -277,7 +277,7 @@ const app = {
         audio.src = this.currentSong.path;
         songName.innerText=this.currentSong.name;
         artist.innerText=this.currentSong.artist;
-        albumImage.src=this.currentSong.image;
+        albumImage.src="../" + this.currentSong.image;
         progress.value=0;
     },
     loadConfig: function () {
@@ -339,7 +339,7 @@ const app = {
                     var Data = JSON.parse(res.substring(1,res.length - 1));
                     document.getElementById("account-header-box").innerHTML = 
                     `<button id="account-header" class="header-button">
-                        <img src="${Data.avatar}" alt="" id="header-avatar" class="avatar">
+                        <img src="../${Data.avatar}" alt="" id="header-avatar" class="avatar">
                         <div id="account-head-name">${Data.full_name}</div>
                     </button>
                     <button id="logout" class="header-button" onclick="logout()">LOGOUT</button>`;
@@ -379,7 +379,6 @@ function navigateTo(path, callback = null, reqType = "GET", details = null)
         if(this.readyState == 4)
         {
             root.innerHTML = this.responseText;
-            console.log(path)
             history.pushState({ejs: root.innerHTML/*, randomData: window.Math.random()*/}, `${path}`, `${path}`)
             if(callback)
             {
@@ -437,52 +436,7 @@ function openTab(evt, tabName) {
   }
 
 function goToSong(id){
-    navigateTo('/song', () => {
-        /*var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-            if(this.readyState == 4)
-            {
-                var res = this.responseText;
-                var parsedJSON = JSON.parse(res);
-                document.getElementById("song-title").innerHTML = parsedJSON[0].song_name;
-                document.getElementById("song-artist").innerHTML = parsedJSON[0].artist_name;
-                document.getElementById("song-album").innerHTML = parsedJSON[0].album_name;
-                document.getElementById("song-rating").innerHTML = Math.floor(parsedJSON[0].sum_rate/ parsedJSON[0].num_of_ratings);
-                document.getElementById("song-category").innerHTML = parsedJSON[0].category;
-                document.getElementById("song-details-info").innerHTML = parsedJSON[0].song_info;
-            }
-        }
-        
-        xhttp.open("POST", `/song/get`, true);
-        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        xhttp.send(`song_id=${id}`);
-
-        xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-            if(this.readyState == 4)
-            {
-                var res = this.responseText;
-                var parsedJSON = JSON.parse(res);
-                divRes = document.getElementById("comments");
-                for (var i=0;i<parsedJSON.length;i++) {
-                    var div = document.createElement("div");
-                    div.className = "comment"
-                    div.innerHTML = 
-                    `
-                        <img class="comment-user-avatar" src="../images/eguitar.jpg">
-                        <div class="comment-text">
-                            <h1>User2</h1>
-                            <p>${parsedJSON[i].comment_content}</p>
-                        </div>`;
-                    divRes.appendChild(div);
-                }
-            }
-        }
-        
-        xhttp.open("POST", `/comment/get`, true);
-        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        xhttp.send(`song_id=${id}`);*/
-    })
+    navigateTo('/song')
 }
 
 
@@ -499,7 +453,7 @@ function playSong(id){
                     name: parsedJSON.song_name,
                     artist: parsedJSON.artist_name,
                     path: parsedJSON.song_link,
-                    image: parsedJSON.song_image,
+                    image: parsedJSON.album_image,
                     album: parsedJSON.album_name,
                     duration: parsedJSON.duration
                 },
@@ -516,6 +470,7 @@ function playSong(id){
 
 function addToQueue(id){
     var xhttp = new XMLHttpRequest();
+    var not_empty = app.songs.length
     xhttp.onreadystatechange = function() {
         if(this.readyState == 4)
         {
@@ -527,11 +482,14 @@ function addToQueue(id){
                     name: parsedJSON.song_name,
                     artist: parsedJSON.artist_name,
                     path: parsedJSON.song_link,
-                    image: parsedJSON.song_image,
+                    image: parsedJSON.album_image,
                     album: parsedJSON.album_name,
                     duration: parsedJSON.duration
                 },
             );
+            if(not_empty) return
+            currentIndex = 0;
+            app.loadCurrentSong();
         }
     }
     xhttp.open("POST", `/song/get`, true);
@@ -700,3 +658,70 @@ function submitComment(song_id){
     xhttp.send(`comment_content=${document.getElementById("comment-input").value}&song_id=${song_id}`);
 }
 
+function playAlbum(album_id)
+{
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if(this.readyState == 4)
+        {
+            var res = this.responseText;
+            var parsedJSONArray = JSON.parse(res);  
+            app.currentIndex = app.songs.length;
+            parsedJSONArray.forEach(parsedJSON => {
+                app.songs.push(
+                    {
+                        songid: parsedJSON.song_id,
+                        name: parsedJSON.song_name,
+                        artist: parsedJSON.artist_name,
+                        path: parsedJSON.song_link,
+                        image: parsedJSON.album_image,
+                        album: parsedJSON.album_name,
+                        duration: parsedJSON.duration
+                    },
+                );
+            }); 
+            app.loadCurrentSong();
+            audio.play();
+        }
+    }
+    xhttp.open("POST", `/album/get`, true);
+    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.send(`album_id=${album_id}`);
+    
+}
+function addAlbumToQueue(album_id)
+{
+    var not_empty = app.songs.length
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if(this.readyState == 4)
+        {
+            var res = this.responseText;
+            var parsedJSONArray = JSON.parse(res);  
+            parsedJSONArray.forEach(parsedJSON => {
+                app.songs.push(
+                    {
+                        songid: parsedJSON.song_id,
+                        name: parsedJSON.song_name,
+                        artist: parsedJSON.artist_name,
+                        path: parsedJSON.song_link,
+                        image: parsedJSON.album_image,
+                        album: parsedJSON.album_name,
+                        duration: parsedJSON.duration
+                    },
+                );
+            }); 
+            if(not_empty) return
+            app.currentIndex = 0;
+            app.loadCurrentSong();
+        }
+    }
+    xhttp.open("POST", `/album/get`, true);
+    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.send(`album_id=${album_id}`);
+    
+   
+}
+function updatePreview(){
+    document.getElementById("album-cover").setAttribute("src", URL.createObjectURL(document.getElementById("upload-file-image").files[0]))
+}

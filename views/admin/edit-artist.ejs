@@ -1,17 +1,17 @@
 <div id="artist-content">
-    <img id="background-image" src="../../images/album.png" alt="">
+    <img id="background-image" src="../../..<%= data.artist_image%>" alt="">
     
     <div id="album-headings">
         <div class="image-input-field">
-            <img id="album-cover" src="../../images/album.png">
+            <img id="album-cover" src="../../../<%= data.artist_image%>">
             <label for="upload-file-image" style="margin: 0 0 5px 0; color: #FFFFFF;" >Upload Artist Image:</label>
-            <input id="upload-file-image" type="file" style="font-family: 'Poppins'"/>
+            <input id="upload-file-image" type="file" style="font-family: 'Poppins'"  oninput="updatePreview()"/>
         </div>
         <div id="album-headings-text">
             <div id="album-name">Edit Artist</div>
             <div class="input-field">
                 <label>Artist</label>
-                <input id="artist-name-input"></input>
+                <input id="artist-name-input" value="<%- data.artist_name %>"></input>
             </div>
         </div>
     </div>
@@ -21,12 +21,12 @@
             <h1>Artist Details</h1>
             <div class="input-field">
                 <label>Artist Info</label>
-                <input id="artist-info-input"></input>
+                <input id="artist-info-input" value="<%- data.artist_info %>"></input>
             </div>
         </div>
         <div style="margin-top: 50px; margin-bottom: 10px">  
-            <button id = "song-play-button" onclick="addArtist()">Save</button>
-            <button id = "song-add-queue" onclick="navigateTo('/admin')">Cancel</button>
+            <button id = "song-play-button" onclick="updateArtist('<%- data.artist_id %>')">Save</button>
+            <button id = "song-add-queue" onclick="navigateTo('/admin/artist/<%- data.artist_id %>')">Cancel</button>
         </div>
     </div>
         

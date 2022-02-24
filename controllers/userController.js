@@ -52,7 +52,7 @@ export const post_Signup = async (req, res) => {
                         }
                         var phone_db = await pool.query('SELECT phone_number FROM account WHERE phone_number = $1', [phone_number])
                         if(phone_db.rowCount == 0) {
-                            var image_link = 'public/images/userImages/' + user_name + '.jpg'
+                            var image_link = '/images/userImages/' + user_name + '.jpg'
                             const imageName = user_name + '.jpg';
                             saveFile(avatar, uploadFolder, imageName)
                             var user = await pool.query('INSERT INTO account(account_id, username, current_password, avatar, user_role, full_name, birth_date, email, phone_number, last_updated_stamp, created_stamp) \
@@ -86,7 +86,7 @@ export const get_Login = async (req, res) => {
     else res.render('login', {layout: false});
 }
 export const post_Login = async (req, res) => {
-    const {user_name, password} = req.fields
+    const {user_name, password} = req.body
     if(user_name == '' || password == '')
         res.status(500).send({message: 'Missing some value'});
     else {
@@ -166,7 +166,7 @@ export const searchQuery = async(req, res) => {
     var key_word = req.params.keyword;
     key_word = "%" + key_word +  "%"
     try {
-        var song = await pool.query('SELECT song.*, artist_name, album_name FROM song, artist, album WHERE song_name LIKE $1 and song.artist_id = artist.artist_id and song.album_id = album.album_id', [key_word])
+        var song = await pool.query('SELECT song.*, artist_name, album_name, album_image FROM song, artist, album WHERE song_name LIKE $1 and song.artist_id = artist.artist_id and song.album_id = album.album_id', [key_word])
         res.locals.song_result = song.rows;
         song.rows.forEach(row => {
             row.duration = convertIntToTimeString(row.duration)

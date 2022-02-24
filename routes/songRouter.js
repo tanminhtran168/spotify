@@ -2,6 +2,7 @@ import express from 'express'
 import bodyParser from 'body-parser';
 import { checkAdmin, countViews, isAuth } from '../utils.js'
 import {getAllSong, get_getSongInfobyId, post_getSongInfobyId, get_searchSong, post_searchSong, get_addNewSong, post_addNewSong, get_deleteSong, post_deleteSong, get_updateSong, post_updateSong} from '../controllers/songController.js'
+import ExpressFormidable from 'express-formidable';
 const router = express.Router();
 
 router.use(bodyParser.json())
@@ -14,7 +15,7 @@ router.get('/search/', countViews, get_searchSong);
 router.post('/search/', countViews, post_searchSong);
 
 router.get('/add/', isAuth, checkAdmin, get_addNewSong);
-router.post('/add/', isAuth, checkAdmin, post_addNewSong);
+router.post('/add/', isAuth, ExpressFormidable(), checkAdmin, post_addNewSong);
 
 router.get('/delete/', isAuth, checkAdmin, get_deleteSong);
 router.post('/delete/', isAuth, checkAdmin, post_deleteSong);

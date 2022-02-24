@@ -4,7 +4,7 @@
         <div class="image-input-field">
             <img id="album-cover" src="../../images/album.png">
             <label for="upload-file-image" style="margin: 0 0 5px 0; color: #FFFFFF;" >Upload Album Cover Image:</label>
-            <input id="upload-file-image" type="file" style="font-family: 'Poppins'"/>
+            <input id="upload-file-image" type="file" style="font-family: 'Poppins'" oninput="updatePreview()"/>
         </div>
         <div id="album-headings-text">
             <div id="album-name">Add A New Album</div>
@@ -29,7 +29,7 @@
         </div>
         <div style="margin-top: 50px; margin-bottom: 10px">  
             <button id = "song-play-button" onclick="addAlbum()">Save</button>
-            <button id = "song-add-queue" onclick="navigateTo('/admin')">Cancel</button>
+            <button id = "song-add-queue" onclick="navigateTo('/admin/album/manage')">Cancel</button>
         </div>
     </div>
     

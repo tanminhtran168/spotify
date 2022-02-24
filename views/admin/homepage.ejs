@@ -11,35 +11,35 @@
                 <i class="fas fa-eye button-with-image-icon"></i>
                 
                 <div class="button-with-image-info">
-                    <div class="button-with-image-title">120</div>
+                    <div class="button-with-image-title"><%- viewcount %></div>
                     <div class="button-with-image-description">Views</div> 
                 </div>
             </div>
             <div class="button-with-image">
                 <i class="fas fa-music button-with-image-icon"></i>
                 <div class="button-with-image-info">
-                    <div class="button-with-image-title">120</div>
+                    <div class="button-with-image-title"><%- num_of_song %></div>
                     <div class="button-with-image-description">Songs</div> 
                 </div>
             </div>
             <div class="button-with-image">
                 <i class="fas fa-record-vinyl button-with-image-icon"></i>
                 <div class="button-with-image-info">
-                    <div class="button-with-image-title">10</div>
+                    <div class="button-with-image-title"><%- num_of_album %></div>
                     <div class="button-with-image-description">Albums</div> 
                 </div>
             </div>
             <div class="button-with-image">
                 <i class="fas fa-microphone-alt button-with-image-icon"></i>
                 <div class="button-with-image-info">
-                    <div class="button-with-image-title">120</div>
+                    <div class="button-with-image-title"><%- num_of_artist %></div>
                     <div class="button-with-image-description">Artists</div> 
                 </div>
             </div>
             <div class="button-with-image">
                 <i class="fas fa-user-circle button-with-image-icon"></i>
                 <div class="button-with-image-info">
-                    <div class="button-with-image-title">120</div>
+                    <div class="button-with-image-title"><%- num_of_client %></div>
                     <div class="button-with-image-description">Users</div> 
                 </div>
             </div>
@@ -49,21 +49,21 @@
         <h1>Manage</h1> 
             <hr>
         <div class="catalogue">
-            <div class="button-with-image">
+            <div class="button-with-image" onclick="navigateTo('/admin/song/manage')">
                 <i class="fas fa-music button-with-image-icon"></i>
                 <div class="button-with-image-info">
                     <div class="button-with-image-title">Manage Songs</div>
                    
                 </div>
             </div>
-            <div class="button-with-image">
+            <div class="button-with-image" onclick="navigateTo('/admin/album/manage')">
                 <i class="fas fa-record-vinyl button-with-image-icon"></i>
                 <div class="button-with-image-info">
                     <div class="button-with-image-title">Manage Albums</div>
                     
                 </div>
             </div>
-            <div class="button-with-image">
+            <div class="button-with-image" onclick="navigateTo('/admin/artist/manage')">
                 <i class="fas fa-microphone-alt button-with-image-icon"></i>
                 <div class="button-with-image-info">
                     <div class="button-with-image-title">Manage Artists</div>

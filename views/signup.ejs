@@ -47,6 +47,11 @@
                 <label class="label">Birthday</label>
                 <input id="birthdate-input" type="date" name="birth_date">
             </div>
+            <div class="image-input-field">
+                <label for="upload-file-image" style="margin: 0 0 5px 0; color: #FFFFFF;">Upload Your Avatar Image:</label>
+                <input id="upload-file-image" type="file" style="font-family: 'Poppins'" oninput="updatePreview()"/>
+                <img id="album-cover" src="../images/album.png">
+            </div>
         </form>
         <button id="signup-submit" onclick = "submit_register()">Sign up</button>
         <hr style="width: 100%;">

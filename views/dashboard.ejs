@@ -13,7 +13,6 @@
                 <%if(loggedIn){ %>
                 <% playlists.forEach(playlist => { %>
                 <div class="box-playlist" onclick = "navigateTo('/playlist/<%=playlist.playlist_id%>')">
-                    <img class="box-playlist-cover" src="../images/album.png">
                     <div class="box-playlist-title"><%= playlist.playlist_name %></div>
                     <div class="box-playlist-disc"><%= playlist.playlist_info %></div> 
                 </div>
@@ -43,7 +42,7 @@
                 <%if(loggedIn){ %>
                 <% artists.forEach(artist => { %>
                     <div class="box-artist" onclick = "navigateTo('/artist/<%=artist.artist_id%>')">
-                        <img class="box-artist-cover" src="../images/album.png">
+                        <img class="box-artist-cover" src="../<%= artist.artist_image%>">
                         <div class="box-artist-name"><%= artist.artist_name%></div>
                     </div>
                 <% })} else {%> 

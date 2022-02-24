@@ -30,7 +30,7 @@ export const post_getArtistInfobyId = async (req, res) => {
     } 
 
     try {
-        var song = await pool.query('SELECT song.*, artist_name, album_name FROM song, artist, album WHERE song.artist_id = artist.artist_id and song.album_id = album.album_id and artist.artist_id = $1', [artist_id])
+        var song = await pool.query('SELECT song.*, artist_name, album_name, album_image FROM song, artist, album WHERE song.artist_id = artist.artist_id and song.album_id = album.album_id and artist.artist_id = $1', [artist_id])
         song.rows.forEach(row => {
             row.duration = convertIntToTimeString(row.duration)
         })
@@ -146,8 +146,9 @@ export const get_updateArtist = async (req, res) => {
     res.render('artistViews/updateArtist')
 }
 export const post_updateArtist = async (req, res) => {
-    var {artist_id, artist_name, birth_date, artist_info} = req.fields
+    var {artist_id, artist_name,  artist_info} = req.fields
     const {artist_image} = req.files
+    if(artist_image)
     if(!isImage(artist_image)) {
         res.status(500).send({message: 'Wrong file format'}) 
         return
@@ -158,15 +159,15 @@ export const post_updateArtist = async (req, res) => {
         else {
             if(artist_name == '') artist_name = old_db.rows[0].artist_name
             //if(artist_image == '') artist_image = old_db.rows[0].artist_image
-            if(birth_date == '') birth_date = old_db.rows[0].birth_date
             if(artist_info == '') artist_info = old_db.rows[0].artist_info
             var image_link = '/images/artistImages/' + artist_name + '.jpg'
             const imageName = artist_name + '.jpg'
-            saveFile(artist_image, uploadFolder, imageName)
+            if(artist_image)
+                saveFile(artist_image, uploadFolder, imageName)
             var artistname_db = await pool.query('SELECT artist_name FROM artist WHERE artist_name = $1', [artist_name])
             if(artistname_db.rowCount == 0 || artist_name == old_db.rows[0].artist_name) {
-                var artist = pool.query('UPDATE artist SET artist_name = $2, artist_image = $3, birth_date = $4, artist_info = $5, last_updated_stamp = current_timestamp WHERE artist_id = $1', [artist_id, artist_name, image_link, birth_date, artist_info])
-                if (artist.rowCount) res.status(201).send({message: 'Artist updated'})
+                var artist = pool.query('UPDATE artist SET artist_name = $2, artist_image = $3, artist_info = $4, last_updated_stamp = current_timestamp WHERE artist_id = $1', [artist_id, artist_name, image_link, artist_info])
+                if (artist) res.status(201).send({message: 'Artist updated'})
                 else res.status(500).send({message: 'Error in updating artist'})
             }
             else res.status(500).send({message: 'Artist name already exists'})

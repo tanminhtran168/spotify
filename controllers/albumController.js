@@ -19,19 +19,28 @@ export const getAllAlbum = async (req, res) => {
 }
 
 export const get_getAlbumbyId = async (req, res) => {
-    res.render('albumViews/getInfobyId')
+    const album_id = req.body.album_id
+    try {
+        const songs = await pool.query('SELECT song.*, artist_name, album_name, album_image FROM song, artist, album WHERE song.artist_id = artist.artist_id and song.album_id = album.album_id and album.album_id = $1', [album_id])
+        songs.rows.forEach(row => {
+            row.duration = convertIntToTimeString(row.duration)
+        })
+        res.send(songs.rows)
+    } catch (err) {
+        console.log(err.stack)
+    }
 }
 export const post_getAlbumbyId = async (req, res) => {
     const album_id = req.params.albumId
     try {
-        const album = await pool.query('SELECT * FROM album WHERE album_id = $1', [album_id])
+        const album = await pool.query('SELECT album.*, artist_name FROM album, artist WHERE album_id = $1 and album.artist_id = artist.artist_id', [album_id])
         album.rows[0].total_duration = convertIntToTimeString(album.rows[0].total_duration)
         res.locals.data = album.rows[0]
     } catch (err) {
         console.log(err.stack)
     }
     try {
-        const songs = await pool.query('SELECT song.*, artist_name, album_name FROM song, artist, album WHERE song.artist_id = artist.artist_id and song.album_id = album.album_id and album.album_id = $1', [album_id])
+        const songs = await pool.query('SELECT song.*, artist_name, album_name, album_image FROM song, artist, album WHERE song.artist_id = artist.artist_id and song.album_id = album.album_id and album.album_id = $1', [album_id])
         songs.rows.forEach(row => {
             row.duration = convertIntToTimeString(row.duration)
         })
@@ -151,6 +160,7 @@ export const get_updateAlbum = async (req, res) => {
 export const post_updateAlbum = async (req, res) => {
     var {album_id, album_name, artist_name, album_info} = req.fields
     const {album_image} = req.files
+    if(album_image)
     if(!isImage(album_image)) {
         res.status(500).send({message: 'Wrong file format'})
         return
@@ -175,7 +185,8 @@ export const post_updateAlbum = async (req, res) => {
                     // Cập nhật album
                     var image_link = '/images/albumImages/' + album_name + '.jpg'
                     const imageName = album_name + '.jpg'
-                    saveFile(album_image, uploadFolder, imageName)
+                    if(album_image)
+                        saveFile(album_image, uploadFolder, imageName)
                     var album = pool.query('UPDATE album SET album_name = $2, artist_id = $3, album_image = $4, album_info = $5, last_updated_stamp = current_timestamp WHERE album_id = $1', [album_id, album_name, new_artist.rows[0].artist_id, image_link, album_info])
                     if (album) res.status(201).send({message: 'Album updated'});
                     else res.status(500).send({message: 'Error in updating album'});

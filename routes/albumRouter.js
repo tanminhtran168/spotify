@@ -11,7 +11,7 @@ router.use(bodyParser.urlencoded({extended:true}))
 router.get('/:albumId', countViews, post_getAlbumbyId);
 
 router.get('/get', countViews, get_getAlbumbyId); 
-router.post('/get', countViews, post_getAlbumbyId);
+router.post('/get', countViews, get_getAlbumbyId);
 
 router.get('/search', countViews, get_searchAlbum); 
 router.post('/search', countViews, post_searchAlbum);
@@ -23,6 +23,6 @@ router.get('/delete', isAuth, checkAdmin, get_deleteAlbum);
 router.post('/delete', isAuth, checkAdmin, post_deleteAlbum);
 
 router.get('/update', isAuth, checkAdmin, get_updateAlbum);
-router.post('/update', isAuth, checkAdmin, post_updateAlbum);
+router.post('/update', isAuth, ExpressFormidable(), checkAdmin, post_updateAlbum);
 
 export default router;
