@@ -582,7 +582,7 @@ function playPlaylist(playlist_id){
                         name: parsedJSON.song_name,
                         artist: parsedJSON.artist_name,
                         path: parsedJSON.song_link,
-                        image: parsedJSON.song_image,
+                        image: parsedJSON.album_image,
                         album: parsedJSON.album_name,
                         duration: parsedJSON.duration
                     },
@@ -614,7 +614,7 @@ function addPlaylistToQueue(playlist_id){
                         name: parsedJSON.song_name,
                         artist: parsedJSON.artist_name,
                         path: parsedJSON.song_link,
-                        image: parsedJSON.song_image,
+                        image: parsedJSON.album_image,
                         album: parsedJSON.album_name,
                         duration: parsedJSON.duration
                     },

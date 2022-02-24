@@ -34,7 +34,7 @@ export const get_getPlaylistbyId = async(req, res) => {
         }
 
         try {
-            const songs = await pool.query('SELECT song.*, artist_name, album_name FROM song, artist, album, song_added_to_playlist WHERE song.artist_id = artist.artist_id and song.album_id = album.album_id and song.song_id = song_added_to_playlist.song_id and playlist_id = $1', [playlist_id])     
+            const songs = await pool.query('SELECT song.*, artist_name, album_name, album_image FROM song, artist, album, song_added_to_playlist WHERE song.artist_id = artist.artist_id and song.album_id = album.album_id and song.song_id = song_added_to_playlist.song_id and playlist_id = $1', [playlist_id])     
             songs.rows.forEach(row => {
                 row.duration = convertIntToTimeString(row.duration)
             })
@@ -159,7 +159,10 @@ export const post_getAllSonginPlaylist = async (req, res) => {
     if(client.rowCount) {
         if(client_id == client.rows[0].client_id) {
             try {
-                var playlist = await pool.query('SELECT song.*, artist_name, album_name FROM song, song_added_to_playlist, artist, album WHERE song.artist_id = artist.artist_id and song.album_id = album.album_id and song.song_id = song_added_to_playlist.song_id and playlist_id = $1', [playlist_id])
+                var playlist = await pool.query('SELECT song.*, artist_name, album_name, album_image FROM song, song_added_to_playlist, artist, album WHERE song.artist_id = artist.artist_id and song.album_id = album.album_id and song.song_id = song_added_to_playlist.song_id and playlist_id = $1', [playlist_id])
+                playlist.rows.forEach(row => {
+                    row.duration = convertIntToTimeString(row.duration)
+                })
                 res.send(playlist.rows)
             } catch (err) {
                 console.log(err.stack)
