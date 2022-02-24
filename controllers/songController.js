@@ -113,15 +113,17 @@ const uploadFolder = path.join(__dirname, "public","songs");
 export const post_addNewSong = async (req, res) => {
     var {song_name, artist_name, album_name, song_info, category} = req.fields;
     const {song_file} = req.files
-    var duration
     if(!isSong(song_file)) {
         res.status(500).send({message: 'Wrong file format'}) 
         return
     }
-    ffprobe(song_file.path, { path: ffprobeStatic.path }, function (err, info) {
-        if (err) return err;
-        duration = info.streams[0].duration;
-    })
+    var duration = await ffprobe(song_file.path, { path: ffprobeStatic.path })
+        .then(function (info) {
+        return info.streams[0].duration;
+    }).catch(function (err) {
+        console.error(err);
+      })
+    //console.log(duration)
     if(song_name == '' || artist_name == '' || album_name == '' || category == '' )
         res.status(500).send({message: 'Missing some value'})
     else 
