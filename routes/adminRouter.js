@@ -8,21 +8,21 @@ const router = express.Router();
 router.use(bodyParser.json())
 router.use(bodyParser.urlencoded({extended:true}))
 
-router.get('/', get_homepage);
+router.get('/',isAuth, checkAdmin, get_homepage);
 
-router.get('/song/manage', get_song_manage);
-router.get('/album/manage', get_album_manage);
-router.get('/artist/manage', get_artist_manage);
+router.get('/song/manage',isAuth, checkAdmin, get_song_manage);
+router.get('/album/manage',isAuth, checkAdmin, get_album_manage);
+router.get('/artist/manage',isAuth, checkAdmin, get_artist_manage);
 
-router.get('/song/:songId/update', get_update_song);
-router.get('/album/:albumId/update', get_update_album);
-router.get('/artist/:artistId/update', get_update_artist);
+router.get('/song/:songId/update', isAuth, checkAdmin,get_update_song);
+router.get('/album/:albumId/update',isAuth, checkAdmin, get_update_album);
+router.get('/artist/:artistId/update',isAuth, checkAdmin, get_update_artist);
 
-router.get('/album/add', get_add_album);
-router.get('/artist/add', get_add_artist);
-router.get('/song/add', get_add_song);
+router.get('/album/add', isAuth, checkAdmin,get_add_album);
+router.get('/artist/add',isAuth, checkAdmin, get_add_artist);
+router.get('/song/add',isAuth, checkAdmin, get_add_song);
 
-router.get('/song/:songId', get_single_song);
-router.get('/artist/:artistId', get_single_artist);
-router.get('/album/:albumId', get_single_album);
+router.get('/song/:songId',isAuth, checkAdmin, get_single_song);
+router.get('/artist/:artistId',isAuth, checkAdmin, get_single_artist);
+router.get('/album/:albumId', isAuth, checkAdmin,get_single_album);
 export default router;

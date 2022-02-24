@@ -416,7 +416,7 @@ function logout(){
     xhttp.onreadystatechange = function() {
         if(this.readyState == 4)
         {
-            location.reload()
+            document.location = '/'
         }
     }
     xhttp.open("POST", `/logout`, true);
