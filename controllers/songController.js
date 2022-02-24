@@ -39,7 +39,10 @@ export const post_getSongInfobyId = async (req, res) => {
         //res.send(song.rows)
         //console.log(song.rows[0])
         res.locals.data = song.rows[0]
+        if(song.rows[0].num_of_ratings)
         res.locals.rating = Math.round(song.rows[0].sum_rate / song.rows[0].num_of_ratings)
+        else
+        res.locals.rating = "unrated"
         const album = await pool.query('SELECT album_image FROM album WHERE album_id = $1', [song.rows[0].album_id])
         res.locals.album_image = album.rows[0].album_image
         

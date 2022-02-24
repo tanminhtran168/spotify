@@ -60,8 +60,8 @@ export const post_addNewRating = async (req, res) => {
                 res.status(500).send({message: 'Rating must be between 1 - 5 stars'})
                 return
             }
-            var update = await pool.query('UPDATE song SET sum_rate = sum_rate + $2, num_of_ratings = num_of_ratings + 1, last_updated_stamp = current_timestamp WHERE song_id = $1', [song_id, rating])
-            var rate = await pool.query('INSERT INTO rating(rating_id, client_id, song_id, rating, last_updated_stamp, created_stamp) VALUES (default, $1, $2, $3, current_timestamp, default)', [client_id, song_id, rating])
+            var update = await pool.query('UPDATE song SET sum_rate = sum_rate + $2, num_of_ratings = num_of_ratings + 1 WHERE song_id = $1', [song_id, rating])
+            var rate = await pool.query('INSERT INTO rating(rating_id, client_id, song_id, rating, created_stamp) VALUES (default, $1, $2, $3, default)', [client_id, song_id, rating])
             if(rate.rowCount) {
                 if(update.rowCount) res.status(201).send({message: 'Add new rating successful'})
                 else res.status(500).send({message: 'Error in updating rating'})

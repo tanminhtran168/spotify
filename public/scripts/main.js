@@ -738,3 +738,29 @@ function addAlbumToQueue(album_id)
 function updatePreview(){
     document.getElementById("album-cover").setAttribute("src", URL.createObjectURL(document.getElementById("upload-file-image").files[0]))
 }
+function sendRating(song_id){
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if(this.readyState == 4)
+        {
+            var res = this.responseText;
+            var parsedJSONArray = JSON.parse(res);  
+            alert(parsedJSONArray.message)
+            location.reload()
+        }
+    }
+    var details = {
+        'rating': document.getElementById("rating-input").value,
+        'song_id': song_id
+    };
+    var formBody = [];
+    for (var property in details) {
+      var encodedKey = encodeURIComponent(property);
+      var encodedValue = encodeURIComponent(details[property]);
+      formBody.push(encodedKey + "=" + encodedValue);
+    }
+    formBody = formBody.join("&");
+    xhttp.open("POST", `/rating/add`, true);
+    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.send(formBody);
+}

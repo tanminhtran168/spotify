@@ -42,7 +42,14 @@
             <hr>
         </div>
     </div>
+        
     <div id="comment-section" class="content-box">
+        <div id="rating-container">
+            <h1>Rate this Song:</h1>
+            <input type="number" id="rating-input" min="1" max="5">    
+        </div>
+        <button id="rating-submit" onclick="sendRating('<%= data.song_id %>')"> Send your rating </button>
+        <hr>
         <h1>Comments</h1>
         <hr>
         <div id="comments">
