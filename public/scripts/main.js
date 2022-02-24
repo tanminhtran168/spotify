@@ -234,9 +234,6 @@ const app = {
             
         };
 
-        document.getElementById("home").onclick = function () {
-            navigateTo('/')
-        }
         document.getElementById("queue-button").onclick = function () {
             if(window.location.pathname === '/queue')
             {

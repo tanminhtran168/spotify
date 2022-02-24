@@ -12,7 +12,7 @@
         <h1>All Songs</h1>
         <hr>
         <% songs.forEach(song => { %>
-                <div class="list-item-song" onclick = "navigateTo('/song/<%=song.song_id%>')">
+                <div class="list-item-song" onclick = "navigateTo('/admin/song/<%=song.song_id%>')">
                     <img class="list-song-cover" src="../../<%=song.album_image%>">
                     <div class="list-song-title"><%= song.song_name%></div>
                     <div class="list-song-artist"><%=song.artist_name%></div>
@@ -27,7 +27,7 @@
         <hr>
         <div class="catalogue">
             <% albums.forEach(album => { %>
-                <div class="box-album" onclick = "navigateTo('/album/<%=album.album_id%>')">
+                <div class="box-album" onclick = "navigateTo('/admin/album/<%=album.album_id%>')">
                     <img class="box-album-cover" src="../../<%=album.album_image%>">
                     <div class="box-album-title"><%=album.album_name%></div>
                     <div class="box-album-artist"><%=album.artist_name%></div>

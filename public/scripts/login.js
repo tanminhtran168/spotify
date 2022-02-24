@@ -21,7 +21,10 @@ document.getElementById("login-submit").onclick = function () {
             else
             {
                 setCookie("token",Data.token, 2);
-                document.location ='/';
+                if(Data.isAdmin)
+                    document.location ='/admin';
+                else
+                    document.location ='/';
             }
             
         }
