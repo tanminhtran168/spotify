@@ -11,7 +11,7 @@
     Đặng Minh Đức : Tạo database mẫu, kết nối database với backend, hỗ trợ xử lý backend, kiểm thử hệ thống.
     Ngô Nam Dương : Xử lý backend, tạo các hàm chức năng, kết nối backend với database và frontend.
     Trần Bình Minh : Thiết kế giao diện, xử lý logic frontend, kết nối với backend. 
-    Trần Tấn Minh : Thiết kế database, hỗ trợ viết frontend.
+    Trần Tấn Minh : Thiết kế database, bổ sung backend, hỗ trợ viết frontend.
 
 # Chỉ dẫn cài đặt : 
 
