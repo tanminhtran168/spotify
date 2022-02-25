@@ -39,3 +39,4 @@
       > npm i   
       > npm start  
   - Hệ thống sẽ chạy trên localhost:5000  
+  - Note: Danh sách từ xấu ["abc", "bcd"]
