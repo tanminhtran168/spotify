@@ -59,7 +59,7 @@ export const post_addNewComment = async (req, res) => {
             else {
                 var x = 0
                 while(x < badWord.length) {
-                    var banWord = ' ' + badWord[x] + ' '
+                    var banWord = badWord[x]
                     if(comment_content.search(banWord) != -1) {
                         res.status(500).send({message: 'You have typed forbidden word'})
                         return
