@@ -135,7 +135,6 @@ export const get_dashboard = async(req, res) => {
     const token = req.cookies.token
     if(token)
     {
-        res.locals.loggedIn = true;
         var account_id
         jwt.verify(token, config.JWT_SECRET, (err, decode) => {
             if (err) return res.status(401).send({ message: 'Error in authentication' });
@@ -163,8 +162,6 @@ export const get_dashboard = async(req, res) => {
             console.log(err.stack)
         }    
     }
-    else
-        res.locals.loggedIn = false;
     res.render('dashboard')
 }
 export const get_queue = async(req, res) =>{

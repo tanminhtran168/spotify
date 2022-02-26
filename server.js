@@ -32,6 +32,11 @@ app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
 app.use(function(req, res, next){
 	res.locals.ajax = req.xhr;
+	const token = req.cookies.token
+    if(token)
+		res.locals.loggedIn = true;
+	else
+		res.locals.loggedIn = false;
 	next();
 })
 app.use("/", user);

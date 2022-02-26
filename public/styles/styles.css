@@ -789,13 +789,21 @@ hr {
 }
 #artist-headings{
     margin-top: 300px;
-    margin-left: auto;
-    margin-right: auto;
-    width: 80%;
+    margin-left: 10%;
+    margin-right: 10%;
+    height: fit-content;
     display: flex;
     font-family: "Poppins";
     font-size: 100px;
     font-weight: 600;
+}
+#artist-name{
+    width: 80%;
+    margin: 0;
+    height: fit-content;
+    height: auto;
+    min-height: 100% !important;
+    overflow: auto;
 }
 #artist-top-songs{
     padding-top: 30px;
@@ -1134,6 +1142,16 @@ label{
 #rating-submit:hover{
     opacity: 1;
 }
-#rating-container{
-
+#favorite-button{
+    margin: auto 10px 30px auto;
+    height: 25px;
+    width: fit-content;
+    background-color: transparent;
+    border: none;
+    color: #FFFFFF;
+    font-size: 30px;
+    opacity: 0.7;
+}
+#favorite-button:hover{
+    opacity: 1;
 }

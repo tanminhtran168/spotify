@@ -795,3 +795,53 @@ function update_account(account_id){
     xhttp.open("POST", `/account/update`, true);
     xhttp.send(formBody)
 }
+function add_favorite(artist_id){
+    document.getElementById("favorite-button").children[0].classList.remove("far")
+    document.getElementById("favorite-button").children[0].classList.add("fas")
+    document.getElementById("favorite-button").setAttribute('onclick', `remove_favorite(${artist_id})`)
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if(this.readyState == 4)
+        {
+            var Data = JSON.parse(this.responseText);
+        }
+    }
+    var details = {
+        'artist_id': artist_id,
+    };
+    var formBody = [];
+    for (var property in details) {
+      var encodedKey = encodeURIComponent(property);
+      var encodedValue = encodeURIComponent(details[property]);
+      formBody.push(encodedKey + "=" + encodedValue);
+    }
+    formBody = formBody.join("&");
+    xhttp.open("POST", `/artist/addfavor`, true);
+    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.send(formBody);
+}
+function remove_favorite(artist_id){
+    document.getElementById("favorite-button").children[0].classList.remove("fas")
+    document.getElementById("favorite-button").children[0].classList.add("far")
+    document.getElementById("favorite-button").setAttribute('onclick', `add_favorite(${artist_id})`)
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if(this.readyState == 4)
+        {
+            var Data = JSON.parse(this.responseText);
+        }
+    }
+    var details = {
+        'artist_id': artist_id,
+    };
+    var formBody = [];
+    for (var property in details) {
+      var encodedKey = encodeURIComponent(property);
+      var encodedValue = encodeURIComponent(details[property]);
+      formBody.push(encodedKey + "=" + encodedValue);
+    }
+    formBody = formBody.join("&");
+    xhttp.open("POST", `/artist/deletefavor`, true);
+    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.send(formBody);
+}

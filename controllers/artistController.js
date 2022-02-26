@@ -22,6 +22,16 @@ export const get_getArtistInfobyId = async (req, res) => {
 }
 export const post_getArtistInfobyId = async (req, res) => {
     const artist_id = req.params.artistId
+    const client_id = await getClient(req, res)
+    if(client_id && client_id!=-1)
+    {
+        const favor = await pool.query('SELECT * FROM artist_favorite WHERE client_id = $1 and artist_id = $2', [client_id, artist_id])
+        if(favor.rows[0])
+            res.locals.isFavorite = true;
+        else
+            res.locals.isFavorite = false;
+    }
+   
     try {
         var artist = await pool.query('SELECT * FROM artist WHERE artist_id = $1', [artist_id])
         res.locals.data = artist.rows[0];
@@ -213,7 +223,7 @@ export const post_addArtistFavorite = async(req, res) => {
                     if(updateNum.rowCount) res.status(201).send({message: 'Add artist favorite successful'})
                     else res.status(500).send({message: 'Error in updating number of artist favorite'})
                 }
-                else res.status(500).send({message: 'Error in adding artist favorite'})
+                else res.status(500).send({message: 'Error in adding favorite artist '})
             }
         }
 }
